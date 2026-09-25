@@ -1,0 +1,38 @@
+#area-impressao-plano-corte { display:none; }
+.pc-resumo { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:14px 0; }
+.pc-resumo > div { border:1px solid var(--borda); border-radius:8px; padding:10px; background:#211b10; }
+.pc-resumo strong,.pc-resumo span { display:block; }
+.pc-resumo strong { color:var(--texto-escuro); font-size:11px; }
+.pc-resumo span { color:var(--dourado); font-size:20px; font-weight:800; margin-top:4px; }
+.pc-legenda { margin:8px 0 12px; color:var(--texto-escuro); font-size:12px; }
+.pc-material-grupo > h3 { margin:14px 0 5px; color:var(--dourado); font-size:15px; }
+.pc-barra { border:1px solid var(--borda); border-radius:8px; margin:10px 0; overflow:hidden; }
+.pc-barra-cabecalho { display:flex; justify-content:space-between; gap:12px; padding:9px 11px; background:#211b10; color:var(--texto-claro); }
+.pc-barra-cabecalho span { color:var(--texto-escuro); font-size:12px; }
+.pc-cortes { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:7px; padding:9px; }
+.pc-corte { border:1px solid var(--borda); border-radius:6px; padding:7px; }
+.pc-corte strong,.pc-corte span,.pc-corte small { display:block; }
+.pc-corte strong { color:var(--dourado); font-size:16px; }
+.pc-corte span { font-size:12px; margin-top:2px; }
+.pc-corte small { color:var(--texto-escuro); margin-top:4px; font-size:10px; }
+@media print {
+    body.imprimindo-plano-corte > * { display:none !important; }
+    body.imprimindo-plano-corte > #area-impressao-plano-corte { display:block !important; color:#000; background:#fff; font-family:Arial,sans-serif; font-size:10px; }
+    #area-impressao-plano-corte h1 { margin:0 0 8px; font-size:18px; border-bottom:2px solid #b18b18; padding-bottom:5px; }
+    #area-impressao-plano-corte .pc-resumo { display:flex; gap:0; margin:5px 0 8px; border-top:1px solid #888; border-bottom:1px solid #888; }
+    #area-impressao-plano-corte .pc-resumo > div { flex:1; padding:4px 8px; border:0; border-right:1px solid #bbb; border-radius:0; background:#fff; }
+    #area-impressao-plano-corte .pc-resumo > div:last-child { border-right:0; }
+    #area-impressao-plano-corte .pc-resumo strong { font-size:8px; color:#555; }
+    #area-impressao-plano-corte .pc-resumo span { font-size:13px; color:#111; margin-top:2px; }
+    #area-impressao-plano-corte .pc-legenda { margin:4px 0 6px; font-size:8px; }
+    #area-impressao-plano-corte .pc-material-grupo > h3 { margin:6px 0 3px; font-size:11px; color:#111; }
+    #area-impressao-plano-corte .pc-barra { border:0; border-bottom:1px solid #888; border-radius:0; margin:3px 0 5px; break-inside:avoid; }
+    #area-impressao-plano-corte .pc-barra-cabecalho { padding:3px 2px; border-bottom:1px solid #bbb; background:#fff; color:#000; }
+    #area-impressao-plano-corte .pc-barra-cabecalho span { font-size:8px; color:#333; }
+    #area-impressao-plano-corte .pc-cortes { grid-template-columns:repeat(5,minmax(0,1fr)); gap:0; padding:2px 0; }
+    #area-impressao-plano-corte .pc-corte { border:0; border-right:1px dotted #bbb; border-radius:0; padding:2px 5px; }
+    #area-impressao-plano-corte .pc-corte:last-child { border-right:0; }
+    #area-impressao-plano-corte .pc-corte strong { font-size:11px; color:#111; }
+    #area-impressao-plano-corte .pc-corte span { font-size:8px; }
+    #area-impressao-plano-corte .pc-corte small { font-size:7px; margin-top:2px; }
+}

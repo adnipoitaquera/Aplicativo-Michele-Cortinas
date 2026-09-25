@@ -1,0 +1,55 @@
+/* Interface de ERP clássico. As regras de impressão permanecem independentes. */
+@media screen {
+  :root { --bg-principal:#e6e9ed; --bg-card:#ffffff; --bg-input:#fff; --borda:#aab3bd; --texto-claro:#182c44; --texto-escuro:#405166; --dourado:#234f81; --dourado-hover:#193f6c; --sucesso:#217547; --erro:#b83232; --sombra-1:0 1px 2px #0001; --sombra-2:0 2px 5px #0002; --sombra-3:0 2px 8px #0002; }
+  body { background:var(--bg-principal)!important; font-family:'Segoe UI',Tahoma,Arial,sans-serif; font-size:14px; line-height:1.45; }
+  .app-layout { display:block; }
+  .sidebar { width:100%; height:auto; position:relative; display:flex; flex-direction:row; flex-wrap:wrap; gap:0; padding:0 8px 5px; background:linear-gradient(#f9fafb,#dce2e8); border-bottom:1px solid #98a6b4; }
+  .sidebar-brand { width:100%; margin:0 -8px 4px; padding:10px 16px; background:var(--dourado); border:0; }
+  .sidebar-brand strong { color:white; font-size:18px; }
+  .sidebar-brand span { color:#e3edf6; }
+  .sidebar-section,.sidebar-spacer,.sidebar-user { display:none; }
+  .sidebar-btn { width:auto; margin:0; padding:9px 12px!important; border-radius:0; border:0!important; border-right:1px solid #b5bec8!important; font-size:13px; font-weight:600; color:#243b53; }
+  .sidebar-btn:hover,.sidebar-btn.ativo { color:#15365c; background:#cbdcec; }
+  .app-main { padding:10px; }
+  .app-main .container { max-width:none; border-radius:6px; padding:16px; }
+  .container:hover { transform:none; }
+  .v6-topbar { padding:7px 10px; margin-bottom:12px; border-radius:2px; background:linear-gradient(#fff,#e2e7ed); gap:10px; flex-wrap:wrap; }
+  .v6-breadcrumb,.v6-breadcrumb strong { color:#234f81; }
+  .v6-actions { align-items:center; flex-wrap:wrap; }
+  .header-comercial { display:none; }
+  .secao-titulo { margin:12px 0 10px; padding:6px 8px; font-size:15px; letter-spacing:0; background:#e7eef5; color:#173d69; -webkit-text-fill-color:currentColor; border:1px solid #aabaca; border-left:3px solid #416b94; }
+  .grid-forms { grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:8px; margin-bottom:10px; }
+  label { color:#233b54; font-size:13px; font-weight:600; margin-bottom:5px; }
+  input,select,textarea { border-radius:2px; padding:7px 9px; font-size:14px; background:#fff; color:#182c44; min-width:0; box-sizing:border-box; }
+  input:focus,select:focus,textarea:focus { background:#fff; outline:2px solid #5888b8; outline-offset:1px; box-shadow:none; }
+  .btn,.aba-btn { padding:8px 13px; font-size:13px; border:1px solid #9aaabb; border-radius:2px; text-transform:none; letter-spacing:0; background:linear-gradient(#fff,#dce4ed); color:#193e68; box-shadow:none; }
+  .btn:hover,.aba-btn:hover,.aba-btn.ativa { background:#cfdfef; color:#173d69; transform:none; box-shadow:none; }
+  .btn-sucesso { color:#185b32; background:#e0f0e4; }.btn-erro { color:#8e2525; background:#f9e4e4; }
+  .menu-abas { gap:2px; margin-bottom:12px; padding-bottom:0; flex-wrap:wrap; }
+  .item-carrinho-card,.opcional-box,.mini-resumo,.plano-corte-resumo>div { background:#ffffff; border-radius:2px; box-shadow:none!important; }
+  .ambiente-resumo { background:#e5edf4; padding:8px; }.ambiente-nome-resumo { color:#193e68; }.ambiente-numero { color:#fff; border-radius:2px; }.ambiente-conteudo { padding:10px; }
+  .opcional-box { padding:10px; margin-bottom:10px; }.opcional-box:hover { background:#f5f8fb; }
+  table { font-size:13px; margin-top:8px; } th { background:#e2e9ef; color:#234f81; padding:9px; font-size:12px; text-transform:none; letter-spacing:0; } td { padding:6px 8px; } tbody tr:nth-child(even) { background:#f0f3f5; }
+  .painel-home { background:#fafbfc; padding:12px; border:1px solid #b6bfc8; }
+  .painel-home>p { color:#526174!important; margin:0 0 12px!important; }
+  .dashboard { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:12px; margin:14px 0 4px; }
+  .dash-card { position:relative; min-height:138px; padding:18px 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border:1px solid #c2cad3; border-radius:6px; background:#fff; color:#19344f; font:14px 'Segoe UI',Tahoma,Arial,sans-serif; cursor:pointer; }
+  .dash-card:hover { transform:none; border-color:#608bb6; background:#e5f0fb; box-shadow:inset 0 0 0 1px white; }.dash-card:focus-visible { outline:2px solid #315f90; outline-offset:2px; }
+  .atalho-icone { font-size:36px; line-height:1.2; }.atalho-titulo { font-weight:bold; }.dash-num { position:absolute; top:5px; right:6px; font-size:12px; font-weight:700; padding:3px 7px; background:#dce8f4; color:#234f81; border-radius:3px; }
+  #login-screen { background:linear-gradient(135deg,#d7e2ec,#f2f4f6); }.login-box { background:#ffffff; border-radius:4px; box-shadow:0 8px 30px #29435d30; }.login-box label { color:#234f81; }.login-erro { color:#a32222; }
+  input::placeholder,textarea::placeholder { color:#59697b; opacity:1; }
+  input:disabled,select:disabled,textarea:disabled { color:#526174; background:#edf0f3; opacity:1; }
+  .secao-titulo { background-clip:border-box; -webkit-background-clip:border-box; border-radius:3px; }
+  .btn-ouro,.aba-btn.ativa { background:var(--dourado); color:#fff; border-color:var(--dourado); }
+  .btn-ouro:hover,.aba-btn.ativa:hover { background:var(--dourado-hover); color:#fff; }
+  .btn-sucesso:hover { background:#cce6d5; color:#185b32; }
+  .btn-erro:hover { background:#f3cccc; color:#8e2525; }
+  .pre-visualizacao,.grafico-relatorio,.pc-resumo>div,.pc-barra-cabecalho,.materiais-ficha-cabecalho { background:#f2f5f8; color:var(--texto-claro); }
+  .grafico-barra-trilho { background:#dbe3eb; }.grafico-barra { background:var(--dourado); }
+  .modulo-cabecalho { background:#e7edf3; }.modulo-corpo.desativado { opacity:1; background:#f1f3f5; }
+  .dash-sub,.mini-resumo span,.pc-resumo strong,.historico-status { color:#405166; font-size:13px; }
+  .login-box { background:#fff; }.login-brand { font-size:13px; }
+  .painel-home { border-radius:5px; background:#f4f7fa; padding:16px; }
+  .v6-topbar { background:#f5f7fa; }.sidebar { background:#f3f5f7; }
+  @media(max-width:800px) { .sidebar-brand strong { font-size:18px; }.sidebar-brand strong:after { content:none; }.sidebar-brand span,.sidebar-btn span { display:inline; }.sidebar-btn { font-size:11px; }.sidebar-btn::first-letter { font-size:inherit; }.app-main { padding:6px; }.app-main .container { padding:8px; }.dashboard { grid-template-columns:repeat(auto-fill,minmax(125px,1fr)); }.grid-forms { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); } }
+}

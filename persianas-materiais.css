@@ -1,0 +1,30 @@
+#area-impressao-persianas { display:none; }
+.mp-cabecalho, .mp-grade { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.mp-cabecalho { margin:16px 0; }
+.mp-peca { border:1px solid var(--borda); border-radius:8px; padding:16px; margin:16px 0; }
+.mp-peca h3 { margin:0 0 6px; }
+.mp-peca p { margin:0 0 12px; font-size:12px; }
+.mp-campo { min-width:0; overflow-wrap:anywhere; }
+.mp-campo > strong { display:block; font-size:12px; margin-bottom:6px; }
+.mp-campo input:not([type=checkbox]), .mp-campo select { width:100%; box-sizing:border-box; }
+.mp-campo label { margin-right:10px; }
+.mp-campo input[type=checkbox] { width:auto; }
+.persiana-recolhida > div:not(:first-child) { display:none !important; }
+.persiana-recolhida > div:first-child { margin-bottom:0 !important; }
+@media(max-width:800px) { .mp-grade,.mp-cabecalho { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media print {
+    body.imprimindo-persianas > * { display:none !important; }
+    body.imprimindo-persianas > #area-impressao-persianas { display:block !important; color:#000; background:#fff; font-family:Arial,sans-serif; font-size:11px; }
+    #area-impressao-persianas .mp-cabecalho { grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; margin:6px 0; border:1px solid #888; }
+    #area-impressao-persianas .mp-cabecalho .mp-campo { border-right:1px solid #aaa; padding:4px 6px; }
+    #area-impressao-persianas .mp-cabecalho .mp-campo:last-child { border-right:0; }
+    #area-impressao-persianas .mp-grade { grid-template-columns:repeat(8,minmax(0,1fr)); gap:0; border-left:1px solid #aaa; border-top:1px solid #aaa; }
+    #area-impressao-persianas .mp-peca { break-inside:avoid; border:1px solid #888; border-radius:0; padding:5px; margin:5px 0; }
+    #area-impressao-persianas .mp-peca p { display:none; }
+    #area-impressao-persianas .mp-peca h3 { margin:0 0 3px; font-size:12px; }
+    #area-impressao-persianas .mp-grade .mp-campo { min-height:25px; border-right:1px solid #aaa; border-bottom:1px solid #aaa; padding:3px 4px; font-size:9px; }
+    #area-impressao-persianas .mp-grade .mp-campo > strong { margin-bottom:1px; font-size:8px; color:#555; }
+    #area-impressao-persianas h2 { font-size:20px; }
+    #area-impressao-persianas h3 { font-size:14px; }
+    #area-impressao-persianas .mp-campo > strong { font-size:10px; }
+}

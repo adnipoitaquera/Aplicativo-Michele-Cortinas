@@ -23,7 +23,7 @@
       if (!store?.pronto) throw new Error('Entre na sua conta antes de salvar.');
       store.setItem(chave, valor);
       clearTimeout(timer);
-      timer = setTimeout(() => sincronizar().catch(() => {}), 200);
+      timer = setTimeout(() => sincronizar().catch(() => {}), chave === 'michele_rascunhos' ? 1200 : 200);
     }
   };
   function status(tipo, mensagem) {

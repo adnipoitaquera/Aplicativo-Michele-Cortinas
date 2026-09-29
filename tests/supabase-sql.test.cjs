@@ -33,6 +33,7 @@ test('SQL real: migração, login existente, gravação, permissões e conflitos
     returns jsonb language sql security definer as $$ select '{"success":true}'::jsonb $$;`);
   await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/20260929200006_restaurar_salvamento_com_revisao.sql'),'utf8'));
   assert.equal((await db.query("select count(*)::int as n from pg_proc where pronamespace='public'::regnamespace and proname='michele_u_salvar'")).rows[0].n,1);
+  await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/20260929201609_salvamento_automatico_rascunhos.sql'),'utf8'));
   const chamar = async (nome,args,tipos) => {
     const params = args.map((_,i) => '$' + (i+1) + (tipos?.[i] ? '::'+tipos[i] : ''));
     const resultado = await db.query('select public.'+nome+'('+params.join(',')+') as resultado', args);
@@ -129,6 +130,18 @@ test('SQL real: migração, login existente, gravação, permissões e conflitos
     assert.equal((await ler(adm.token)).dados.michele_fornecedores,dados.michele_fornecedores);
     assert.ok((await chamar('michele_u_login',['admin','teste-admin'])).erro);
     assert.ok((await chamar('michele_u_login',['admin','nova-senha'])).token);
+  });
+  await t.test('rascunhos automáticos preservam campos incompletos e isolam alterações por usuário', async () => {
+    let remoto = await ler(login.token);
+    const rascunho = {usuarioId:'PROF-2',tela:'clientes',estado:{campos:{'c-nome':{value:''},'c-telefone':{value:'11'}}}};
+    const dados = lista => ({...remoto.dados,michele_rascunhos:JSON.stringify(lista)});
+    await salvar(login.token,dados([rascunho]),remoto.revisao);
+    remoto = await ler(login.token);
+    assert.equal(JSON.parse(remoto.dados.michele_rascunhos)[0].estado.campos['c-telefone'].value,'11');
+    await assert.rejects(salvar(login.token,dados([{...rascunho,usuarioId:'PROF-1'}]),remoto.revisao),/outro usuario/);
+    await assert.rejects(salvar(login.token,dados([{...rascunho,tela:'profissionais'}]),remoto.revisao),/restrito/);
+    await assert.rejects(salvar(login.token,dados([{...rascunho,estado:{campos:{'p-senha':{value:'nao-salvar'}}}}]),remoto.revisao),/Senhas/);
+    await assert.rejects(salvar(login.token,dados([rascunho,rascunho]),remoto.revisao),/duplicado/);
   });
   await t.test('tentativas erradas são limitadas e logout invalida a sessão', async () => {
     for (let i=0;i<5;i++) assert.ok((await chamar('michele_u_login',['elton','errada'])).erro);

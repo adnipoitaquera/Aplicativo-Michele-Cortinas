@@ -51,6 +51,7 @@
   .login-box { background:#fff; }.login-brand { font-size:13px; }
   .painel-home { border-radius:5px; background:#f4f7fa; padding:16px; }
   .v6-topbar { background:#f5f7fa; }.sidebar { background:#f3f5f7; }
+  .autosave-status { padding:8px 10px; border-left:3px solid #217547; background:#edf6ef; color:#173d27; font-size:12px; font-weight:600; }
   label,.login-box label { color:#172b43; font-weight:700; }
   input,select,textarea { color:#101c2b; font-weight:600; }
   input::placeholder,textarea::placeholder { color:#46566b; opacity:1; }

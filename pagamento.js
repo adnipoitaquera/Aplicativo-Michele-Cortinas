@@ -80,6 +80,7 @@
             const resposta = await autenticar(pedido);
             if (resposta && campo(id,'forma').value === 'cartao' && JSON.stringify(pedido) === JSON.stringify(contextoCartao(id))) {
                 campo(id,'autorizacao-parcelas').value = JSON.stringify(resposta); processarCalculoGeral();
+                window.MicheleAutoSave?.agendar('orcamento');
             }
         };
         for (const chave of ['forma','percentual']) campo(id,chave).addEventListener('input', () => { campo(id,'autorizacao').value = ''; processarCalculoGeral(); });
@@ -90,6 +91,7 @@
             const resposta = await autenticar(pedido);
             if (resposta && JSON.stringify(pedido) === JSON.stringify(contexto(id,percentual(input.value)))) {
                 campo(id,'autorizacao').value = JSON.stringify(resposta); processarCalculoGeral();
+                window.MicheleAutoSave?.agendar('orcamento');
             }
         };
         campo(id,'campo').onclick = () => alterarCampo(id);

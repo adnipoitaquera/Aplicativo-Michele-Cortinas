@@ -1,4 +1,4 @@
-﻿# Salvamento no Supabase — Michele Cortinas
+# Salvamento no Supabase — Michele Cortinas
 
 O aplicativo usa o projeto `ckreezktfiodjjqcbzbu`, com `enabled: true` e `authMode: usuario` em `supabase-config.js`. O acesso continua com os usuários e senhas cadastrados no sistema; não é necessário criar login por e-mail.
 
@@ -15,11 +15,11 @@ O aplicativo usa o projeto `ckreezktfiodjjqcbzbu`, com `enabled: true` e `authMo
 ## Uso
 
 1. Abra a versão atualizada do aplicativo e entre com seu usuário e senha.
-2. Grave o cliente, ambiente, orçamento ou cadastro pelo botão correspondente.
+2. Edite normalmente: clientes, fornecedores, profissionais, produtos, configurações e orçamentos são registrados automaticamente após uma breve pausa na digitação, sem clicar em Salvar. Campos incompletos ficam como rascunho recuperável; senhas não entram nos rascunhos. A conversão de orçamento em pedido continua sendo uma ação explícita.
 3. Aguarde **Todas as alterações salvas na nuvem** no topo da tela.
 4. Em outro dispositivo, entre com um usuário autorizado para consultar a mesma base.
 
-Os dados do aplicativo ficam em `michele_privado.empresa`; os acessos usam `michele_privado.usuarios`. As tabelas públicas antigas não são o destino do salvamento atual e foram preservadas. Formulários ainda não gravados não são enviados.
+Os dados do aplicativo ficam em `michele_privado.empresa`; os acessos usam `michele_privado.usuarios`. As tabelas públicas antigas não são o destino do salvamento atual e foram preservadas. A migração `20260929201609_salvamento_automatico_rascunhos.sql` permite rascunhos por usuário e impede alterações nos rascunhos de outro usuário. O cadastro é atualizado quando os campos obrigatórios estão válidos. Rascunhos são recuperados ao entrar novamente no sistema.
 
 Se houver falha de rede, as alterações ficam pendentes no navegador. Não limpe os dados do navegador. Use **Exportar alterações pendentes** antes de descartar uma cópia ou recarregar em caso de conflito. O aplicativo só confirma o envio quando o servidor devolve a revisão esperada.
 

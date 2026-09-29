@@ -3753,6 +3753,7 @@ function previsualizarLogoEmpresa(event) {
   leitor.onload = () => {
     const preview = document.getElementById('config-logo-preview');
     if (preview) { preview.src = leitor.result; preview.style.display = 'block'; }
+    window.MicheleAutoSave?.agendar('configuracoes');
   };
   leitor.readAsDataURL(arquivo);
 }
@@ -4309,5 +4310,6 @@ window.addEventListener('afterprint', () => {
 <script src="pagamento.js"></script>
 <script src="cortina-editor.js"></script>
 <script src="cortina-calculo.js"></script>
+<script src="salvamento-automatico.js"></script>
 </body>
 </html>

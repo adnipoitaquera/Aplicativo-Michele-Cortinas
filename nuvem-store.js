@@ -5,7 +5,7 @@
     'clientes', 'fornecedores', 'pedidos', 'profissionais', 'produtos_voal',
     'produtos_forro', 'produtos_persiana', 'produtos_acessorios',
     'produtos_motorizacao', 'produtos_personalizados', 'config_empresa',
-    'numero_orcamento', 'numero_pedido'
+    'numero_orcamento', 'numero_pedido', 'rascunhos'
   ].map(chave => 'michele_' + chave);
   function limpar(chave, valor) {
     if (!CHAVES.includes(chave)) throw new Error('Cadastro desconhecido: ' + chave);

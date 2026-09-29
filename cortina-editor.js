@@ -166,6 +166,7 @@
             });
             antesEdicao = null;
             processarCalculoGeral(); aba(id, false);
+            window.MicheleAutoSave?.agendar('orcamento');
             el(`item-card-${id}`).classList.remove('aberto');
         };
         corpo.querySelector('[data-acao="gravar"]').onclick = async event => {
@@ -180,6 +181,7 @@
                 else input.value = input.defaultValue || '';
             });
             alternarModuloCortina(id); processarCalculoGeral(); aba(id, false);
+            window.MicheleAutoSave?.agendar('orcamento');
         };
         corpo.querySelectorAll('textarea').forEach(input => input.addEventListener('input', () => processarCalculoGeral()));
     }

@@ -1,55 +1,42 @@
-# Conectar o sistema ao Supabase
+﻿# Salvamento no Supabase — Michele Cortinas
 
-**Estado atual:** o login existente por usuário e senha foi restaurado a pedido do responsável. `enabled: false` em `supabase-config.js` mantém os cadastros locais e impede a substituição do acesso por e-mail. A tabela `michele_dados` foi detectada no projeto, mas a sincronização permanece desativada até adaptar a autenticação aos usuários existentes. Não ative a integração por e-mail como solução para esse requisito. As instruções abaixo descrevem a implementação anterior e precisam dessa adaptação antes de serem usadas.
+O aplicativo usa o projeto `ckreezktfiodjjqcbzbu`, com `enabled: true` e `authMode: usuario` em `supabase-config.js`. O acesso continua com os usuários e senhas cadastrados no sistema; não é necessário criar login por e-mail.
 
-A conexão está configurada para o projeto `ckreezktfiodjjqcbzbu`. A chave pública foi aceita pelo serviço de autenticação. Na verificação de 25/09/2026, a API informou que a tabela `public.michele_dados` ainda não existe no cache do esquema; execute o SQL de instalação antes de entrar no sistema. O salvamento real ainda depende dessa instalação e de uma conta de acesso.
+## Estado verificado em 29/09/2026
 
-## Instalação
+- Banco instalado, com os usuários existentes preservados.
+- Descontos, cartão até 12x e autorização do gerente disponíveis.
+- Corrigida a função `michele_u_salvar`, que havia sido substituída por uma versão que retornava sucesso sem gravar o documento completo.
+- Migração aplicada: `20260929200006_restaurar_salvamento_com_revisao.sql`.
+- Função antiga preservada no esquema privado, sem acesso pela API pública.
+- Teste transacional de login, gravação, leitura, repetição idempotente, conflito de revisão e sessão inválida concluído; todas as alterações do teste foram revertidas.
+- A revisão e o hash dos dados originais permaneceram iguais após a verificação.
 
-1. No projeto Supabase, abra **SQL Editor** e execute o arquivo `supabase/migrations/202609250001_dados_sistema.sql` uma vez. Ele cria a tabela, a função de gravação e a política de acesso.
-2. Em **Authentication → Users**, crie a conta de acesso com e-mail e senha e confirme o e-mail. O login antigo `admin` não dá acesso à nuvem.
-3. A URL e a chave pública **anon** já estão em `supabase-config.js`. Para trocar de projeto, atualize esses valores com a URL e uma chave pública **publishable** (ou **anon**). Nunca use uma chave secreta ou `service_role`.
-4. Publique os arquivos do site juntos, incluindo `supabase-config.js`, `nuvem-store.js`, `supabase-sync.js`, `supabase-sync.css` e os arquivos de estilos já usados pelo sistema. Abra o site por HTTPS. Para desenvolvimento, use um servidor em `localhost`.
-5. No navegador onde estão os dados antigos, entre com a conta criada. Se a base dessa conta estiver vazia, o sistema oferece enviar os cadastros locais. Confira a conta antes de aceitar. A cópia local original é preservada; as senhas antigas dos profissionais não são enviadas.
-6. Espere a mensagem **Todas as alterações salvas na nuvem**. Em outro dispositivo, abra o mesmo site e entre com **o mesmo e-mail e senha**.
+## Uso
 
-O Supabase guarda o banco e autentica o acesso. A hospedagem do site precisa servir os arquivos atualizados; preencher a configuração não publica o site automaticamente.
+1. Abra a versão atualizada do aplicativo e entre com seu usuário e senha.
+2. Grave o cliente, ambiente, orçamento ou cadastro pelo botão correspondente.
+3. Aguarde **Todas as alterações salvas na nuvem** no topo da tela.
+4. Em outro dispositivo, entre com um usuário autorizado para consultar a mesma base.
 
-Antes de entrar, o botão **Baixar cópia dos dados deste navegador** permite guardar os cadastros originais mesmo se o banco ainda não estiver instalado. O backup inclui os valores originais, sem reformatá-los, além do formato convencional de importação para os cadastros válidos. Guarde esse arquivo em local privado, pois pode conter as senhas do antigo acesso local.
+Os dados do aplicativo ficam em `michele_privado.empresa`; os acessos usam `michele_privado.usuarios`. As tabelas públicas antigas não são o destino do salvamento atual e foram preservadas. Formulários ainda não gravados não são enviados.
 
-Abrir a conta na nuvem não normaliza, renumera nem regrava automaticamente os registros existentes. A migração inicial valida todos os cadastros antes do primeiro envio e não substitui uma base já preenchida. Os próximos números de pedido e orçamento consideram o histórico sem alterar seus documentos anteriores.
+Se houver falha de rede, as alterações ficam pendentes no navegador. Não limpe os dados do navegador. Use **Exportar alterações pendentes** antes de descartar uma cópia ou recarregar em caso de conflito. O aplicativo só confirma o envio quando o servidor devolve a revisão esperada.
 
-## Dados e acesso
+## Pagamentos
 
-São enviados clientes, fornecedores, profissionais, pedidos, orçamentos, ambientes e acabamentos dos pedidos, catálogos e preços de produtos, categorias personalizadas, configurações da empresa e logotipo, além dos contadores de pedidos e orçamentos. Formulários ainda não gravados pelo botão correspondente não são considerados cadastros salvos.
+O administrador define o desconto máximo à vista no cadastro do profissional. Vendedores podem parcelar no cartão até 3x; de 4x a 12x precisam da senha de um administrador ou gerente ativo na mesma tela. A autorização registra o responsável e fica vinculada ao ambiente, bandeira, total e número de parcelas. O valor é dividido sem acréscimo, com ajuste de centavos na última parcela.
 
-Cada conta possui uma base própria, protegida por `auth.uid()`. O acesso dessa conta é administrativo. Os profissionais cadastrados são registros para vendedores e comissões; não criam contas de autenticação. Contas com e-mails diferentes não compartilham a base nesta versão. Para compartilhar a empresa com acessos individuais de funcionários, será necessário acrescentar membros e permissões no banco.
+## Instalação e manutenção
 
-A tabela só permite consulta da própria conta. Gravações passam pela função `michele_salvar`, que confirma a identidade da conta, valida as chaves e compara a revisão em uma transação. Não há acesso anônimo aos dados nem permissão de escrita direta na tabela.
+Não execute a instalação inicial sobre esta base nem importe dados antigos por cima dos atuais. Para uma instalação nova, o botão **Preparar nuvem com meus dados** gera o SQL com os dados do navegador de origem. Esse arquivo contém informações privadas e não deve ir para o Git.
 
-## Salvamento e recuperação
+A pasta de migrações contém também scripts históricos de outras versões. Não execute todos indiscriminadamente com `db push`; confira as dependências e o histórico remoto antes de atualizar. A migração de reparo pressupõe o login por usuário e a validação de pagamentos já instalados.
 
-As alterações são enviadas automaticamente ao salvar ou editar campos com salvamento automático. A faixa no topo diferencia envio pendente, falha e confirmação. Em uma falha de conexão, um diário local, separado por projeto e conta, preserva os dados para tentar novamente. A confirmação só aparece após resposta do banco. O navegador avisa antes de fechar com envios pendentes e o botão Sair aguarda o envio.
+Somente a chave pública do projeto fica no frontend. Nunca publique uma chave secreta, senha de banco ou `service_role`.
 
-Os cadastros são gravados juntos em um documento JSON com controle de revisão. Se dois dispositivos editarem a mesma versão, a segunda gravação é recusada para não substituir o trabalho do primeiro. Exporte a cópia pendente, carregue a versão da nuvem e refaça as alterações necessárias consultando o backup. Importar um backup inteiro substitui os cadastros correspondentes; não faz mesclagem automática.
+## Validação
 
-O sistema verifica atualizações de outros dispositivos ao voltar à janela e a cada 30 segundos. Ele oferece recarregar sem descartar automaticamente formulários abertos. Uma única aba de edição por conta é permitida no mesmo navegador para preservar o diário local. Dispositivos diferentes podem abrir a mesma conta, sujeitos ao controle de conflitos.
+`npm test`: 60 testes aprovados. A confirmação de gravação também foi testada no banco real em uma transação revertida.
 
-Para uma operação maior, com muitos usuários editando ao mesmo tempo ou uma base volumosa, a evolução indicada é separar os registros em tabelas e aplicar conflitos por registro. Esta versão prioriza a preservação do formato atual e a migração dos cadastros existentes.
-
-## Verificação
-
-Execute `node --test tests/*.test.cjs`. Os testes locais verificam recuperação de falhas, resposta perdida, concorrência entre dispositivos, isolamento do diário, retirada das senhas, armazenamento cheio e os recursos existentes de impressão e materiais.
-
-Depois da instalação, valide também no projeto real: login; cadastro de cliente, fornecedor e pedido; leitura em um segundo dispositivo; edição concorrente; desconexão e reconexão; e tentativa de consulta com outra conta. Os testes locais usam um servidor simulado e não substituem essa validação do banco e das políticas reais.
-
-Referências: [Supabase Auth](https://supabase.com/docs/reference/javascript/auth-signinwithpassword) e [políticas de acesso ao banco](https://supabase.com/docs/guides/database/postgres/row-level-security).
-# Descontos e autorização do gerente
-
-Para habilitar também **cartão em até 12x**, execute `supabase/migrations/202609290002_parcelamento.sql` no SQL Editor. Esse arquivo também inclui a estrutura de autorizações anterior; pode ser usado mesmo se a migração de descontos ainda não tiver sido aplicada. A instalação inicial já inclui o parcelamento.
-
-Visa, Mastercard, Elo, American Express, Hipercard, Diners Club e Outra ficam disponíveis para seleção. Os valores são divididos sem acréscimo, com eventual ajuste de centavos na última parcela. Vendedores podem aplicar até 3x; acima disso, até 12x, o gerente ou administrador autoriza com usuário e senha na mesma tela. Gerentes e administradores conectados podem selecionar até 12x diretamente. A autorização fica vinculada ao ambiente, bandeira, total e número de parcelas. A proposta e a impressão mostram a condição efetivamente aplicada; uma seleção ainda não autorizada permanece apenas como simulação.
-
-Para uma base já instalada com login por usuário, execute `supabase/migrations/202609290001_autorizacoes.sql` no SQL Editor antes de usar a autorização de descontos. A instalação inicial já inclui essa atualização. A migração preserva os cadastros existentes.
-
-No cadastro de cada profissional, o administrador define **Desconto máximo à vista (%)**. O padrão é zero. Na aba Pagamento de cada ambiente, um percentual maior depende do usuário e senha de um administrador ou gerente ativo. A sessão do vendedor permanece aberta. O banco registra o responsável e valida o desconto na gravação; a senha não é guardada no orçamento. O botão de alteração de campo bloqueado permite uma alteração pontual nos campos do ambiente, sem conceder acesso geral aos cadastros administrativos.
+O verificador do Supabase ainda aponta que a tabela pública antiga `clientes` não tem RLS. Ela não é usada pelo salvamento atual; suas permissões não foram alteradas para não interromper usos antigos. Revisão indicada: https://supabase.com/docs/guides/database/database-linter?lint=0013_rls_disabled_in_public . As tabelas privadas têm RLS e acesso direto bloqueado; as RPCs validam sessão e cargo.

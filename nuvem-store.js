@@ -105,6 +105,9 @@
         this.status('enviando', 'Salvando na nuvem…');
         try {
           const revisao = await this.salvar(this.operacao);
+          if (!Number.isSafeInteger(revisao) || revisao !== this.operacao.revisao + 1) {
+            throw new Error('O servidor não confirmou a revisão do salvamento. As alterações continuam pendentes.');
+          }
           this.revisao = revisao;
           this.confirmados = this.operacao.dados;
           for (const [id, senha] of Object.entries(this.operacao.senhas || {})) {

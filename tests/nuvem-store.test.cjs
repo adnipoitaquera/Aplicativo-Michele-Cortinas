@@ -26,6 +26,17 @@ function criar(servidor, extras = {}) {
   return store;
 }
 
+test('resposta de sucesso sem revisão não confirma nem apaga dados pendentes', async () => {
+  for (const resposta of [{success:true}, null, '2', 0]) {
+    const estados = [], a = criar(servidor(), {salvar:async()=>resposta,status:tipo=>estados.push(tipo)});
+    a.setItem('michele_clientes','[{"nome":"Teste pendente"}]');
+    await assert.rejects(a.flush(), /não confirmou/);
+    assert.equal(a.pendente(),true);
+    assert.ok(a.storage.getItem(a.journalKey));
+    assert.ok(!estados.includes('salvo'));
+  }
+});
+
 test('outro dispositivo carrega todos os cadastros, configurações e números confirmados', async () => {
   const server = servidor(), a = criar(server);
   for (const chave of CHAVES) {

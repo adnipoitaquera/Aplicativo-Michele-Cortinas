@@ -29,6 +29,10 @@ test('SQL real: migração, login existente, gravação, permissões e conflitos
   // Simula uma base com a primeira migração aplicada e atualiza sem perder dados.
   await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/202609290001_autorizacoes.sql'),'utf8'));
   await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/202609290002_parcelamento.sql'),'utf8'));
+  await db.exec(`create function public.michele_u_salvar(p_dados jsonb, p_operacao text, p_revisao text, p_senhas text, p_token text)
+    returns jsonb language sql security definer as $$ select '{"success":true}'::jsonb $$;`);
+  await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/20260929200006_restaurar_salvamento_com_revisao.sql'),'utf8'));
+  assert.equal((await db.query("select count(*)::int as n from pg_proc where pronamespace='public'::regnamespace and proname='michele_u_salvar'")).rows[0].n,1);
   const chamar = async (nome,args,tipos) => {
     const params = args.map((_,i) => '$' + (i+1) + (tipos?.[i] ? '::'+tipos[i] : ''));
     const resultado = await db.query('select public.'+nome+'('+params.join(',')+') as resultado', args);

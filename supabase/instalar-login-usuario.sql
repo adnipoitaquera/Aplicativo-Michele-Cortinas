@@ -158,7 +158,7 @@ begin
   u := michele_privado.conta(p_token);
   perform michele_privado.validar(p_dados);
   if p_operacao is null or p_revisao is null or jsonb_typeof(p_senhas) <> 'object' then raise exception 'Envio inválido'; end if;
-  select * into e from michele_privado.empresa for update;
+  select * into e from michele_privado.empresa where id = true for update;
   if e.operacao=p_operacao then return e.revisao; end if;
   if e.revisao<>p_revisao then raise exception 'MICHELE_CONFLITO: outro dispositivo alterou os cadastros'; end if;
   if lower(coalesce(u->>'cargo','')) <> 'administrador' then
@@ -171,7 +171,7 @@ begin
   if (e.dados->'michele_profissionais') is distinct from (p_dados->'michele_profissionais') or p_senhas <> '{}'::jsonb then
     perform michele_privado.atualizar_contas(coalesce((p_dados->>'michele_profissionais')::jsonb,'[]'),p_senhas,p_token);
   end if;
-  update michele_privado.empresa set dados=p_dados,revisao=revisao+1,operacao=p_operacao,atualizado_em=now() returning revisao into e.revisao;
+  update michele_privado.empresa set dados=p_dados,revisao=revisao+1,operacao=p_operacao,atualizado_em=now() where id = e.id returning revisao into e.revisao;
   return e.revisao;
 end; $$;
 
@@ -277,7 +277,7 @@ begin
   u := michele_privado.conta(p_token);
   perform michele_privado.validar(p_dados);
   if p_operacao is null or p_revisao is null or jsonb_typeof(p_senhas) <> 'object' then raise exception 'Envio inválido'; end if;
-  select * into e from michele_privado.empresa for update;
+  select * into e from michele_privado.empresa where id = true for update;
   if e.operacao=p_operacao then return e.revisao; end if;
   if e.revisao<>p_revisao then raise exception 'MICHELE_CONFLITO: outro dispositivo alterou os cadastros'; end if;
   if lower(coalesce(u->>'cargo','')) <> 'administrador' then
@@ -291,7 +291,7 @@ begin
   if (e.dados->'michele_profissionais') is distinct from (p_dados->'michele_profissionais') or p_senhas <> '{}'::jsonb then
     perform michele_privado.atualizar_contas(coalesce((p_dados->>'michele_profissionais')::jsonb,'[]'),p_senhas,p_token);
   end if;
-  update michele_privado.empresa set dados=p_dados,revisao=revisao+1,operacao=p_operacao,atualizado_em=now() returning revisao into e.revisao;
+  update michele_privado.empresa set dados=p_dados,revisao=revisao+1,operacao=p_operacao,atualizado_em=now() where id = e.id returning revisao into e.revisao;
   return e.revisao;
 end; $$;
 
@@ -347,7 +347,7 @@ begin
   u := michele_privado.conta(p_token);
   perform michele_privado.validar(p_dados);
   if p_operacao is null or p_revisao is null or jsonb_typeof(p_senhas) <> 'object' then raise exception 'Envio inválido'; end if;
-  select * into e from michele_privado.empresa for update;
+  select * into e from michele_privado.empresa where id = true for update;
   if not found then raise exception 'Instalação incompleta'; end if;
   if e.operacao=p_operacao then return e.revisao; end if;
   if e.revisao<>p_revisao then raise exception 'MICHELE_CONFLITO: outro dispositivo alterou os cadastros'; end if;
@@ -363,7 +363,7 @@ begin
   if (e.dados->'michele_profissionais') is distinct from (p_dados->'michele_profissionais') or p_senhas <> '{}'::jsonb then
     perform michele_privado.atualizar_contas(coalesce((p_dados->>'michele_profissionais')::jsonb,'[]'),p_senhas,p_token);
   end if;
-  update michele_privado.empresa set dados=p_dados,revisao=revisao+1,operacao=p_operacao,atualizado_em=now() returning revisao into e.revisao;
+  update michele_privado.empresa set dados=p_dados,revisao=revisao+1,operacao=p_operacao,atualizado_em=now() where id = e.id returning revisao into e.revisao;
   return e.revisao;
 end; $$;
 revoke all on function public.michele_u_salvar(text,jsonb,bigint,uuid,jsonb) from public,anon,authenticated;

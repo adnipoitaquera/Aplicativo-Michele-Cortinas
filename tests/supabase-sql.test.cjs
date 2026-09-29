@@ -34,6 +34,9 @@ test('SQL real: migração, login existente, gravação, permissões e conflitos
   await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/20260929200006_restaurar_salvamento_com_revisao.sql'),'utf8'));
   assert.equal((await db.query("select count(*)::int as n from pg_proc where pronamespace='public'::regnamespace and proname='michele_u_salvar'")).rows[0].n,1);
   await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/20260929201609_salvamento_automatico_rascunhos.sql'),'utf8'));
+  await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/migrations/20260929202158_corrigir_gravacao_where_empresa.sql'),'utf8'));
+  const funcaoSalvar = (await db.query("select pg_get_functiondef('public.michele_u_salvar(text,jsonb,bigint,uuid,jsonb)'::regprocedure) as sql")).rows[0].sql;
+  assert.match(funcaoSalvar, /update michele_privado\.empresa[^;]+where id = e\.id/i, 'A gravação deve selecionar a empresa para ser compatível com safeupdate na API');
   const chamar = async (nome,args,tipos) => {
     const params = args.map((_,i) => '$' + (i+1) + (tipos?.[i] ? '::'+tipos[i] : ''));
     const resultado = await db.query('select public.'+nome+'('+params.join(',')+') as resultado', args);

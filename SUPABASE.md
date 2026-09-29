@@ -14,6 +14,8 @@ O aplicativo usa o projeto `ckreezktfiodjjqcbzbu`, com `enabled: true` e `authMo
 
 ## Uso
 
+Correção de acesso: a migração `20260929202158_corrigir_gravacao_where_empresa.sql` adiciona o filtro da empresa ao UPDATE. A API exige WHERE por meio de safeupdate; sem o filtro, reenviar alterações pendentes bloqueava a entrada com “UPDATE requires a WHERE clause”. Nenhum cadastro ou diário local deve ser apagado para resolver esse erro.
+
 1. Abra a versão atualizada do aplicativo e entre com seu usuário e senha.
 2. Edite normalmente: clientes, fornecedores, profissionais, produtos, configurações e orçamentos são registrados automaticamente após uma breve pausa na digitação, sem clicar em Salvar. Campos incompletos ficam como rascunho recuperável; senhas não entram nos rascunhos. A conversão de orçamento em pedido continua sendo uma ação explícita.
 3. Aguarde **Todas as alterações salvas na nuvem** no topo da tela.

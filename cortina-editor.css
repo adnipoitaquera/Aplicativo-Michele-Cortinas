@@ -1,0 +1,46 @@
+@media screen {
+    .cortina-editor { padding:0!important; border:1px solid #8eafbd; border-radius:4px; background:#f7f9fa; color:#33434b; overflow:hidden; }
+    .cortina-titulo { background:linear-gradient(#98c4d8,#609dbb); color:#fff; padding:7px 12px; font-weight:700; font-size:14px; }
+    .cortina-abas { display:flex; padding:3px 4px 0; background:linear-gradient(#a2cde0,#66a4c5); border-bottom:1px solid #96bacb; gap:3px; }
+    .cortina-abas button { padding:7px 16px; border:1px solid #9ebfce; background:#e8f4fa; color:#3d6d86; border-radius:3px 3px 0 0; cursor:pointer; font-weight:700; }
+    .cortina-abas button[aria-selected="true"] { background:#fff; color:#a76522; border-bottom-color:#fff; }
+    .cortina-form,.cortina-material,[id^="cortina-pagamento-"] { padding:14px; }
+    dialog { max-width:min(480px,90vw); border:1px solid #8eafbd; border-radius:8px; padding:22px; }
+    dialog::backdrop { background:#0007; }
+    dialog input,dialog select { box-sizing:border-box; width:100%; margin:8px 0; }
+    .cortina-editor [hidden] { display:none!important; }
+    .cortina-grade { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:12px; }
+    .cortina-medidas { grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px; }
+    .cortina-complementos { grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px; margin-bottom:20px; }
+    .cortina-observacao { grid-column:span 3; }
+    .cortina-colunas { display:grid; grid-template-columns:1.13fr 1fr; gap:40px; }
+    .cortina-colunas h3 { margin:5px 0 12px; font-size:13px; border-bottom:1px solid #c8dbe4; padding-bottom:6px; }
+    .cortina-acessorios { grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:24px; row-gap:18px; }
+    .cortina-tecido-linha { display:grid; grid-template-columns:minmax(0,3fr) minmax(42px,.75fr) minmax(48px,1fr); gap:12px; margin-bottom:18px; }
+    .cortina-opcionais { grid-template-columns:2fr 1fr; gap:12px; margin-bottom:0; }
+    .cortina-editor input,.cortina-editor select,.cortina-editor textarea { width:100%; border:1px solid #c2ccd1; border-radius:1px!important; padding:6px!important; font-size:12px; }
+    .cortina-editor label { font-size:12px; font-weight:700; text-transform:none; letter-spacing:0; color:#172b43; margin-bottom:4px; }
+    .cortina-form select,.cortina-form input:not([type="checkbox"]) { height:28px; margin-top:0!important; }
+    .cortina-form textarea { height:42px; resize:vertical; }
+    .cortina-subcampo { margin-top:7px; font-size:10px!important; }
+    .cortina-alerta-inversao { margin:10px 14px; padding:12px; border:1px solid #d39a29; border-left:4px solid #bc7900; background:#fff3cc; color:#624000; font-size:13px; }
+    .cortina-alerta-inversao p { margin:6px 0 0; }
+    .cortina-produto-quantidade { display:grid; grid-template-columns:minmax(0,1fr) 68px; gap:8px; align-items:end; }
+    .cortina-produto-quantidade > div { min-width:0; }
+    .cortina-form { background:#fafafa; }
+    .cortina-editor .form-group { margin:0; min-width:0; }
+    .cortina-editor .opcional-box { padding:0; border:0; background:transparent; }
+    .cortina-nota { font-size:12px; color:#2c3c50; line-height:1.5; }
+    .cortina-extras { border-top:1px solid #cadce5; padding-top:8px; margin-top:12px; font-size:11px; }
+    .cortina-extras summary { cursor:pointer; color:#346b85; margin-bottom:10px; }
+    .cortina-acoes { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:5px; padding:9px 12px; border-top:1px solid #bfd7e3; background:#edf3f6; }
+    .cortina-acoes [role="status"] { margin-right:auto; font-size:12px; }
+    .cortina-acoes .btn { background:linear-gradient(#fff,#e4e4e4); border:1px solid #aaa; color:#444; padding:3px 8px; font-size:11px; }
+    .cortina-material { min-height:260px; }
+    .cortina-material table { width:100%; border-collapse:collapse; font-size:12px; }
+    .cortina-material caption { padding:8px; font-weight:700; background:#edf2f5; }
+    .cortina-material th,.cortina-material td { border:1px solid #dce3e7; padding:7px; }
+    .cortina-material td:nth-child(n+5) { text-align:right; white-space:nowrap; }
+    .cortina-material tfoot th { text-align:right; }
+    @media(max-width:650px) { .cortina-colunas { grid-template-columns:1fr; gap:12px; } .cortina-grade { grid-template-columns:repeat(2,minmax(0,1fr)); } .cortina-observacao { grid-column:span 2; } .cortina-tecido-linha { grid-template-columns:2fr 1fr 1fr; } .cortina-form,.cortina-material { padding:8px; } }
+}

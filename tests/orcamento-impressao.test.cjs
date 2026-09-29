@@ -48,3 +48,14 @@ test('imprime só a persiana ativa quando a cortina e a adicional estão desativ
     assert.ok(!html.includes('Cortina de tecido')); assert.ok(!html.includes('Romana'));
     assert.ok(html.includes('1,5 m')); assert.ok(!html.includes('3,2 m'));
 });
+test('imprime a condição aplicada do cartão uma vez, sem divulgar simulação pendente', () => {
+    const {ctx, card, campos} = preparar();
+    campos['pagamento-descricao-1'] = {value:'Cartão Visa: 2x de R$ 33,33 + última de R$ 33,34. Total: R$ 100,00.'};
+    campos['pagamento-simulacao-1'] = {textContent:'Simulação solicitada: 12x. Ainda não autorizada.'};
+    assert.doesNotMatch(ctx.montarLinhasDescritivoImpressao([card]),/Cartão Visa/);
+    const html = ctx.montarPagamentoImpressao([card]);
+    assert.equal((html.match(/Cartão Visa/g) || []).length,1);
+    assert.match(html,/Condições de pagamento/);
+    assert.match(html,/última de R\$ 33,34/);
+    assert.doesNotMatch(html,/12x|não autorizada/);
+});

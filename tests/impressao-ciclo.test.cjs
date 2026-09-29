@@ -19,8 +19,8 @@ test('cancelar a proposta limpa o estado e nao agenda outra impressao', () => {
     window: { addEventListener: (name, cb) => listeners[name] = cb,
       print: () => { prints++; listeners.beforeprint(); listeners.afterprint(); } },
     processarCalculoGeral() {}, clientes: [], usuarioAtual: { nome: 'Teste' },
-    objetoOrcamentoCorrente: null, localStorage: { getItem: () => null },
-    LOGO_EMPRESA_PADRAO: '', montarLinhasDescritivoImpressao: () => ''
+    objetoOrcamentoCorrente: null, dadosStorage: { getItem: () => null },
+    LOGO_EMPRESA_PADRAO: '', montarLinhasDescritivoImpressao: () => '', montarPagamentoImpressao: () => '<section class="print-payment">À vista</section>'
   };
   vm.createContext(ctx);
   const start = html.indexOf('function imprimirPropostaProfissional()');
@@ -30,6 +30,7 @@ test('cancelar a proposta limpa o estado e nao agenda outra impressao', () => {
   assert.equal(classes.size, 0);
   assert.equal(root['aria-hidden'], 'true');
   assert.ok(root.innerHTML.includes('print-page'));
+  assert.ok(root.innerHTML.indexOf('print-payment') > root.innerHTML.indexOf('class="print-total"'));
   listeners.beforeprint(); // Ctrl+P prepares without calling print again.
   assert.equal(prints, 1);
   assert.ok(classes.has('imprimindo-proposta'));

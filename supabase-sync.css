@@ -1,0 +1,6 @@
+#nuvem-status { position: sticky; top: 0; z-index: 100000; padding: 10px 16px; background: #eaf4ee; color: #163e28; border: 1px solid #639974; font: 14px/1.5 Arial, sans-serif; }
+#nuvem-status[hidden], #nuvem-status button[hidden] { display: none; }
+#nuvem-status[data-estado="erro"], #nuvem-status[data-estado="conflito"], #nuvem-status[data-estado="local"], #nuvem-status[data-estado="atualizado"] { background: #fff4d6; color: #633e00; border-color: #ad790e; }
+#nuvem-status button { margin: 4px 6px; padding: 5px 10px; cursor: pointer; color: #1c1c1c; background: white; border: 1px solid #777; border-radius: 4px; }
+@media print { #nuvem-status { display: none !important; } }
+

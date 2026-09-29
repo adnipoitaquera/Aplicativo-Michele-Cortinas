@@ -1,7 +1,7 @@
 /* Interface de ERP clássico. As regras de impressão permanecem independentes. */
 @media screen {
-  :root { --bg-principal:#e6e9ed; --bg-card:#ffffff; --bg-input:#fff; --borda:#aab3bd; --texto-claro:#182c44; --texto-escuro:#405166; --dourado:#234f81; --dourado-hover:#193f6c; --sucesso:#217547; --erro:#b83232; --sombra-1:0 1px 2px #0001; --sombra-2:0 2px 5px #0002; --sombra-3:0 2px 8px #0002; }
-  body { background:var(--bg-principal)!important; font-family:'Segoe UI',Tahoma,Arial,sans-serif; font-size:14px; line-height:1.45; }
+  :root { --bg-principal:#e6e9ed; --bg-card:#ffffff; --bg-input:#fff; --borda:#aab3bd; --texto-claro:#101c2b; --texto-escuro:#2c3c50; --dourado:#164579; --dourado-hover:#10335c; --sucesso:#217547; --erro:#b83232; --sombra-1:0 1px 2px #0001; --sombra-2:0 2px 5px #0002; --sombra-3:0 2px 8px #0002; }
+  body { background:var(--bg-principal)!important; color:var(--texto-claro); font-family:'Segoe UI',Tahoma,Arial,sans-serif; font-size:14px; font-weight:500; line-height:1.45; }
   .app-layout { display:block; }
   .sidebar { width:100%; height:auto; position:relative; display:flex; flex-direction:row; flex-wrap:wrap; gap:0; padding:0 8px 5px; background:linear-gradient(#f9fafb,#dce2e8); border-bottom:1px solid #98a6b4; }
   .sidebar-brand { width:100%; margin:0 -8px 4px; padding:10px 16px; background:var(--dourado); border:0; }
@@ -51,5 +51,14 @@
   .login-box { background:#fff; }.login-brand { font-size:13px; }
   .painel-home { border-radius:5px; background:#f4f7fa; padding:16px; }
   .v6-topbar { background:#f5f7fa; }.sidebar { background:#f3f5f7; }
+  label,.login-box label { color:#172b43; font-weight:700; }
+  input,select,textarea { color:#101c2b; font-weight:600; }
+  input::placeholder,textarea::placeholder { color:#46566b; opacity:1; }
+  input:disabled,select:disabled,textarea:disabled { color:#46566b; -webkit-text-fill-color:#46566b; }
+  th { color:#12385f; font-weight:800; } td { color:#101c2b; font-weight:500; }
+  .sidebar-btn,.btn,.aba-btn { font-weight:700; }
+  .dash-sub,.mini-resumo span,.pc-resumo strong,.historico-status,.login-intro,.login-help { color:#2c3c50; }
+  .painel-home>p { color:#2c3c50!important; }
+  .v6-home-card p { color:#2c3c50; }
   @media(max-width:800px) { .sidebar-brand strong { font-size:18px; }.sidebar-brand strong:after { content:none; }.sidebar-brand span,.sidebar-btn span { display:inline; }.sidebar-btn { font-size:11px; }.sidebar-btn::first-letter { font-size:inherit; }.app-main { padding:6px; }.app-main .container { padding:8px; }.dashboard { grid-template-columns:repeat(auto-fill,minmax(125px,1fr)); }.grid-forms { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); } }
 }

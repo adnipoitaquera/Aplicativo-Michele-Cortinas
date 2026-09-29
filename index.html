@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="supabase-sync.css">
+    <script src="supabase-config.js"></script>
+    <script src="nuvem-store.js"></script>
+    <script src="supabase-instalacao.js"></script>
+    <script src="supabase-usuario.js"></script>
+    <script src="supabase-sync.js"></script>
     <title>Michele Cortinas - Sistema de Gestão e Orçamentos</title>
     <style>
         :root {
@@ -603,6 +609,13 @@ body{padding:0!important;background:#0d0d0d!important}
         .print-total { margin-top:12px; border:2px solid #111; border-radius:7px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; background:#f8f8f8; }
         .print-total .label { font-size:10px; text-transform:uppercase; font-weight:800; }
         .print-total .value { font-size:20px; font-weight:900; }
+        .print-closing { break-inside:avoid; page-break-inside:avoid; }
+        .print-payment { margin-top:6px; padding:10px 12px; border:2px solid #111; border-radius:7px; color:#111; }
+        .print-payment h3 { margin:0 0 8px; font-size:12px; font-weight:800; text-transform:uppercase; }
+        .print-payment-item { break-inside:avoid; font-size:11px; line-height:1.5; }
+        .print-payment-item + .print-payment-item { margin-top:8px; padding-top:8px; border-top:1px solid #999; }
+        .print-payment-item strong { font-weight:800; }
+        .print-payment-item p { margin:2px 0 0; font-weight:600; }
         .print-note { margin-top:8px; font-size:8px; color:#555; line-height:1.4; }
         .print-signatures { display:grid; grid-template-columns:1fr 1fr; gap:50px; margin-top:24px; page-break-inside:avoid; }
         .print-sign { border-top:1px solid #555; padding-top:4px; text-align:center; font-size:8px; }
@@ -613,11 +626,20 @@ body{padding:0!important;background:#0d0d0d!important}
 <link rel="stylesheet" href="persianas-materiais.css">
 <link rel="stylesheet" href="plano-corte-persianas.css">
 <link rel="stylesheet" href="erp-classico.css">
+<link rel="stylesheet" href="cortina-editor.css">
 </head>
 <body>
 <div id="area-impressao-persianas" aria-hidden="true"></div>
 <div id="area-impressao-plano-corte" aria-hidden="true"></div>
 <div id="area-impressao-profissional" aria-hidden="true"></div>
+<div id="nuvem-status" role="status" aria-live="polite" hidden>
+  <span id="nuvem-mensagem"></span>
+  <button type="button" id="nuvem-tentar" hidden>Tentar salvar novamente</button>
+  <button type="button" id="nuvem-exportar" hidden>Exportar alterações pendentes</button>
+  <button type="button" id="nuvem-recarregar" hidden>Carregar versão da nuvem</button>
+  <button type="button" id="nuvem-backup-local" hidden>Baixar cópia dos dados deste navegador</button>
+  <button type="button" id="nuvem-instalar" hidden>Preparar nuvem com meus dados</button>
+</div>
 <div id="login-screen">
   <main class="login-box" aria-labelledby="login-titulo">
     <div class="login-brand">Michele Cortinas</div>
@@ -776,9 +798,16 @@ body{padding:0!important;background:#0d0d0d!important}
             <div class="form-group"><label>E-mail</label><input type="text" id="c-email" placeholder="cliente@provedor.com"></div>
             <div class="form-group"><label>Endereço de Instalação</label><input type="text" id="c-endereco" placeholder="Rua, número, bairro e cidade"></div>
         </div>
-        <button class="btn btn-ouro" style="margin-top:10px;" onclick="salvarNovoClienteNoBanco()">Gravar Registro do Cliente</button>
+        <button class="btn btn-ouro" style="margin-top:10px;" id="btn-salvar-cliente" onclick="salvarNovoClienteNoBanco()">Salvar cliente</button>
+        <button class="btn" onclick="limparCliente()">Novo / Cancelar edição</button>
 
         <div class="secao-titulo" style="margin-top:40px;">Clientes Registrados no Sistema</div>
+        <div class="historico-toolbar">
+            <label for="busca-cliente">Buscar cliente</label>
+            <input id="busca-cliente" type="search" placeholder="Nome, CPF/CNPJ, telefone ou código..." oninput="atualizarTabelaClientes()">
+            <button class="btn" onclick="document.getElementById('busca-cliente').value='';atualizarTabelaClientes()">Limpar busca</button>
+        </div>
+        <p id="clientes-status" role="status" aria-live="polite"></p>
         <table id="tabela-clientes-dados">
             <thead>
                 <tr>
@@ -787,6 +816,7 @@ body{padding:0!important;background:#0d0d0d!important}
                     <th>CPF</th>
                     <th>Telefone</th>
                     <th>Endereço</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -801,7 +831,7 @@ body{padding:0!important;background:#0d0d0d!important}
     <div class="form-group"><label>Categoria</label><select id="f-categoria"><option>Tecidos</option><option>Trilhos</option><option>Persianas</option><option>Motorização</option><option>Componentes</option><option>Acessórios</option><option>Outros</option></select></div><div class="form-group"><label>CEP</label><input id="f-cep"></div><div class="form-group" style="grid-column:span 2"><label>Endereço</label><input id="f-endereco"></div>
     <div class="form-group" style="grid-column:1/-1"><label>Observações</label><textarea id="f-observacoes"></textarea></div>
   </div>
-  <button class="btn btn-ouro" onclick="salvarFornecedor()">Salvar fornecedor</button>
+  <button class="btn btn-ouro" id="btn-salvar-fornecedor" onclick="salvarFornecedor()">Salvar fornecedor</button>
   <div class="secao-titulo" style="margin-top:30px">Fornecedores cadastrados</div>
   <div class="historico-toolbar"><input id="busca-fornecedor" oninput="atualizarFornecedores()" placeholder="Pesquisar fornecedor, CNPJ, telefone ou código..."></div>
   <div class="tabela-scroll"><table><thead><tr><th>Código</th><th>Razão Social</th><th>Fantasia</th><th>CNPJ</th><th>Categoria</th><th>Ações</th></tr></thead><tbody id="tabela-fornecedores"></tbody></table></div>
@@ -810,10 +840,10 @@ body{padding:0!important;background:#0d0d0d!important}
   <div class="secao-titulo"><span>Profissionais da Loja</span><button class="btn btn-sucesso" style="padding:6px 12px" onclick="limparProfissional()">+ Novo profissional</button></div>
   <div class="form-inline-grid">
     <div class="form-group"><label>Código</label><input id="p-codigo" readonly></div><div class="form-group"><label>Nome</label><input id="p-nome"></div><div class="form-group"><label>Cargo</label><select id="p-cargo"><option>Vendedor</option><option>Gerente</option><option>Administrador</option><option>Instalador</option><option>Técnico</option><option>Outro</option></select></div><div class="form-group"><label>Comissão (%)</label><input id="p-comissao" type="number" step="0.01" min="0" value="5"></div>
-    <div class="form-group"><label>Usuário</label><input id="p-usuario"></div><div class="form-group"><label>Senha</label><input id="p-senha" type="password"></div><div class="form-group"><label>Telefone</label><input id="p-telefone"></div><div class="form-group"><label>E-mail</label><input id="p-email"></div>
+    <div class="form-group"><label>Usuário</label><input id="p-usuario"></div><div class="form-group"><label>Senha</label><input id="p-senha" type="password"></div><div class="form-group"><label>Desconto máximo à vista (%)</label><input id="p-desconto-maximo" type="number" min="0" max="100" step="0.01" value="0"></div><div class="form-group"><label>Telefone</label><input id="p-telefone"></div><div class="form-group"><label>E-mail</label><input id="p-email"></div>
     <div class="form-group"><label>Status</label><select id="p-status"><option>Ativo</option><option>Inativo</option></select></div><div class="form-group" style="grid-column:span 3"><label>Observações</label><input id="p-observacoes"></div>
   </div>
-  <button class="btn btn-ouro" onclick="salvarProfissional()">Salvar profissional</button>
+  <button class="btn btn-ouro" id="btn-salvar-profissional" onclick="salvarProfissional()">Salvar profissional</button>
   <div class="secao-titulo" style="margin-top:30px">Equipe cadastrada</div>
   <div class="tabela-scroll"><table><thead><tr><th>Código</th><th>Nome</th><th>Cargo</th><th>Usuário</th><th>Comissão</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabela-profissionais"></tbody></table></div>
 </div>
@@ -824,11 +854,13 @@ body{padding:0!important;background:#0d0d0d!important}
     <div class="form-group" id="grupo-novo-produto" style="display:none"><label>Nova categoria</label><input id="produto-novo-nome" placeholder="Ex.: Cortina rolô"></div>
     <div class="form-group" style="grid-column:span 2"><label>Produto</label><input id="produto-nome" placeholder="Ex.: Screen 3%"></div>
     <div class="form-group"><label>Valor (R$)</label><input id="produto-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>
+    <div class="form-group"><label>Subcategoria</label><input id="produto-subcategoria" placeholder="Ex.: Blackout, Suportes, Ponteiras"></div>
+    <div class="form-group"><label>Largura do tecido (m)</label><input id="produto-largura-tecido" type="number" min="0.01" step="0.01" placeholder="Ex.: 3,00"></div>
   </div>
   <button class="btn btn-ouro" onclick="salvarProduto()">Salvar produto</button>
   <div class="secao-titulo" style="margin-top:30px">Categorias e produtos cadastrados</div>
   <div class="historico-toolbar"><input id="busca-produto" type="search" oninput="atualizarTabelaProdutos()" placeholder="Pesquisar categoria ou produto..."></div>
-  <div class="tabela-scroll"><table><thead><tr><th>Categoria</th><th>Produto</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="tabela-produtos"></tbody></table></div>
+  <div class="tabela-scroll"><table><thead><tr><th>Categoria</th><th>Produto</th><th>Largura do tecido (m)</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="tabela-produtos"></tbody></table></div>
 </div>
 <div id="aba-pedidos" class="conteudo-aba">
         <div class="secao-titulo">Histórico de Orçamentos e Pedidos</div>
@@ -1543,14 +1575,14 @@ function restaurarCatalogoProdutos() {
     ['michele_produtos_motorizacao', PRECOS_MOTORIZACAO]
   ];
   categorias.forEach(([chave, lista]) => {
-    const salvo = JSON.parse(localStorage.getItem(chave) || 'null');
+    const salvo = JSON.parse(dadosStorage.getItem(chave) || 'null');
     if (Array.isArray(salvo)) lista.splice(0, lista.length, ...salvo);
     if (lista === PRECOS_VOAL || lista === PRECOS_FORRO) {
         lista.splice(0, lista.length, ...separarVariacoesTecidos(lista));
     }
   });
   completarCatalogoMateriaisPersianas();
-  produtosPersonalizados = JSON.parse(localStorage.getItem('michele_produtos_personalizados') || '[]');
+  produtosPersonalizados = JSON.parse(dadosStorage.getItem('michele_produtos_personalizados') || '[]');
   if (!Array.isArray(produtosPersonalizados)) produtosPersonalizados = [];
   produtosPersonalizados.forEach(produto => {
     if (!produto?.id || !produto?.nome || !Array.isArray(produto.lista)) return;
@@ -1560,17 +1592,19 @@ function restaurarCatalogoProdutos() {
 }
 
 // Estado da aplicação
-let clientes = JSON.parse(localStorage.getItem('michele_clientes')) || [];
-let pedidos = JSON.parse(localStorage.getItem('michele_pedidos')) || [];
+let clientes = JSON.parse(dadosStorage.getItem('michele_clientes')) || [];
+let pedidos = JSON.parse(dadosStorage.getItem('michele_pedidos')) || [];
 let objetoOrcamentoCorrente = null;
 let contadorItensId = 0;
-let fornecedores = JSON.parse(localStorage.getItem('michele_fornecedores')) || [];
-let profissionais = JSON.parse(localStorage.getItem('michele_profissionais')) || [];
+let fornecedores = JSON.parse(dadosStorage.getItem('michele_fornecedores')) || [];
+let profissionais = JSON.parse(dadosStorage.getItem('michele_profissionais')) || [];
 let usuarioAtual = JSON.parse(sessionStorage.getItem('michele_usuario_atual') || 'null');
+let clienteEditando = null;
 let fornecedorEditando = null;
 let profissionalEditando = null;
 
 window.onload = function() {
+    if (MicheleNuvem.ativo) { usuarioAtual = null; MicheleNuvem.iniciar(); return; }
     restaurarCatalogoProdutos();
     atualizarOpcoesProdutos();
     normalizarDadosExistentes();
@@ -1578,6 +1612,29 @@ window.onload = function() {
     garantirNumeracaoHistorico();
     if (usuarioAtual) iniciarAplicacao(); else mostrarLogin();
 };
+
+async function avisarGravacao(mensagem) {
+    try {
+        await MicheleNuvem.sincronizar();
+        alert(mensagem + (MicheleNuvem.ativo ? ' Dados confirmados na nuvem.' : ' Salvo somente neste navegador; ainda não foi enviado ao Supabase.'));
+        return true;
+    } catch (_) {
+        alert('O envio à nuvem ainda não foi confirmado. Veja o aviso no topo do sistema e tente novamente.');
+        return false;
+    }
+}
+
+function iniciarComDadosNuvem(conta) {
+    clientes = JSON.parse(dadosStorage.getItem('michele_clientes') || '[]');
+    pedidos = JSON.parse(dadosStorage.getItem('michele_pedidos') || '[]');
+    fornecedores = JSON.parse(dadosStorage.getItem('michele_fornecedores') || '[]');
+    profissionais = JSON.parse(dadosStorage.getItem('michele_profissionais') || '[]');
+    usuarioAtual = conta;
+    restaurarCatalogoProdutos();
+    atualizarOpcoesProdutos();
+    // Abrir a nuvem não regrava nem renumera os registros existentes.
+    iniciarAplicacao();
+}
 
 function alternarAba(e, idAba) {
     const ph=document.getElementById('painel-dashboard'); if(ph) ph.style.display='none';
@@ -1748,7 +1805,7 @@ function iniciarNovaCategoria() {
   document.getElementById('produto-novo-nome').focus();
 }
 function persistirCategoriaProduto(dados) {
-  localStorage.setItem(dados.chave, JSON.stringify(dados.chave === 'michele_produtos_personalizados' ? produtosPersonalizados : dados.lista));
+  dadosStorage.setItem(dados.chave, JSON.stringify(dados.chave === 'michele_produtos_personalizados' ? produtosPersonalizados : dados.lista));
 }
 function precoCatalogo(categoria, nome, valorPadrao = 0) {
   const item = categoriasProduto[categoria]?.lista.find(produto => produto.nome === nome);
@@ -1799,6 +1856,7 @@ function atualizarOpcoesProdutos() {
       select.value = '0';
     }
   });
+  if (window.MicheleCortinaEditor) window.MicheleCortinaEditor.catalogos();
 }
 function atualizarTabelaProdutos() {
   const tabela = document.getElementById('tabela-produtos');
@@ -1811,11 +1869,13 @@ function atualizarTabelaProdutos() {
       .filter(x => `${dados.nome} ${x.item.nome}`.toLowerCase().includes(busca))
   })).filter(grupo => grupo.itens.length);
   tabela.innerHTML = grupos.map(grupo =>
-    `<tr><td colspan="4" style="background:#292929;color:#d4af37;font-weight:700">${escaparHtmlProduto(grupo.dados.nome)}</td></tr>` +
-    grupo.itens.map(x => `<tr><td>${escaparHtmlProduto(grupo.dados.nome)}</td><td>${escaparHtmlProduto(x.item.nome)}</td><td>${formatarMoeda(x.item.preco)} ${escaparHtmlProduto(x.item.unidade || grupo.dados.unidade)}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProduto('${grupo.categoria}',${x.indice})">Editar</button></td></tr>`).join('')
-  ).join('') || '<tr><td colspan="4">Nenhum produto encontrado.</td></tr>';
+    `<tr><td colspan="5" style="background:#292929;color:#d4af37;font-weight:700">${escaparHtmlProduto(grupo.dados.nome)}</td></tr>` +
+    grupo.itens.map(x => `<tr><td>${escaparHtmlProduto(grupo.dados.nome)}</td><td>${escaparHtmlProduto(x.item.nome)}</td><td>${Number(x.item.larguraTecido) > 0 ? Number(x.item.larguraTecido).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'}</td><td>${formatarMoeda(x.item.preco)} ${escaparHtmlProduto(x.item.unidade || grupo.dados.unidade)}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProduto('${grupo.categoria}',${x.indice})">Editar</button></td></tr>`).join('')
+  ).join('') || '<tr><td colspan="5">Nenhum produto encontrado.</td></tr>';
 }
 function limparProduto() {
+  document.getElementById('produto-subcategoria').value = '';
+  document.getElementById('produto-largura-tecido').value = '';
   produtoEditando = null;
   atualizarCategoriasProdutoSelecionaveis('voal');
   document.getElementById('produto-nome').value = '';
@@ -1830,6 +1890,8 @@ function editarProduto(categoria, indice) {
   atualizarCategoriasProdutoSelecionaveis(categoria);
   document.getElementById('produto-nome').value = item.nome;
   document.getElementById('produto-preco').value = item.preco;
+  document.getElementById('produto-subcategoria').value = item.subcategoria || '';
+  document.getElementById('produto-largura-tecido').value = item.larguraTecido || '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function salvarProduto() {
@@ -1837,6 +1899,9 @@ function salvarProduto() {
   let dados = categoriasProduto[categoria];
   const nome = document.getElementById('produto-nome').value.trim();
   const preco = Number(document.getElementById('produto-preco').value);
+  const subcategoria = document.getElementById('produto-subcategoria').value.trim();
+  const larguraTecido = Number(document.getElementById('produto-largura-tecido').value) || null;
+  if (larguraTecido !== null && larguraTecido <= 0) { alert('Informe uma largura de tecido maior que zero.'); return; }
   if (categoria === 'novo') {
     const nomeProduto = document.getElementById('produto-novo-nome').value.trim();
     if (!nomeProduto) { alert('Informe o nome da nova categoria.'); return; }
@@ -1854,19 +1919,19 @@ function salvarProduto() {
   if (!dados || !nome || !Number.isFinite(preco) || preco < 0) { alert('Informe categoria, produto e um valor válido.'); return; }
   if (produtoEditando) {
     const origem = categoriasProduto[produtoEditando.categoria];
-    if (produtoEditando.categoria === categoria) dados.lista[produtoEditando.indice] = { ...dados.lista[produtoEditando.indice], nome, preco };
+    if (produtoEditando.categoria === categoria) dados.lista[produtoEditando.indice] = { ...dados.lista[produtoEditando.indice], nome, preco, subcategoria, larguraTecido };
     else {
       origem.lista.splice(produtoEditando.indice, 1);
-      dados.lista.push({ nome, preco });
+      dados.lista.push({ nome, preco, subcategoria, larguraTecido });
       persistirCategoriaProduto(origem);
     }
-  } else dados.lista.push({ nome, preco });
+  } else dados.lista.push({ nome, preco, subcategoria, larguraTecido });
   persistirCategoriaProduto(dados);
   atualizarCategoriasProdutoSelecionaveis(categoria);
   atualizarOpcoesProdutos();
   atualizarTabelaProdutos();
   limparProduto();
-  alert('Produto salvo.');
+  avisarGravacao('Produto salvo.');
 }
 
 function adicionarItemOrcamentoPadrao() {
@@ -2269,6 +2334,7 @@ function adicionarItemOrcamentoPadrao() {
     attachFiltroSelect(`select-forro-${id}`, `search-forro-${id}`);
     attachFiltroSelect(`select-terceiro-${id}`, `search-terceiro-${id}`);
     atualizarOpcoesProdutos();
+    if (window.MicheleCortinaEditor) window.MicheleCortinaEditor.montar(id);
     const campos = card.querySelectorAll('input, select');
     campos.forEach(campo => {
         const atualizar = () => { atualizarResumoAmbiente(id); processarCalculoGeral(); };
@@ -2431,12 +2497,13 @@ function alternarAmbiente(id) {
     if (card) card.classList.toggle('aberto');
 }
 
-function salvarAmbiente(id) {
+async function salvarAmbiente(id) {
     const card = document.getElementById(`item-card-${id}`);
     if (!card) return;
     processarCalculoGeral();
     if (!objetoOrcamentoCorrente) return;
-    salvarComoOrcamentoOuPedido(objetoOrcamentoCorrente.tipo || 'Orçamento');
+    const salvo = await salvarComoOrcamentoOuPedido(objetoOrcamentoCorrente.tipo || 'Orçamento');
+    if (salvo === null) return;
     document.getElementById('btn-salvar-alteracoes').disabled = false;
     if (objetoOrcamentoCorrente.tipo !== 'Pedido') {
         document.getElementById('btn-salvar-pedido').textContent = 'Atualizar Orçamento';
@@ -2556,11 +2623,19 @@ function iniciarNovoOrcamento() {
     abrirAbaComando('aba-orcamento');
 }
 
-function salvarEAnular(tipoDocumento) {
+async function salvarEAnular(tipoDocumento) {
+    if (salvarEAnular.emAndamento) return;
     if(!objetoOrcamentoCorrente) return;
-    processarCalculoGeral();
-    const documentoAtualizado = salvarComoOrcamentoOuPedido(tipoDocumento);
-    if(!documentoAtualizado) resetarFormularioOrcamento();
+    salvarEAnular.emAndamento = true;
+    const painel = document.getElementById('aba-orcamento');
+    if (painel) painel.inert = true;
+    try {
+        processarCalculoGeral();
+        const documentoAtualizado = await salvarComoOrcamentoOuPedido(tipoDocumento);
+        if(documentoAtualizado === false) resetarFormularioOrcamento();
+    } catch (erro) {
+        alert('Não foi possível salvar o orçamento. O formulário foi mantido. ' + erro.message);
+    } finally { salvarEAnular.emAndamento = false; if (painel) painel.inert = false; }
 }
 
 function inserirCamposAcabamentoPersiana(sufixo) {
@@ -2888,11 +2963,19 @@ function processarCalculoGeral() {
             const quantidadeTrilho = (parseInt(document.getElementById(`tubo-trilho-qtd-${id}`).value) || 0) * (parseFloat(document.getElementById(`tubo-trilho-tamanho-${id}`).value) || 0);
             adicionarMaterial(document.getElementById(`select-tubo-trilho-${id}`).selectedOptions[0].textContent.split(' - R$')[0], quantidadeTrilho, 'm', Number(document.getElementById(`select-tubo-trilho-${id}`).value), quantidadeTrilho * Number(document.getElementById(`select-tubo-trilho-${id}`).value));
         }
+        const calculoCortina = window.MicheleCortinaCalculo ? (cortinaAtiva ? window.MicheleCortinaCalculo.calcular(
+            chave => document.getElementById(`${chave}-${id}`)?.value,
+            chave => document.getElementById(`${chave}-${id}`)?.selectedOptions[0]?.textContent || chave
+        ) : {materiais:[],tecidos:{},total:0}) : null;
+        if (calculoCortina) materiais.splice(0, materiais.length, ...calculoCortina.materiais);
+        const materiaisCortina = cortinaAtiva ? materiais.map(material => ({...material})) : [];
         adicionarMaterial(descPersiana || 'Persianas', totalPersiana > 0 ? 1 : 0, 'conj.', totalPersiana, totalPersiana);
         adicionarMaterial('Motorização', totalMotorizacao > 0 ? 1 : 0, 'conj.', totalMotorizacao, totalMotorizacao);
-        adicionarMaterial('Instalação', instalacaoQtd, 'un.', instalacaoValorUnitario, totalInstalacao);
+        if (!calculoCortina) adicionarMaterial('Instalação', instalacaoQtd, 'un.', instalacaoValorUnitario, totalInstalacao);
 
-        const subtotalItem = precoMetragemVoal + precoMetragemForro + precoMetragemTerceiro + maoDeObraOculta + subtotalComponentes + totalPersiana + totalMotorizacao + totalInstalacao;
+        const subtotalBruto = calculoCortina ? calculoCortina.total + totalPersiana + totalMotorizacao : precoMetragemVoal + precoMetragemForro + precoMetragemTerceiro + maoDeObraOculta + subtotalComponentes + totalPersiana + totalMotorizacao + totalInstalacao;
+        const pagamento = window.MichelePagamento?.calcular(id, subtotalBruto) || {total:subtotalBruto};
+        const subtotalItem = pagamento.total;
         valorGeralConsolidado += subtotalItem;
 
         listaItensProcessados.push({
@@ -2911,6 +2994,8 @@ function processarCalculoGeral() {
             instalacaoValorUnitario: instalacaoValorUnitario,
             instalacaoTotal: totalInstalacao,
             materiais: materiais,
+            materiaisCortina: materiaisCortina,
+            calculoCortina: calculoCortina,
             abertura: document.getElementById(`abertura-${id}`).value,
             voalAtivo: voalAtivo,
             forroAtivo: forroAtivo,
@@ -2923,6 +3008,7 @@ function processarCalculoGeral() {
             motorizacaoAtiva: motorizacaoAtiva,
             cortinaAtiva: cortinaAtiva,
             subtotal: subtotalItem,
+            subtotalBruto, pagamento,
             configuracao: capturarEstadoCard(card)
         });
     });
@@ -2931,6 +3017,7 @@ function processarCalculoGeral() {
         const cardId = cards[idx].id.replace('item-card-','');
         atualizarValorResumoAmbiente(cardId, it.subtotal);
         atualizarResumoAmbiente(cardId);
+        if (window.MicheleCortinaEditor) window.MicheleCortinaEditor.renderizar(cardId, it);
     });
     atualizarContadoresAmbientes();
 
@@ -2986,6 +3073,7 @@ function processarCalculoGeral() {
         if(it.motorizacaoAtiva) {
             textoComercial += `• Motorização Eletrônica: Ativada\n`;
         }
+        if (it.pagamento?.forma) textoComercial += `• Pagamento: ${it.pagamento.descricao}\n`;
         textoComercial += `• Subtotal do Item: ${it.subtotal.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}\n`;
     });
 
@@ -3005,10 +3093,12 @@ function processarCalculoGeral() {
 
 function proximoNumero(tipo) {
     const chave = tipo === 'Pedido' ? 'michele_numero_pedido' : 'michele_numero_orcamento';
-    let atual = parseInt(localStorage.getItem(chave) || '0', 10);
+    let atual = parseInt(dadosStorage.getItem(chave) || '0', 10);
     if(!Number.isFinite(atual) || atual < 0) atual = 0;
+    const campo = tipo === 'Pedido' ? 'numeroPedido' : 'numeroOrcamento';
+    for (const doc of pedidos) atual = Math.max(atual, parseInt(doc[campo], 10) || 0);
     atual += 1;
-    localStorage.setItem(chave, String(atual));
+    dadosStorage.setItem(chave, String(atual));
     return String(atual).padStart(6, '0');
 }
 
@@ -3019,8 +3109,8 @@ function numeroExibicao(doc) {
 
 function garantirNumeracaoHistorico() {
     let alterou = false;
-    let maiorOrc = parseInt(localStorage.getItem('michele_numero_orcamento') || '0', 10) || 0;
-    let maiorPed = parseInt(localStorage.getItem('michele_numero_pedido') || '0', 10) || 0;
+    let maiorOrc = parseInt(dadosStorage.getItem('michele_numero_orcamento') || '0', 10) || 0;
+    let maiorPed = parseInt(dadosStorage.getItem('michele_numero_pedido') || '0', 10) || 0;
     pedidos.forEach(doc => {
         if(doc.tipo === 'Pedido') {
             if(doc.numeroPedido) maiorPed = Math.max(maiorPed, parseInt(doc.numeroPedido,10) || 0);
@@ -3035,12 +3125,12 @@ function garantirNumeracaoHistorico() {
             maiorOrc += 1; doc.numeroOrcamento = String(maiorOrc).padStart(6,'0'); alterou = true;
         }
     });
-    localStorage.setItem('michele_numero_orcamento', String(maiorOrc));
-    localStorage.setItem('michele_numero_pedido', String(maiorPed));
-    if(alterou) localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+    dadosStorage.setItem('michele_numero_orcamento', String(maiorOrc));
+    dadosStorage.setItem('michele_numero_pedido', String(maiorPed));
+    if(alterou) dadosStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
 }
 
-function salvarComoOrcamentoOuPedido(tipoDocumento) {
+async function salvarComoOrcamentoOuPedido(tipoDocumento) {
     if(!objetoOrcamentoCorrente) return;
     const base = JSON.parse(JSON.stringify(objetoOrcamentoCorrente));
 
@@ -3053,12 +3143,13 @@ function salvarComoOrcamentoOuPedido(tipoDocumento) {
     }
     if(indiceExistente >= 0 && (base.tipo || 'Orçamento') === tipoDocumento) {
         const docAtualizado = {...base, tipo:tipoDocumento, idDocumento:base.idDocumento || pedidos[indiceExistente].idDocumento};
-        pedidos[indiceExistente] = docAtualizado;
+        const atualizados = pedidos.map((pedido, indice) => indice === indiceExistente ? docAtualizado : pedido);
+        dadosStorage.setItem('michele_pedidos', JSON.stringify(atualizados));
+        pedidos = atualizados;
         objetoOrcamentoCorrente = JSON.parse(JSON.stringify(docAtualizado));
-        localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
         atualizarTabelaPedidos();
         atualizarRelatorioTotalPedidos();
-        alert(`${tipoDocumento} ${numeroExibicao(docAtualizado)} atualizado com sucesso!`);
+        if (!await avisarGravacao(`${tipoDocumento} ${numeroExibicao(docAtualizado)} atualizado com sucesso!`)) return null;
         return true;
     }
 
@@ -3075,15 +3166,17 @@ function salvarComoOrcamentoOuPedido(tipoDocumento) {
     }
 
     const transformouOrcamento = tipoDocumento === 'Pedido' && indiceExistente >= 0 && (base.tipo || 'Orçamento') !== 'Pedido';
-    if(transformouOrcamento) pedidos.splice(indiceExistente, 1, doc);
-    else pedidos.push(doc);
-    localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+    const atualizados = transformouOrcamento
+      ? pedidos.map((pedido, indice) => indice === indiceExistente ? doc : pedido)
+      : [...pedidos, doc];
+    dadosStorage.setItem('michele_pedidos', JSON.stringify(atualizados));
+    pedidos = atualizados;
     objetoOrcamentoCorrente = JSON.parse(JSON.stringify(doc));
     atualizarTabelaPedidos();
-    alert(transformouOrcamento
+    const confirmado = await avisarGravacao(transformouOrcamento
         ? `Orçamento ${base.numeroOrcamento ? 'ORC-' + base.numeroOrcamento : ''} transformado no Pedido ${numeroExibicao(doc)} com sucesso!`
         : `${tipoDocumento} ${numeroExibicao(doc)} gravado com sucesso no histórico!`);
-    return false;
+    return confirmado ? false : null;
 }
 
 function salvarAlteracoesHistorico() {
@@ -3095,9 +3188,9 @@ function salvarAlteracoesHistorico() {
     const indice=pedidos.findIndex(pedido=>pedido.idDocumento===objetoOrcamentoCorrente.idDocumento);
     if(indice<0){alert('O registro original não foi encontrado no histórico.');return;}
     pedidos[indice]=JSON.parse(JSON.stringify(objetoOrcamentoCorrente));
-    localStorage.setItem('michele_pedidos',JSON.stringify(pedidos));
+    dadosStorage.setItem('michele_pedidos',JSON.stringify(pedidos));
     atualizarTabelaPedidos();
-    alert(`${numeroExibicao(objetoOrcamentoCorrente)} atualizado com sucesso.`);
+    avisarGravacao(`${numeroExibicao(objetoOrcamentoCorrente)} atualizado com sucesso.`);
 }
 
 
@@ -3111,32 +3204,40 @@ function gerarCodigosUnicos() {
     document.getElementById('c-codigo').value = 'CLI-' + Math.floor(1000 + Math.random() * 9000);
 }
 
+function limparCliente() {
+    clienteEditando = null;
+    ['nome','cpf','telefone','email','endereco'].forEach(k => document.getElementById('c-'+k).value = '');
+    gerarCodigosUnicos();
+    document.getElementById('btn-salvar-cliente').textContent = 'Salvar cliente';
+}
+function editarCliente(index) {
+    const cli = clientes[index]; if (!cli) return;
+    clienteEditando = cli;
+    ['codigo','nome','cpf','telefone','email','endereco'].forEach(k => document.getElementById('c-'+k).value = cli[k] || '');
+    document.getElementById('btn-salvar-cliente').textContent = 'Atualizar cliente';
+    document.getElementById('c-nome').focus();
+}
 function salvarNovoClienteNoBanco() {
     const nome = document.getElementById('c-nome').value.trim();
-    if(!nome) { alert('Insira o nome do cliente.'); return; }
-
-    const novo = {
-        codigo: document.getElementById('c-codigo').value,
-        nome: nome,
-        cpf: document.getElementById('c-cpf').value,
-        telefone: document.getElementById('c-telefone').value,
-        email: document.getElementById('c-email').value,
-        endereco: document.getElementById('c-endereco').value
-    };
-
-    clientes.push(novo);
-    localStorage.setItem('michele_clientes', JSON.stringify(clientes));
-    
-    document.getElementById('c-nome').value = "";
-    document.getElementById('c-cpf').value = "";
-    document.getElementById('c-telefone').value = "";
-    document.getElementById('c-email').value = "";
-    document.getElementById('c-endereco').value = "";
-    
-    gerarCodigosUnicos();
-    popularClientesSelect();
-    atualizarTabelaClientes();
-    alert('Cliente cadastrado com sucesso!');
+    if (!nome) { alert('Insira o nome do cliente.'); return; }
+    const editando = clienteEditando !== null;
+    const novo = {...(clienteEditando || {})};
+    ['codigo','nome','cpf','telefone','email','endereco'].forEach(k => novo[k] = document.getElementById('c-'+k).value.trim());
+    const atualizados = editando ? clientes.map(c => c === clienteEditando ? novo : c) : [...clientes, novo];
+    dadosStorage.setItem('michele_clientes', JSON.stringify(atualizados));
+    clientes = atualizados;
+    limparCliente(); popularClientesSelect(); atualizarTabelaClientes(); atualizarDashboard();
+    avisarGravacao(editando ? 'Cliente atualizado.' : 'Cliente salvo.');
+}
+function excluirCliente(index) {
+    const cli = clientes[index];
+    if (!cli || !confirm(`Excluir o cliente ${cli.nome}? Os pedidos e or?amentos anteriores ser?o preservados.`)) return;
+    const atualizados = clientes.filter((_, i) => i !== index);
+    dadosStorage.setItem('michele_clientes', JSON.stringify(atualizados));
+    clientes = atualizados;
+    if (clienteEditando === cli) limparCliente();
+    popularClientesSelect(); atualizarTabelaClientes(); atualizarDashboard();
+    avisarGravacao('Cliente exclu?do.');
 }
 
 function popularClientesSelect() {
@@ -3152,14 +3253,22 @@ function popularClientesSelect() {
 
 function atualizarTabelaClientes() {
     const tbody = document.querySelector('#tabela-clientes-dados tbody');
+    const normalizar = valor => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const termo = normalizar(document.getElementById('busca-cliente')?.value);
+    let encontrados = 0;
     if(tbody) {
         tbody.innerHTML = "";
-        clientes.forEach(cli => {
+        clientes.forEach((cli, index) => {
+            if (termo && ![cli.nome, cli.cpf, cli.telefone, cli.codigo].some(valor => normalizar(valor).includes(termo))) return;
+            encontrados++;
             let tr = document.createElement('tr');
-            tr.innerHTML = `<td>${cli.codigo}</td><td>${cli.nome}</td><td>${cli.cpf}</td><td>${cli.telefone}</td><td>${cli.endereco}</td>`;
+            tr.innerHTML = `<td>${cli.codigo}</td><td>${cli.nome}</td><td>${cli.cpf}</td><td>${cli.telefone}</td><td>${cli.endereco}</td><td><button class="btn" onclick="editarCliente(${index})">Editar</button> <button class="btn btn-erro" onclick="excluirCliente(${index})">Excluir</button></td>`;
             tbody.appendChild(tr);
         });
+        if (!encontrados) tbody.innerHTML = '<tr><td colspan="6">Nenhum cliente encontrado.</td></tr>';
     }
+    const status = document.getElementById('clientes-status');
+    if (status) status.textContent = `${encontrados} cliente${encontrados === 1 ? '' : 's'} encontrado${encontrados === 1 ? '' : 's'}.`;
 }
 
 function formatarMoeda(v) {
@@ -3172,6 +3281,7 @@ function obterTermoHistorico() {
 
 function obterMateriaisRelatorio(item) {
     if(!item) return [];
+    if (item.calculoCortina) return item.materiais || [];
     const estado = item.configuracao || {};
     let m;
     try {
@@ -3439,7 +3549,7 @@ function atualizarTabelaPedidos() {
             <td><div class="acoes-historico">
                 <button class="btn btn-ouro" onclick="consultarOrcamentoHistorico(${index})">Consultar</button>
                 <button class="btn btn-sucesso" onclick="gerarPedidoDoHistorico(${index})" ${ped.tipo === 'Pedido' ? 'disabled' : ''}>Gerar Pedido</button>
-                <button class="btn btn-erro" onclick="deletarPedido(${index})">Remover</button>
+                <button class="btn btn-erro" onclick="deletarPedido(${index})">Excluir</button>
             </div></td>`;
         tbody.appendChild(tr);
     });
@@ -3495,17 +3605,22 @@ function gerarPedidoDoHistorico(index) {
     pedido.numeroPedido = proximoNumero('Pedido');
     pedido.numeroOrcamento = doc.numeroOrcamento || null;
     pedidos.splice(index, 1, pedido);
-    localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+    dadosStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
     atualizarTabelaPedidos();
-    alert(`Orçamento ${doc.numeroOrcamento ? 'ORC-' + doc.numeroOrcamento : ''} transformado no Pedido ${numeroExibicao(pedido)} de ${pedido.cliente?.nome || 'Cliente Avulso'}.`);
+    avisarGravacao(`Orçamento ${doc.numeroOrcamento ? 'ORC-' + doc.numeroOrcamento : ''} transformado no Pedido ${numeroExibicao(pedido)} de ${pedido.cliente?.nome || 'Cliente Avulso'}.`);
 }
 
 function deletarPedido(index) {
-    if(confirm("Deseja realmente remover este registro?")) {
-        pedidos.splice(index, 1);
-        localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
-        atualizarTabelaPedidos();
-    }
+    const doc = pedidos[index];
+    if (!doc || !confirm(`Excluir ${doc.tipo || 'Or?amento'} ${numeroExibicao(doc)} de ${doc.cliente?.nome || 'Cliente Avulso'}? Esta a??o n?o pode ser desfeita.`)) return;
+    const atualizados = pedidos.filter((_, i) => i !== index);
+    dadosStorage.setItem('michele_pedidos', JSON.stringify(atualizados));
+    pedidos = atualizados;
+    if (objetoOrcamentoCorrente && doc.idDocumento && objetoOrcamentoCorrente.idDocumento === doc.idDocumento) resetarFormularioOrcamento();
+    atualizarTabelaPedidos(); atualizarDashboard();
+    atualizarRelatorioTotalPedidos(); atualizarRelatorioGeralPedidos(); atualizarRelatorioVendasVendedor(); atualizarRelatorioGeralProdutos();
+    atualizarListaMateriais(); atualizarMateriaisPersianas(); atualizarPlanoCortePersianas(); atualizarPlanoCorteTubosTrilhos();
+    avisarGravacao(`${doc.tipo || 'Or?amento'} exclu?do.`);
 }
 
 function normalizarDadosExistentes(){
@@ -3536,16 +3651,17 @@ function normalizarDadosExistentes(){
     senha: x.senha || '',
     cargo: x.cargo || 'Vendedor',
     comissao: Number(x.comissao || 0),
+    descontoMaximo: Number(x.descontoMaximo || 0),
     telefone: x.telefone || '',
     email: x.email || '',
     status: x.status || 'Ativo',
     observacoes: x.observacoes || ''
   }));
 
-  localStorage.setItem('michele_clientes', JSON.stringify(clientes));
-  localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
-  localStorage.setItem('michele_fornecedores', JSON.stringify(fornecedores));
-  localStorage.setItem('michele_profissionais', JSON.stringify(profissionais));
+  dadosStorage.setItem('michele_clientes', JSON.stringify(clientes));
+  dadosStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+  dadosStorage.setItem('michele_fornecedores', JSON.stringify(fornecedores));
+  dadosStorage.setItem('michele_profissionais', JSON.stringify(profissionais));
 }
 
 function inicializarUsuarios(){
@@ -3555,10 +3671,11 @@ function inicializarUsuarios(){
   if(!profissionais.some(p=>String(p.usuario||'').toLowerCase()==='elton')){
     profissionais.push({id:novoCodigo(profissionais,'PROF-'),nome:'Elton',cargo:'Vendedor',comissao:5,usuario:'Elton',senha:'1234',telefone:'',email:'',status:'Ativo',observacoes:''});
   }
-  localStorage.setItem('michele_profissionais',JSON.stringify(profissionais));
+  dadosStorage.setItem('michele_profissionais',JSON.stringify(profissionais));
 }
 function mostrarLogin(){document.getElementById('login-screen').style.display='flex';document.getElementById('app-shell').style.display='none';}
 function usuarioEhAdministrador() {
+  if (MicheleNuvem.ativo) return usuarioAtual?.cargo === 'Administrador';
   const cadastroAtual = profissionais.find(p => p.id === usuarioAtual?.id) || profissionais.find(p => p.usuario === usuarioAtual?.usuario);
   if(cadastroAtual) {
     usuarioAtual = cadastroAtual;
@@ -3579,25 +3696,33 @@ function iniciarAplicacao(){
   abrirDashboard();
 }
 function fazerLogin(){
-  const u=document.getElementById('login-usuario').value.trim().toLocaleLowerCase('pt-BR'), s=document.getElementById('login-senha').value;
-  const p=profissionais.find(x=>
-    String(x.usuario || '').trim().toLocaleLowerCase('pt-BR')===u &&
-    String(x.senha || '')===s &&
-    String(x.status || '').trim().toLocaleLowerCase('pt-BR')==='ativo'
+  if (MicheleNuvem.ativo) { MicheleNuvem.login(); return; }
+  const u = document.getElementById('login-usuario').value.trim().toLocaleLowerCase('pt-BR');
+  const s = document.getElementById('login-senha').value;
+  const p = profissionais.find(x =>
+    String(x.usuario || '').trim().toLocaleLowerCase('pt-BR') === u &&
+    String(x.senha || '') === s &&
+    String(x.status || '').trim().toLocaleLowerCase('pt-BR') === 'ativo'
   );
-  if(!p){document.getElementById('login-erro').textContent='Usuário ou senha inválidos.';return;}
-  usuarioAtual=p;sessionStorage.setItem('michele_usuario_atual',JSON.stringify(p));document.getElementById('login-erro').textContent='';iniciarAplicacao();
+  if (!p) {
+    document.getElementById('login-erro').textContent = 'Usuário ou senha inválidos.';
+    return;
+  }
+  usuarioAtual = p;
+  sessionStorage.setItem('michele_usuario_atual', JSON.stringify(p));
+  document.getElementById('login-erro').textContent = '';
+  iniciarAplicacao();
 }
 
 // Configurações da Empresa
 const LOGO_EMPRESA_PADRAO = 'https://drive.google.com/thumbnail?id=1YCQITXdbaT8o7OP0GkgX5rtJt56OElzT&sz=w1200';
 function carregarConfiguracoes() {
-  const config = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
+  const config = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
     aplicarPaleta(config.paleta || 'padrao');
   atualizarCabecalhoEmpresa({ ...config, logo: config.logo || LOGO_EMPRESA_PADRAO });
 }
 function abrirConfiguracoes() {
-  const config = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
+  const config = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
   document.getElementById('config-nome-empresa').value = config.nomeEmpresa || 'Michele Cortinas';
   document.getElementById('config-endereco').value = config.endereco || '';
   document.getElementById('config-bairro-cidade').value = config.bairroCidade || '';
@@ -3636,9 +3761,9 @@ function removerLogoEmpresa() {
   if (preview) { preview.src = ''; preview.style.display = 'none'; }
   const arquivo = document.getElementById('config-logo');
   if (arquivo) arquivo.value = '';
-  const config = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
+  const config = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
   delete config.logo;
-  localStorage.setItem('michele_config_empresa', JSON.stringify(config));
+  dadosStorage.setItem('michele_config_empresa', JSON.stringify(config));
   atualizarCabecalhoEmpresa(config);
 }
 // Fechar modal ao clicar fora dele
@@ -3647,7 +3772,7 @@ document.addEventListener('click', (e) => {
   if (e.target === modal) fecharConfiguracoes();
 });
 function salvarConfiguraciones() {
-  const configAnterior = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
+  const configAnterior = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
   const logoPreview = document.getElementById('config-logo-preview');
   const config = {
     nomeEmpresa: document.getElementById('config-nome-empresa').value || 'Michele Cortinas',
@@ -3661,11 +3786,11 @@ function salvarConfiguraciones() {
         logo: logoPreview?.src || configAnterior.logo || LOGO_EMPRESA_PADRAO,
         paleta: document.getElementById('config-paleta').value
   };
-  localStorage.setItem('michele_config_empresa', JSON.stringify(config));
+  dadosStorage.setItem('michele_config_empresa', JSON.stringify(config));
     aplicarPaleta(config.paleta);
   atualizarCabecalhoEmpresa(config);
   fecharConfiguracoes();
-  alert('✅ Configurações salvas com sucesso!');
+  avisarGravacao('✅ Configurações salvas com sucesso!');
 }
 function aplicarPaleta(nome) {
     // Todas as paletas usam superficies claras com texto de alto contraste.
@@ -3706,8 +3831,9 @@ function atualizarCabecalhoEmpresa(config) {
   }
 }
 
-function fazerLogout(){sessionStorage.removeItem('michele_usuario_atual');usuarioAtual=null;location.reload();}
+function fazerLogout(){if(MicheleNuvem.ativo){MicheleNuvem.sair();return;}sessionStorage.removeItem('michele_usuario_atual');usuarioAtual=null;location.reload();}
 function trocarUsuario(){
+  if (MicheleNuvem.ativo) { MicheleNuvem.sair(); return; }
   sessionStorage.removeItem('michele_usuario_atual');
   usuarioAtual=null;
   const campoUsuario=document.getElementById('login-usuario');
@@ -3849,21 +3975,45 @@ function atualizarDashboard(){
   const q=id=>document.getElementById(id); q('dash-clientes').textContent=clientes.length;q('dash-fornecedores').textContent=fornecedores.length;q('dash-profissionais').textContent=profissionais.length;q('dash-documentos').textContent=pedidos.length;
 }
 function novoCodigo(lista,prefixo){let n=lista.length+1;let c=prefixo+String(n).padStart(6,'0');while(lista.some(x=>x.id===c))c=prefixo+String(++n).padStart(6,'0');return c;}
-function limparFornecedor(){fornecedorEditando=null;['f-razao','f-fantasia','f-cnpj','f-contato','f-telefone','f-whatsapp','f-email','f-cep','f-endereco','f-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-codigo').value=novoCodigo(fornecedores,'FOR-');}
+function excluirFornecedor(id) {
+    if (usuarioAtual?.cargo !== 'Administrador') { alert('Acesso restrito ao administrador.'); return; }
+    const item = fornecedores.find(x => x.id === id);
+    if (!item || !confirm(`Excluir o fornecedor ${item.razao || item.fantasia}?`)) return;
+    const atualizados = fornecedores.filter(x => x.id !== id);
+    dadosStorage.setItem('michele_fornecedores', JSON.stringify(atualizados));
+    fornecedores = atualizados;
+    if (fornecedorEditando === id) limparFornecedor();
+    atualizarFornecedores(); atualizarDashboard(); avisarGravacao('Fornecedor exclu?do.');
+}
+function excluirProfissional(id) {
+    if (usuarioAtual?.cargo !== 'Administrador') { alert('Acesso restrito ao administrador.'); return; }
+    const item = profissionais.find(x => x.id === id); if (!item) return;
+    if (id === usuarioAtual.id || item.usuario === usuarioAtual.usuario) { alert('N?o ? poss?vel excluir o usu?rio conectado.'); return; }
+    if (item.cargo === 'Administrador' && item.status === 'Ativo' && !profissionais.some(x => x.id !== id && x.cargo === 'Administrador' && x.status === 'Ativo')) { alert('Mantenha pelo menos um administrador ativo.'); return; }
+    if (!confirm(`Excluir o profissional ${item.nome}? Seu acesso ser? removido. Os documentos anteriores ser?o preservados.`)) return;
+    const atualizados = profissionais.filter(x => x.id !== id);
+    dadosStorage.setItem('michele_profissionais', JSON.stringify(atualizados));
+    profissionais = atualizados;
+    if (profissionalEditando === id) limparProfissional();
+    atualizarProfissionais(); popularVendedores(); atualizarDashboard(); avisarGravacao('Profissional exclu?do.');
+}
+
+function limparFornecedor(){document.getElementById('btn-salvar-fornecedor').textContent='Salvar fornecedor';fornecedorEditando=null;['f-razao','f-fantasia','f-cnpj','f-contato','f-telefone','f-whatsapp','f-email','f-cep','f-endereco','f-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-codigo').value=novoCodigo(fornecedores,'FOR-');}
 function salvarFornecedor(){
  const obj={id:fornecedorEditando||document.getElementById('f-codigo').value||novoCodigo(fornecedores,'FOR-'),razao:document.getElementById('f-razao').value,fantasia:document.getElementById('f-fantasia').value,cnpj:document.getElementById('f-cnpj').value,contato:document.getElementById('f-contato').value,telefone:document.getElementById('f-telefone').value,whatsapp:document.getElementById('f-whatsapp').value,email:document.getElementById('f-email').value,categoria:document.getElementById('f-categoria').value,cep:document.getElementById('f-cep').value,endereco:document.getElementById('f-endereco').value,observacoes:document.getElementById('f-observacoes').value};
- if(!obj.razao&&!obj.fantasia){alert('Informe a razão social ou nome fantasia.');return} const i=fornecedores.findIndex(x=>x.id===obj.id);if(i>=0)fornecedores[i]=obj;else fornecedores.push(obj);localStorage.setItem('michele_fornecedores',JSON.stringify(fornecedores));atualizarFornecedores();atualizarDashboard();limparFornecedor();alert('Fornecedor salvo.');
+ if(!obj.razao&&!obj.fantasia){alert('Informe a razão social ou nome fantasia.');return} const i=fornecedores.findIndex(x=>x.id===obj.id);const atualizados=i>=0?fornecedores.map((x,n)=>n===i?{...x,...obj}:x):[...fornecedores,obj];dadosStorage.setItem('michele_fornecedores',JSON.stringify(atualizados));fornecedores=atualizados;atualizarFornecedores();atualizarDashboard();limparFornecedor();avisarGravacao(i>=0?'Fornecedor atualizado.':'Fornecedor salvo.');
 }
-function editarFornecedor(id){const x=fornecedores.find(v=>v.id===id);if(!x)return;fornecedorEditando=id;document.getElementById('f-codigo').value=x.id;['razao','fantasia','cnpj','contato','telefone','whatsapp','email','cep','endereco','observacoes'].forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value=x[k]||''});document.getElementById('f-categoria').value=x.categoria||'Outros';window.scrollTo({top:0,behavior:'smooth'});}
-function atualizarFornecedores(){const q=(document.getElementById('busca-fornecedor')?.value||'').toLowerCase();const tb=document.getElementById('tabela-fornecedores');if(!tb)return;tb.innerHTML=fornecedores.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).map(x=>`<tr><td>${x.id}</td><td>${x.razao||''}</td><td>${x.fantasia||''}</td><td>${x.cnpj||''}</td><td>${x.categoria||''}</td><td><button class="btn" style="padding:5px 8px" onclick="editarFornecedor('${x.id}')">Editar</button></td></tr>`).join('');}
-function limparProfissional(){profissionalEditando=null;['p-nome','p-usuario','p-senha','p-telefone','p-email','p-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('p-codigo').value=novoCodigo(profissionais,'PROF-');document.getElementById('p-comissao').value=5;document.getElementById('p-cargo').value='Vendedor';document.getElementById('p-status').value='Ativo';}
+function editarFornecedor(id){const x=fornecedores.find(v=>v.id===id);if(!x)return;fornecedorEditando=id;document.getElementById('btn-salvar-fornecedor').textContent='Atualizar fornecedor';document.getElementById('f-codigo').value=x.id;['razao','fantasia','cnpj','contato','telefone','whatsapp','email','cep','endereco','observacoes'].forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value=x[k]||''});document.getElementById('f-categoria').value=x.categoria||'Outros';window.scrollTo({top:0,behavior:'smooth'});}
+function atualizarFornecedores(){const q=(document.getElementById('busca-fornecedor')?.value||'').toLowerCase();const tb=document.getElementById('tabela-fornecedores');if(!tb)return;tb.innerHTML=fornecedores.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).map(x=>`<tr><td>${x.id}</td><td>${x.razao||''}</td><td>${x.fantasia||''}</td><td>${x.cnpj||''}</td><td>${x.categoria||''}</td><td><button class="btn" style="padding:5px 8px" onclick="editarFornecedor('${x.id}')">Editar</button> <button class="btn btn-erro" onclick="excluirFornecedor('${x.id}')">Excluir</button></td></tr>`).join('');}
+function limparProfissional(){document.getElementById('btn-salvar-profissional').textContent='Salvar profissional';profissionalEditando=null;['p-nome','p-usuario','p-senha','p-telefone','p-email','p-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('p-codigo').value=novoCodigo(profissionais,'PROF-');document.getElementById('p-comissao').value=5;document.getElementById('p-desconto-maximo').value=0;document.getElementById('p-cargo').value='Vendedor';document.getElementById('p-status').value='Ativo';}
 function salvarProfissional(){
+ if(!document.getElementById('p-desconto-maximo').checkValidity()){alert('Informe um desconto máximo entre 0 e 100%.');return;}
  if(usuarioAtual?.cargo!=='Administrador'){alert('Acesso restrito. Somente o Administrador pode cadastrar profissionais.');return}
- const obj={id:profissionalEditando||document.getElementById('p-codigo').value||novoCodigo(profissionais,'PROF-'),nome:document.getElementById('p-nome').value,usuario:document.getElementById('p-usuario').value,senha:document.getElementById('p-senha').value,cargo:document.getElementById('p-cargo').value,comissao:Number(document.getElementById('p-comissao').value)||0,telefone:document.getElementById('p-telefone').value,email:document.getElementById('p-email').value,status:document.getElementById('p-status').value,observacoes:document.getElementById('p-observacoes').value};
- if(!obj.nome||!obj.usuario||(!profissionalEditando&&!obj.senha)){alert('Nome, usuário e senha são obrigatórios.');return} if(profissionais.some(x=>x.usuario===obj.usuario&&x.id!==obj.id)){alert('Esse usuário já existe.');return} const i=profissionais.findIndex(x=>x.id===obj.id);if(i>=0)profissionais[i]=obj;else profissionais.push(obj);localStorage.setItem('michele_profissionais',JSON.stringify(profissionais));atualizarProfissionais();popularVendedores();atualizarDashboard();limparProfissional();alert('Profissional salvo.');
+ const obj={id:profissionalEditando||document.getElementById('p-codigo').value||novoCodigo(profissionais,'PROF-'),nome:document.getElementById('p-nome').value,usuario:document.getElementById('p-usuario').value,senha:document.getElementById('p-senha').value,cargo:document.getElementById('p-cargo').value,descontoMaximo:Number(document.getElementById('p-desconto-maximo').value)||0,comissao:Number(document.getElementById('p-comissao').value)||0,telefone:document.getElementById('p-telefone').value,email:document.getElementById('p-email').value,status:document.getElementById('p-status').value,observacoes:document.getElementById('p-observacoes').value};
+ if(!obj.nome||!obj.usuario||(!profissionalEditando&&!obj.senha)){alert(MicheleNuvem.ativo?'Nome e usuário são obrigatórios.':'Nome, usuário e senha são obrigatórios.');return} if(profissionais.some(x=>x.usuario===obj.usuario&&x.id!==obj.id)){alert('Esse usuário já existe.');return} const i=profissionais.findIndex(x=>x.id===obj.id);if(i>=0&&!obj.senha&&!MicheleNuvem.ativo)obj.senha=profissionais[i].senha;const atualizados=i>=0?profissionais.map((x,n)=>n===i?{...x,...obj}:x):[...profissionais,obj];dadosStorage.setItem('michele_profissionais',JSON.stringify(atualizados));profissionais=atualizados;if(MicheleNuvem.ativo)profissionais.forEach(x=>delete x.senha);atualizarProfissionais();popularVendedores();atualizarDashboard();limparProfissional();avisarGravacao(i>=0?'Profissional atualizado.':'Profissional salvo.');
 }
-function editarProfissional(id){if(usuarioAtual?.cargo!=='Administrador')return;const x=profissionais.find(v=>v.id===id);if(!x)return;profissionalEditando=id;document.getElementById('p-codigo').value=x.id;['nome','usuario','senha','telefone','email','observacoes'].forEach(k=>document.getElementById('p-'+k).value=x[k]||'');document.getElementById('p-cargo').value=x.cargo;document.getElementById('p-comissao').value=x.comissao;document.getElementById('p-status').value=x.status;}
-function atualizarProfissionais(){const tb=document.getElementById('tabela-profissionais');if(!tb)return;tb.innerHTML=profissionais.map(x=>`<tr><td>${x.id}</td><td>${x.nome}</td><td>${x.cargo}</td><td>${x.usuario}</td><td>${Number(x.comissao||0).toFixed(2)}%</td><td>${x.status}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProfissional('${x.id}')">Editar</button></td></tr>`).join('');}
+function editarProfissional(id){if(usuarioAtual?.cargo!=='Administrador')return;const x=profissionais.find(v=>v.id===id);if(!x)return;profissionalEditando=id;document.getElementById('btn-salvar-profissional').textContent='Atualizar profissional';document.getElementById('p-codigo').value=x.id;['nome','usuario','senha','telefone','email','observacoes'].forEach(k=>document.getElementById('p-'+k).value=x[k]||'');document.getElementById('p-cargo').value=x.cargo;document.getElementById('p-comissao').value=x.comissao;document.getElementById('p-desconto-maximo').value=x.descontoMaximo||0;document.getElementById('p-status').value=x.status;}
+function atualizarProfissionais(){const tb=document.getElementById('tabela-profissionais');if(!tb)return;tb.innerHTML=profissionais.map(x=>`<tr><td>${x.id}</td><td>${x.nome}</td><td>${x.cargo}</td><td>${x.usuario}</td><td>${Number(x.comissao||0).toFixed(2)}%</td><td>${x.status}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProfissional('${x.id}')">Editar</button> <button class="btn btn-erro" onclick="excluirProfissional('${x.id}')">Excluir</button></td></tr>`).join('');}
 function popularVendedores(){const s=document.getElementById('orc-vendedor-select');if(!s)return;const ativos=profissionais.filter(x=>x.status==='Ativo'&&(x.cargo==='Vendedor'||x.cargo==='Gerente'||x.cargo==='Administrador'));s.innerHTML='<option value="">Selecionar vendedor</option>'+ativos.map(x=>`<option value="${x.id}">${x.nome}</option>`).join('');if(usuarioAtual&&usuarioAtual.cargo==='Vendedor')s.value=usuarioAtual.id;}
 function buscarGlobal(){const q=(document.getElementById('busca-global')?.value||'').trim().toLowerCase(), box=document.getElementById('resultado-global');if(!q){box.style.display='none';box.innerHTML='';return;}const cs=clientes.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).slice(0,5);const fs=fornecedores.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).slice(0,5);const ds=pedidos.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).slice(0,8);box.style.display='block';box.innerHTML='<div class="secao-titulo">Resultados</div>'+((cs.length?'<h4>Clientes</h4>'+cs.map(x=>`<div class="dash-card" onclick="abrirAbaComando(\'aba-clientes\')"><strong>${x.nome}</strong> — ${x.id} — ${x.telefone||''}</div>`).join(''):'')+(fs.length?'<h4>Fornecedores</h4>'+fs.map(x=>`<div class="dash-card"><strong>${x.fantasia||x.razao}</strong> — ${x.id}</div>`).join(''):'')+(ds.length?'<h4>Orçamentos / Pedidos</h4>'+ds.map(x=>`<div class="dash-card"><strong>${x.numeroOrcamento||x.numeroPedido||x.numero||''}</strong> — ${x.clienteNome||''} — ${(Number(x.total)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</div>`).join(''):'')||'<p>Nenhum resultado encontrado.</p>');}
 
@@ -3876,16 +4026,17 @@ function marcadoMaterial(estado, sufixo) { const chave=Object.keys(estado?.campo
 function obterMateriaisAmbiente(item) {
     const estado=item.configuracao||{}, idAmbiente=item.id || Number(Object.keys(estado.campos||{}).map(chave=>chave.match(/(?:largura|altura|quantidade)-(\d+)$/)?.[1]).find(Boolean)) || 1, largura=Number(campoMaterial(estado,'largura-'+idAmbiente, item.largura))||0, altura=Number(campoMaterial(estado,'altura-'+idAmbiente,item.altura))||0, quantidade=Math.max(1,Number(campoMaterial(estado,'quantidade-'+idAmbiente,item.quantidade))||1);
     const propPrincipal=Number(campoMaterial(estado,'prop-voal-'+idAmbiente,0))||0, propForro=Number(campoMaterial(estado,'prop-forro-'+idAmbiente,0))||0, propTerceiro=Number(campoMaterial(estado,'prop-terceiro-'+idAmbiente,0))||0;
-    const principal=campoMaterial(estado,'select-voal-'+idAmbiente,'') !== '' ? largura*propPrincipal*quantidade : 0, forro=campoMaterial(estado,'select-forro-'+idAmbiente,'') !== '' ? largura*propForro*quantidade : 0, terceiro=campoMaterial(estado,'select-terceiro-'+idAmbiente,'') !== '' ? largura*propTerceiro*quantidade : 0;
+    let principal=campoMaterial(estado,'select-voal-'+idAmbiente,'') !== '' ? largura*propPrincipal*quantidade : 0, forro=campoMaterial(estado,'select-forro-'+idAmbiente,'') !== '' ? largura*propForro*quantidade : 0, terceiro=campoMaterial(estado,'select-terceiro-'+idAmbiente,'') !== '' ? largura*propTerceiro*quantidade : 0;
+    if(item.calculoCortina) { principal=item.calculoCortina.tecidos.voal?.metros||0; forro=item.calculoCortina.tecidos.forro?.metros||0; terceiro=item.calculoCortina.tecidos.terceiro?.metros||0; }
     const tipo=campoMaterial(estado,'tipo-instalacao-'+idAmbiente,'Trilho no teto'), desconto=campoMaterial(estado,'desconto-altura-'+idAmbiente,'Não'), alturaFinal=Math.max(0,desconto==='Sim' ? altura-(tipo==='Tubo trilho na parede'?0.055:0.02) : altura);
     const temAcessorio=Number(campoMaterial(estado,'select-tubo-trilho-'+idAmbiente,0))>0, trilhoQtd=temAcessorio ? Number(campoMaterial(estado,'tubo-trilho-qtd-'+idAmbiente,0))||0 : 0, trilhoTamanho=temAcessorio ? Number(campoMaterial(estado,'tubo-trilho-tamanho-'+idAmbiente,0))||0 : 0, comprimento=trilhoQtd*trilhoTamanho;
     const nomeTrilho=textoMaterial(estado,'select-tubo-trilho-'+idAmbiente,nomeCatalogoPorValor(campoMaterial(estado,'select-tubo-trilho-'+idAmbiente,0),Object.values(categoriasProduto).map(dados=>dados.lista))||'Trilho / tubo não selecionado'), nomePrincipal=textoMaterial(estado,'select-voal-'+idAmbiente,item.textoVoal||'Tecido principal não selecionado'), nomeForro=textoMaterial(estado,'select-forro-'+idAmbiente,item.textoForro||'Forro não selecionado'), nomeTerceiro=textoMaterial(estado,'select-terceiro-'+idAmbiente,item.textoTerceiro||'Tecido 3 não selecionado'), nomesAcessorios=['gancho','rodizio','argola','clip'].map(tipoAcessorio=>textoMaterial(estado,'select-'+tipoAcessorio+'-'+idAmbiente,nomeCatalogoPorValor(campoMaterial(estado,'select-'+tipoAcessorio+'-'+idAmbiente,0),[PRECOS_ACESSORIOS]))).filter(Boolean).join(' / ');
     const modeloUsaLargura=nome=>/FRANZIDA|PREGA MACHO|PREGA FEMEA|PREGA AMERICANA|PREGA FRANCESA/.test(String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase());
     const possuiModelosPorTecido=!!(item.modeloVoal||item.modeloForro||item.modeloTerceiro);
-    const camadasPorLargura=possuiModelosPorTecido ? [m.principal>0&&modeloUsaLargura(item.modeloVoal),m.forro>0&&modeloUsaLargura(item.modeloForro),m.terceiro>0&&modeloUsaLargura(item.modeloTerceiro)].filter(Boolean).length : (modeloUsaLargura(item.modelo)?1:0);
+    const camadasPorLargura=possuiModelosPorTecido ? [principal>0&&modeloUsaLargura(item.modeloVoal),forro>0&&modeloUsaLargura(item.modeloForro),terceiro>0&&modeloUsaLargura(item.modeloTerceiro)].filter(Boolean).length : (modeloUsaLargura(item.modelo)?1:0);
     const temFixadores=campoMaterial(estado,'select-gancho-'+idAmbiente,'') || campoMaterial(estado,'select-rodizio-'+idAmbiente,'') || campoMaterial(estado,'select-argola-'+idAmbiente,'') || campoMaterial(estado,'select-clip-'+idAmbiente,'');
-    const ganchos=temFixadores ? (camadasPorLargura>0 ? (largura/0.08)*camadasPorLargura : (principal+forro+terceiro)/0.08) : 0;
-    return { idAmbiente, ambiente:item.ambiente||'Ambiente', quantidade, largura, alturaParede:altura, altura:alturaFinal, modelo:item.modelo||'Cortina', tipo, desconto, principal, forro, terceiro, ganchos, nomesAcessorios, nomePrincipal, nomeForro, nomeTerceiro, nomeTrilho, trilhoQtd, trilhoTamanho, trilhos:comprimento, suportes:comprimento>0 ? Math.max(2,Math.ceil(comprimento/1.5)+1) : 0, ponteiras:comprimento>0 ? trilhoQtd*2 : 0 };
+    const ganchos=temFixadores ? (item.calculoCortina ? largura/0.08*quantidade : camadasPorLargura>0 ? (largura/0.08)*camadasPorLargura : (principal+forro+terceiro)/0.08) : 0;
+    return { idAmbiente, ambiente:item.ambiente||'Ambiente', quantidade, largura, alturaParede:altura, altura:alturaFinal, modelo:item.modelo||'Cortina', tipo, desconto, principal, forro, terceiro, ganchos, nomesAcessorios, nomePrincipal, nomeForro, nomeTerceiro, nomeTrilho, trilhoQtd, trilhoTamanho, trilhos:comprimento, suportes:item.calculoCortina ? Number(campoMaterial(estado,'cortina-suporte-qtd-'+idAmbiente,0)) : comprimento>0 ? Math.max(2,Math.ceil(comprimento/1.5)+1) : 0, ponteiras:item.calculoCortina ? Number(campoMaterial(estado,'cortina-ponteira-qtd-'+idAmbiente,0)) : comprimento>0 ? trilhoQtd*2 : 0 };
 }
 function orientacaoConfeccao(modelo) { const m=(modelo||'').toUpperCase(); if(m.includes('WAVE')) return 'Costurar a cortina com fita Wave e distribuir os ganchos conforme a fita, mantendo a largura acabada informada.'; if(m.includes('ILHÓS')) return 'Aplicar a quantidade de ilhós com espaçamento uniforme e finalizar a barra na altura acabada.'; if(m.includes('PREGA')) return 'Montar as pregas de forma uniforme, respeitando a proporção do tecido e a largura acabada.'; return 'Montar a cortina franzida, distribuindo o tecido pela proporção indicada e finalizando a barra na altura acabada.'; }
 function atualizarListaMateriais(){
@@ -3998,8 +4149,9 @@ function exportarBackupSistema(){
     michele_produtos_acessorios: PRECOS_ACESSORIOS,
     michele_produtos_motorizacao: PRECOS_MOTORIZACAO,
     michele_produtos_personalizados: produtosPersonalizados,
-    michele_numero_orcamento: localStorage.getItem('michele_numero_orcamento') || '0',
-    michele_numero_pedido: localStorage.getItem('michele_numero_pedido') || '0'
+    michele_config_empresa: JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}'),
+    michele_numero_orcamento: dadosStorage.getItem('michele_numero_orcamento') || '0',
+    michele_numero_pedido: dadosStorage.getItem('michele_numero_pedido') || '0'
   };
   const blob = new Blob([JSON.stringify(dados, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -4015,26 +4167,33 @@ function importarBackupSistema(event){
   const file = event.target.files?.[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = function(){
+  reader.onload = async function(){
     try{
       const dados = JSON.parse(reader.result);
       if(!dados || typeof dados !== 'object') throw new Error('Formato inválido.');
 
-      if(!confirm('Importar este backup irá substituir os dados atuais deste navegador. Deseja continuar?')) return;
+      if(!confirm(MicheleNuvem.ativo ? 'Importar este backup irá substituir os cadastros correspondentes na nuvem, em todos os dispositivos desta conta. Deseja continuar?' : 'Importar este backup irá substituir os dados atuais deste navegador. Deseja continuar?')) return;
+      if (MicheleNuvem.ativo) {
+        for (const chave of MicheleNuvemStore.CHAVES) {
+          if (dados[chave] !== undefined) MicheleNuvemStore.limpar(chave, JSON.stringify(chave.includes('_numero_') ? Number(dados[chave]) : dados[chave]));
+        }
+      }
 
-      if(Array.isArray(dados.michele_clientes)) localStorage.setItem('michele_clientes', JSON.stringify(dados.michele_clientes));
-      if(Array.isArray(dados.michele_pedidos)) localStorage.setItem('michele_pedidos', JSON.stringify(dados.michele_pedidos));
-      if(Array.isArray(dados.michele_fornecedores)) localStorage.setItem('michele_fornecedores', JSON.stringify(dados.michele_fornecedores));
-      if(Array.isArray(dados.michele_profissionais)) localStorage.setItem('michele_profissionais', JSON.stringify(dados.michele_profissionais));
-      if(Array.isArray(dados.michele_produtos_voal)) localStorage.setItem('michele_produtos_voal', JSON.stringify(dados.michele_produtos_voal));
-      if(Array.isArray(dados.michele_produtos_forro)) localStorage.setItem('michele_produtos_forro', JSON.stringify(dados.michele_produtos_forro));
-      if(Array.isArray(dados.michele_produtos_persiana)) localStorage.setItem('michele_produtos_persiana', JSON.stringify(dados.michele_produtos_persiana));
-      if(Array.isArray(dados.michele_produtos_acessorios)) localStorage.setItem('michele_produtos_acessorios', JSON.stringify(dados.michele_produtos_acessorios));
-      if(Array.isArray(dados.michele_produtos_motorizacao)) localStorage.setItem('michele_produtos_motorizacao', JSON.stringify(dados.michele_produtos_motorizacao));
-      if(Array.isArray(dados.michele_produtos_personalizados)) localStorage.setItem('michele_produtos_personalizados', JSON.stringify(dados.michele_produtos_personalizados));
-      if(dados.michele_numero_orcamento != null) localStorage.setItem('michele_numero_orcamento', String(dados.michele_numero_orcamento));
-      if(dados.michele_numero_pedido != null) localStorage.setItem('michele_numero_pedido', String(dados.michele_numero_pedido));
+      if(Array.isArray(dados.michele_clientes)) dadosStorage.setItem('michele_clientes', JSON.stringify(dados.michele_clientes));
+      if(Array.isArray(dados.michele_pedidos)) dadosStorage.setItem('michele_pedidos', JSON.stringify(dados.michele_pedidos));
+      if(Array.isArray(dados.michele_fornecedores)) dadosStorage.setItem('michele_fornecedores', JSON.stringify(dados.michele_fornecedores));
+      if(Array.isArray(dados.michele_profissionais)) dadosStorage.setItem('michele_profissionais', JSON.stringify(dados.michele_profissionais));
+      if(Array.isArray(dados.michele_produtos_voal)) dadosStorage.setItem('michele_produtos_voal', JSON.stringify(dados.michele_produtos_voal));
+      if(Array.isArray(dados.michele_produtos_forro)) dadosStorage.setItem('michele_produtos_forro', JSON.stringify(dados.michele_produtos_forro));
+      if(Array.isArray(dados.michele_produtos_persiana)) dadosStorage.setItem('michele_produtos_persiana', JSON.stringify(dados.michele_produtos_persiana));
+      if(Array.isArray(dados.michele_produtos_acessorios)) dadosStorage.setItem('michele_produtos_acessorios', JSON.stringify(dados.michele_produtos_acessorios));
+      if(Array.isArray(dados.michele_produtos_motorizacao)) dadosStorage.setItem('michele_produtos_motorizacao', JSON.stringify(dados.michele_produtos_motorizacao));
+      if(Array.isArray(dados.michele_produtos_personalizados)) dadosStorage.setItem('michele_produtos_personalizados', JSON.stringify(dados.michele_produtos_personalizados));
+      if(dados.michele_numero_orcamento != null) dadosStorage.setItem('michele_numero_orcamento', String(dados.michele_numero_orcamento));
+      if(dados.michele_numero_pedido != null) dadosStorage.setItem('michele_numero_pedido', String(dados.michele_numero_pedido));
 
+      if(dados.michele_config_empresa && typeof dados.michele_config_empresa === 'object' && !Array.isArray(dados.michele_config_empresa)) dadosStorage.setItem('michele_config_empresa', JSON.stringify(dados.michele_config_empresa));
+      await MicheleNuvem.sincronizar();
       alert('Backup importado. O sistema será recarregado.');
       location.reload();
     }catch(e){
@@ -4078,7 +4237,7 @@ function prepararPropostaImpressao() {
         : (objetoOrcamentoCorrente?.numeroOrcamento || 'A DEFINIR');
     const data = objetoOrcamentoCorrente?.data || new Date().toLocaleDateString('pt-BR');
     const valorTotal = Number(objetoOrcamentoCorrente?.valorTotal || 0);
-    const configEmpresa = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
+    const configEmpresa = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
     const cards = Array.from(document.querySelectorAll('.item-carrinho-card'));
     const dataBase = (() => {
         const partes = String(data).split('/').map(Number);
@@ -4115,7 +4274,10 @@ function prepararPropostaImpressao() {
           <thead><tr><th>Ambiente / peça</th><th>Tecidos</th><th>Modelo da cortina</th><th>Instalação / acabamentos</th><th>Tubos e trilhos</th><th>Motorização</th><th>Modelo da persiana</th><th>Bandô</th><th>Cor do bandô</th><th>Largura</th><th>Altura</th><th>Quantidade</th><th>Valor do ambiente</th></tr></thead>
           <tbody>${linhasResumo || '<tr><td colspan="13">Nenhum ambiente informado.</td></tr>'}</tbody>
         </table>
-        <div class="print-total"><div class="label">Valor total</div><div class="value">${money(valorTotal)}</div></div>
+        <div class="print-closing">
+          <div class="print-total"><div class="label">Valor total</div><div class="value">${money(valorTotal)}</div></div>
+          ${montarPagamentoImpressao(cards)}
+        </div>
         <div class="print-note">Validade desta proposta: 15 dias. Valores sujeitos à confirmação de medidas no local.</div>
         <div class="print-footer">Michele Cortinas • AV Guilherme Giorgi, 220 - Vila Carrão - SP • WhatsApp (11) 96771-1701</div>
       </div>`;
@@ -4144,7 +4306,8 @@ window.addEventListener('afterprint', () => {
 <script src="persianas-materiais.js"></script>
 <script src="plano-corte-persianas.js"></script>
 <script src="plano-corte-cortinas.js"></script>
+<script src="pagamento.js"></script>
+<script src="cortina-editor.js"></script>
+<script src="cortina-calculo.js"></script>
 </body>
 </html>
-
-

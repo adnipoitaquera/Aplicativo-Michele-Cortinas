@@ -123,7 +123,7 @@ function salvarCampoMaterialPersiana(input) {
     const dados = JSON.parse(JSON.stringify(pedido.materiaisPersianas || {}));
     dados[chave] = { ...dados[chave], [campo]: input.type === 'checkbox' ? input.checked : input.value.trim() };
     const atualizados = pedidos.map(p => p === pedido ? { ...p, materiaisPersianas: dados } : p);
-    try { localStorage.setItem('michele_pedidos', JSON.stringify(atualizados)); }
+    try { dadosStorage.setItem('michele_pedidos', JSON.stringify(atualizados)); }
     catch (erro) { alert('Não foi possível salvar o acabamento. Verifique o armazenamento do navegador e tente novamente.'); return; }
     pedido.materiaisPersianas = dados;
     if (objetoOrcamentoCorrente?.idDocumento === pedido.idDocumento) objetoOrcamentoCorrente.materiaisPersianas = dados;
@@ -134,7 +134,9 @@ function salvarCampoMaterialPersiana(input) {
         tampaBando: `${medidas.tampaBando} un.`, tampaBase: `${medidas.tampaBase} un.`
     };
     input.closest('[data-chave]').querySelectorAll('[data-medida]').forEach(el => el.textContent = valores[el.dataset.medida]);
-    document.getElementById('mp-status').textContent = 'Acabamento salvo no pedido.';
+    document.getElementById('mp-status').textContent = typeof MicheleNuvem !== 'undefined' && MicheleNuvem.ativo
+        ? 'Acabamento registrado. Confira a confirmação de envio à nuvem no topo do sistema.'
+        : 'Acabamento salvo no pedido.';
 }
 
 function imprimirMateriaisPersianas() {

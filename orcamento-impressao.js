@@ -64,3 +64,14 @@ function montarLinhasDescritivoImpressao(cards) {
         }).join('');
     }).join('');
 }
+
+function montarPagamentoImpressao(cards) {
+    const linhas = cards.map((card, indice) => {
+        const id = card.id.replace('item-card-', '');
+        const descricao = document.getElementById(`pagamento-descricao-${id}`)?.value || '';
+        if (!descricao) return '';
+        const ambiente = document.getElementById(`ambiente-nome-${id}`)?.value?.trim() || `Ambiente ${indice + 1}`;
+        return `<div class="print-payment-item"><strong>${escaparHtmlProduto(ambiente)}</strong><p>${escaparHtmlProduto(descricao)}</p></div>`;
+    }).filter(Boolean).join('');
+    return linhas ? `<section class="print-payment"><h3>Condições de pagamento</h3>${linhas}</section>` : '';
+}

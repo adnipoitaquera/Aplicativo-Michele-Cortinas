@@ -61,7 +61,7 @@ test('salva acabamento no pedido e no documento em edição, recuperando após r
     const ctx = contexto(), p = pedido(), armazenado = {};
     const status = {};
     ctx.pedidos = [p]; ctx.objetoOrcamentoCorrente = { idDocumento: p.idDocumento };
-    ctx.localStorage = { setItem: (k, v) => armazenado[k] = v };
+    ctx.dadosStorage = { setItem: (k, v) => armazenado[k] = v };
     ctx.document = { getElementById: id => id === 'mp-pedido' ? { value: p.idDocumento } : status };
     const input = { dataset: { campo: 'cor' }, value: 'Azul', type: 'text', closest: () => ({ dataset: { chave: '1:1' }, querySelectorAll: () => [] }) };
     ctx.salvarCampoMaterialPersiana(input);

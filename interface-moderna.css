@@ -1,4 +1,9 @@
 /* Tema de tela: a apresentação dos documentos impressos continua independente. */
+@media print {
+  body.imprimindo-relatorio #app-shell .conteudo-aba:not(.relatorio-impressao-container),
+  body.imprimindo-lista-relatorio #app-shell .conteudo-aba:not(.relatorio-impressao-container) { display:none!important; }
+  body.imprimindo-relatorio #aba-relatorio-materiais > .historico-toolbar { display:none!important; }
+}
 @media print { .moderna-boas-vindas,.moderna-menu,.atalho-descricao { display:none!important; } }
 @media screen {
   :root { --bg-principal:#f5f6fa; --bg-card:#fff; --bg-input:#fff; --borda:#e2e6ee; --texto-claro:#202b40; --texto-escuro:#637089; --dourado:#80603b; --dourado-hover:#634728; --sucesso:#218365; --erro:#bd4554; --sombra-1:0 2px 8px #24334b06; --sombra-2:0 8px 28px #24334b09; --sombra-3:0 16px 48px #24334b0c; }

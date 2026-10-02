@@ -475,8 +475,8 @@
             body.imprimindo-relatorio > * { display:none !important; }
             body.imprimindo-relatorio #app-shell { display:block !important; }
             body.imprimindo-relatorio .app-layout, body.imprimindo-relatorio .app-main, body.imprimindo-relatorio .container { display:block !important; min-height:0 !important; margin:0 !important; padding:0 !important; border:0 !important; background:#fff !important; color:#000 !important; }
-            body.imprimindo-relatorio .sidebar, body.imprimindo-relatorio .v6-topbar, body.imprimindo-relatorio .painel-home, body.imprimindo-relatorio .header-comercial, body.imprimindo-relatorio .conteudo-aba:not(#aba-relatorio-pedidos), body.imprimindo-relatorio #aba-relatorio-pedidos > .secao-titulo, body.imprimindo-relatorio .historico-toolbar, body.imprimindo-relatorio .historico-status { display:none !important; }
-            body.imprimindo-relatorio #aba-relatorio-pedidos, body.imprimindo-relatorio #relatorio-documento { display:block !important; color:#000 !important; }
+            body.imprimindo-relatorio .sidebar, body.imprimindo-relatorio .v6-topbar, body.imprimindo-relatorio .painel-home, body.imprimindo-relatorio .header-comercial, body.imprimindo-relatorio .conteudo-aba:not(:is(#aba-relatorio-pedidos, #aba-relatorio-materiais)), body.imprimindo-relatorio :is(#aba-relatorio-pedidos, #aba-relatorio-materiais) > .secao-titulo, body.imprimindo-relatorio .historico-toolbar, body.imprimindo-relatorio .historico-status { display:none !important; }
+            body.imprimindo-relatorio :is(#aba-relatorio-pedidos, #aba-relatorio-materiais), body.imprimindo-relatorio #relatorio-documento { display:block !important; color:#000 !important; }
             body.imprimindo-relatorio #relatorio-documento * { color:#000 !important; }
             body.imprimindo-relatorio .tabela-scroll { overflow:visible !important; }
             body.imprimindo-relatorio table { width:100%; border-collapse:collapse; font-size:10px; }
@@ -484,8 +484,8 @@
             body.imprimindo-relatorio th { background:#eee !important; }
             body.imprimindo-relatorio #relatorio-pedidos-cabecalho, body.imprimindo-relatorio .relatorio-ambiente { background:#eee !important; border-color:#888 !important; }
             body.imprimindo-lista-relatorio > * { display:none !important; }
-            body.imprimindo-lista-relatorio #app-shell, body.imprimindo-lista-relatorio .app-layout, body.imprimindo-lista-relatorio .app-main, body.imprimindo-lista-relatorio .container, body.imprimindo-lista-relatorio #aba-relatorio-pedidos, body.imprimindo-lista-relatorio .relatorio-impressao-ativo { display:block !important; min-height:0 !important; margin:0 !important; padding:0 !important; background:#fff !important; color:#000 !important; }
-            body.imprimindo-lista-relatorio .sidebar, body.imprimindo-lista-relatorio .v6-topbar, body.imprimindo-lista-relatorio .header-comercial, body.imprimindo-lista-relatorio #aba-relatorio-pedidos > *:not(.relatorio-impressao-ativo), body.imprimindo-lista-relatorio .relatorio-interno:not(.relatorio-impressao-ativo), body.imprimindo-lista-relatorio .historico-toolbar { display:none !important; }
+            body.imprimindo-lista-relatorio #app-shell, body.imprimindo-lista-relatorio .app-layout, body.imprimindo-lista-relatorio .app-main, body.imprimindo-lista-relatorio .container, body.imprimindo-lista-relatorio :is(#aba-relatorio-pedidos, #aba-relatorio-materiais), body.imprimindo-lista-relatorio .relatorio-impressao-ativo { display:block !important; min-height:0 !important; margin:0 !important; padding:0 !important; background:#fff !important; color:#000 !important; }
+            body.imprimindo-lista-relatorio .sidebar, body.imprimindo-lista-relatorio .v6-topbar, body.imprimindo-lista-relatorio .header-comercial, body.imprimindo-lista-relatorio :is(#aba-relatorio-pedidos, #aba-relatorio-materiais) > *:not(.relatorio-impressao-ativo), body.imprimindo-lista-relatorio .relatorio-interno:not(.relatorio-impressao-ativo), body.imprimindo-lista-relatorio .historico-toolbar { display:none !important; }
             body.imprimindo-lista-relatorio table { width:100%; border-collapse:collapse; color:#000 !important; }
             body.imprimindo-lista-relatorio th, body.imprimindo-lista-relatorio td { border:1px solid #888; padding:7px; color:#000 !important; }
         }
@@ -677,7 +677,7 @@ body{padding:0!important;background:#0d0d0d!important}
     <button title="Financeiro" aria-label="Financeiro" class="sidebar-btn" data-tab="aba-financeiro" onclick="abrirAbaComando('aba-financeiro');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>Financeiro</span></button>
     <button title="Produção" aria-label="Produção" class="sidebar-btn" data-tab="aba-producao" onclick="abrirAbaComando('aba-producao');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6M3 9h18"/></svg><span>Produção</span></button>
     <button title="Logística" aria-label="Logística" class="sidebar-btn" data-tab="aba-logistica" onclick="abrirAbaComando('aba-logistica');marcarMenu(this)"><span>Logística e entregas</span></button><button title="Etiquetas" aria-label="Etiquetas" class="sidebar-btn" data-tab="aba-etiquetas" onclick="abrirAbaComando('aba-etiquetas');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h18v14H3zM7 9h10M7 13h6M7 17h8"/></svg><span>Etiquetas</span></button>
-    <button title="Relatórios" aria-label="Relatórios" class="sidebar-btn" data-tab="aba-relatorio-pedidos" onclick="abrirAbaComando('aba-relatorio-pedidos');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 16v-5M14 16V7M19 16V4"/></svg><span>Relatórios</span></button>
+    <button title="Relatórios de vendas" aria-label="Relatórios de vendas" class="sidebar-btn" data-tab="aba-relatorio-pedidos" onclick="abrirAbaComando('aba-relatorio-pedidos');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 16v-5M14 16V7M19 16V4"/></svg><span>Relatórios de vendas</span></button><button title="Relatórios de materiais" aria-label="Relatórios de materiais" class="sidebar-btn" data-tab="aba-relatorio-materiais" onclick="abrirAbaComando('aba-relatorio-materiais');marcarMenu(this)"><span>Relatórios de materiais</span></button>
 <details class="menu-dominio"><summary>Cadastro</summary>
     <button title="Profissionais" aria-label="Profissionais" class="sidebar-btn" data-tab="aba-profissionais" onclick="abrirAbaComando('aba-profissionais');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12l9 3 9-3M12 12v5"/></svg><span>Profissionais</span></button>
 <button title="Cadastro de costureiras" aria-label="Cadastro de costureiras" class="sidebar-btn" data-tab="aba-costureiras" onclick="abrirAbaComando('aba-costureiras');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h18M5 4v16l5-3V4M14 4v13l5 3V4"/></svg><span>Cadastro de costureiras</span></button>
@@ -712,7 +712,7 @@ body{padding:0!important;background:#0d0d0d!important}
         <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-fornecedores')"><span class="atalho-icone" aria-hidden="true">&#x1F3ED;</span><span class="atalho-titulo">Fornecedores</span><span class="dash-num" id="dash-fornecedores">0</span></button>
         <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-profissionais')"><span class="atalho-icone" aria-hidden="true">&#x1F454;</span><span class="atalho-titulo">Profissionais</span><span class="dash-num" id="dash-profissionais">0</span></button>
         <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-produtos')"><span class="atalho-icone" aria-hidden="true">&#x1F3F7;</span><span class="atalho-titulo">Produtos e Subprodutos</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-relatorio-pedidos')"><span class="atalho-icone" aria-hidden="true">&#x1F4CA;</span><span class="atalho-titulo">Relatórios</span></button>
+        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-relatorio-pedidos')"><span class="atalho-icone" aria-hidden="true">&#x1F4CA;</span><span class="atalho-titulo">Relatórios de vendas</span></button><button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-relatorio-materiais')"><span class="atalho-icone" aria-hidden="true">&#x1F9F5;</span><span class="atalho-titulo">Relatórios de materiais</span></button>
         <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-materiais-persianas')"><span class="atalho-icone" aria-hidden="true">&#x1FA9F;</span><span class="atalho-titulo">Materiais para Persianas</span></button>
         <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-plano-corte-persianas')"><span class="atalho-icone" aria-hidden="true">&#x2702;</span><span class="atalho-titulo">Plano de Corte</span></button>
         <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-materiais-cortinas')"><span class="atalho-icone" aria-hidden="true">&#x1F9F5;</span><span class="atalho-titulo">Materiais para Cortinas</span></button>
@@ -1021,7 +1021,7 @@ body{padding:0!important;background:#0d0d0d!important}
     <div id="pct-resumo"></div><div id="pct-lista"><p class="plano-corte-vazio">Nenhum tubo ou trilho encontrado.</p></div>
 </div>
 <div id="aba-relatorio-pedidos" class="conteudo-aba">
-    <div class="secao-titulo">Relatórios</div>
+    <div class="secao-titulo">Relatórios de vendas</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
       <button class="btn btn-ouro" onclick="abrirRelatorioInterno('relatorio-individual')">Relatório Total de Pedidos</button>
       <button class="btn" onclick="abrirRelatorioInterno('relatorio-geral-pedidos')">Relatório Geral de Pedidos</button>
@@ -1070,6 +1070,7 @@ body{padding:0!important;background:#0d0d0d!important}
     <div id="grafico-relatorio-produtos" class="grafico-relatorio" style="display:none"></div>
   </div>
 </div>
+<div id="aba-relatorio-materiais" class="conteudo-aba"><div class="secao-titulo">Relatórios de materiais</div></div>
   </main>
 </div>
 
@@ -3583,12 +3584,14 @@ function imprimirRelatorioTotalPedido() {
         return;
     }
     atualizarRelatorioTotalPedidos();
+    abrirRelatorioInterno('relatorio-individual');
+    document.getElementById('aba-relatorio-materiais').classList.add('relatorio-impressao-container');
     document.body.classList.add('imprimindo-relatorio');
     imprimirComRetorno();
 }
 
 function abrirRelatorioInterno(id) {
-    document.querySelectorAll('#aba-relatorio-pedidos .relatorio-interno').forEach(secao => secao.style.display = secao.id === id ? 'block' : 'none');
+    document.getElementById(id).closest('.conteudo-aba').querySelectorAll('.relatorio-interno').forEach(secao => secao.style.display = secao.id === id ? 'block' : 'none');
     if(id === 'relatorio-individual') atualizarRelatorioTotalPedidos();
     if(id === 'relatorio-geral-pedidos') atualizarRelatorioGeralPedidos();
     if(id === 'relatorio-vendas-vendedor') atualizarRelatorioVendasVendedor();
@@ -3599,6 +3602,7 @@ function imprimirRelatorioLista(id) {
     const secao = document.getElementById(id);
     if(!secao) return;
     secao.classList.add('relatorio-impressao-ativo');
+    secao.closest('.conteudo-aba').classList.add('relatorio-impressao-container');
     document.body.classList.add('imprimindo-lista-relatorio');
     imprimirComRetorno();
 }
@@ -4027,7 +4031,7 @@ function trocarUsuario(){
 function abrirDashboard(){atualizarDashboard();document.getElementById('painel-dashboard').style.display='block';document.querySelectorAll('.conteudo-aba').forEach(aba=>aba.classList.remove('ativa'));const voltar=document.getElementById('btn-voltar-tela');if(voltar)voltar.style.display='none';window.scrollTo({top:0,behavior:'smooth'});}
 function voltarParaInicio(){abrirDashboard();marcarMenu(document.querySelector('.sidebar-btn[data-tab="home"]'));}
 function abrirAbaComando(id) {
-    const restritosAdmin = ['aba-logistica','aba-financeiro', 'aba-costureiras', 'aba-confeccao', 'aba-relatorio-pedidos', 'aba-materiais-cortinas', 'aba-materiais-persianas', 'aba-plano-corte-persianas', 'aba-fornecedores', 'aba-profissionais', 'aba-produtos'];
+    const restritosAdmin = ['aba-logistica','aba-financeiro', 'aba-costureiras', 'aba-confeccao', 'aba-relatorio-pedidos', 'aba-relatorio-materiais', 'aba-materiais-cortinas', 'aba-materiais-persianas', 'aba-plano-corte-persianas', 'aba-fornecedores', 'aba-profissionais', 'aba-produtos'];
 
   if (restritosAdmin.includes(id) && !usuarioEhAdministrador()) {
     alert('Acesso restrito. Somente o Administrador pode acessar esta área.');
@@ -4086,7 +4090,7 @@ function abrirAbaComando(id) {
   if (id === 'aba-etiquetas') atualizarEtiquetas();
   if (id === 'aba-logistica') atualizarLogistica();
 
-  if (id === 'aba-relatorio-pedidos') {
+  if (id === 'aba-relatorio-pedidos' || id === 'aba-relatorio-materiais') {
     atualizarRelatorioTotalPedidos();
     atualizarRelatorioGeralPedidos();
     atualizarRelatorioVendasVendedor();
@@ -4120,7 +4124,7 @@ function aplicarPermissoes() {
     'aba-financeiro',
     'aba-costureiras',
     'aba-confeccao',
-    'aba-relatorio-pedidos',
+    'aba-relatorio-pedidos', 'aba-relatorio-materiais',
     'aba-materiais-cortinas',
     'aba-materiais-persianas',
     'aba-plano-corte-persianas',
@@ -4276,7 +4280,7 @@ window.abrirAbaComando = function(id) {
     'aba-financeiro',
     'aba-costureiras',
     'aba-confeccao',
-    'aba-relatorio-pedidos',
+    'aba-relatorio-pedidos', 'aba-relatorio-materiais',
     'aba-materiais-cortinas',
     'aba-materiais-persianas',
     'aba-plano-corte-persianas',
@@ -4306,7 +4310,8 @@ window.abrirAbaComando = function(id) {
   const labels = {
     'aba-orcamento': 'Orçamentos',
     'aba-pedidos': 'Pedidos',
-    'aba-relatorio-pedidos': 'Relatórios',
+    'aba-relatorio-pedidos': 'Relatórios de vendas',
+    'aba-relatorio-materiais': 'Relatórios de materiais',
     'aba-materiais-cortinas': 'Materiais para cortinas',
     'aba-materiais-persianas': 'Materias para Persianas',
     'aba-plano-corte-persianas': 'Plano de Corte',
@@ -4490,6 +4495,7 @@ function limparEstadoImpressao(){
     document.body.classList.remove('etiqueta-unica');
     document.body.classList.remove('imprimindo-persianas', 'imprimindo-plano-corte', 'imprimindo-materiais', 'imprimindo-relatorio', 'imprimindo-lista-relatorio', 'imprimindo-proposta', 'imprimindo-etiquetas', 'imprimindo-confeccao', 'imprimindo-financeiro');
     document.querySelectorAll('.relatorio-impressao-ativo').forEach(secao => secao.classList.remove('relatorio-impressao-ativo'));
+    document.querySelectorAll('.relatorio-impressao-container').forEach(secao => secao.classList.remove('relatorio-impressao-container'));
     const proposta = document.getElementById('area-impressao-profissional');
     if(proposta){ proposta.setAttribute('aria-hidden','true'); proposta.style.removeProperty('display'); }
 }
@@ -4532,6 +4538,7 @@ function imprimirEtiquetas(todas = false){const etiquetas = Array.from(document.
 <script src="producao-status.js"></script>
 <script src="categorias-edicao.js"></script>
 <script src="confeccao-cortinas.js"></script>
+<script src="relatorios-organizacao.js"></script>
 <script src="interface-moderna.js"></script>
 </body>
 </html>

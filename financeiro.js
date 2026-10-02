@@ -36,7 +36,13 @@
   }
   window.atualizarFormularioFinanceiro=function(){
     const categoria=el('fin-categoria').value;
-    if(categoria==='Pró-labore')el('fin-tipo').value='saida';
+    if(categoria==='Pró-labore'||categoria==='Confecção')el('fin-tipo').value='saida';
+    const costureira=el('fin-costureira'),anterior=costureira.value;
+    costureira.innerHTML='<option value="">Selecione a costureira</option>'+(config().costureiras||[]).map(c=>`<option value="${esc(c.id)}">${esc(c.nome)}</option>`).join('');
+    if(anterior && !Array.from(costureira.options).some(o=>o.value===anterior)){
+      const antigo=lancamentos().find(x=>x.costureiraId===anterior);if(antigo){const option=document.createElement('option');option.value=anterior;option.textContent=antigo.costureiraNome||antigo.contato||'Costureira anterior';costureira.append(option);}
+    }
+    costureira.value=anterior;costureira.required=categoria==='Confecção';el('fin-costureira-grupo').hidden=categoria!=='Confecção';
     const tipoSaida=el('fin-tipo').value==='saida',status=el('fin-situacao').value;
     el('fin-situacao').innerHTML=`<option value="Pendente">${tipoSaida?'A pagar':'A receber'}</option><option value="Liquidado">${tipoSaida?'Pago':'Recebido'}</option><option value="Cancelado">Cancelado</option>`;
     el('fin-situacao').value=status || 'Pendente';
@@ -82,6 +88,7 @@
     el('fin-situacao').value=liquidar?'Liquidado':x.status;
     el('fin-data-movimento').value=liquidar?M.hoje():x.dataMovimento || '';
     atualizarFormularioFinanceiro();
+    if(x.costureiraId){const select=el('fin-costureira');if(!Array.from(select.options).some(o=>o.value===x.costureiraId)){const option=document.createElement('option');option.value=x.costureiraId;option.textContent=x.costureiraNome||x.contato||'Costureira anterior';select.append(option);}select.value=x.costureiraId;}
   };
   window.salvarLancamentoFinanceiro=function(){
     if(!autorizado() || !el('fin-form').reportValidity())return;
@@ -90,6 +97,11 @@
     try{
       x=M.validar({id:editando || crypto.randomUUID(),tipo:el('fin-tipo').value,categoria:el('fin-categoria').value,descricao:el('fin-descricao').value,contato:el('fin-contato').value.trim(),documentoId:p?.idDocumento || '',numero:p?numeroExibicao(p):'',vencimento:el('fin-vencimento').value,dataMovimento:el('fin-data-movimento').value,conta:el('fin-conta').value,valorBruto:el('fin-bruto').value,valorLiquido:el('fin-liquido').value,status:el('fin-situacao').value,administradorId:el('fin-administrador').value});
       if(x.administradorId && !administradores().some(a=>a.id===x.administradorId))throw Error('Selecione um administrador cadastrado.');
+      if(x.categoria==='Confecção'){
+        const id=el('fin-costureira').value,c=(config().costureiras||[]).find(c=>c.id===id),antigo=(dados.lancamentos||[]).find(a=>a.id===editando && a.costureiraId===id);
+        if(!id||(!c&&!antigo))throw Error('Selecione uma costureira cadastrada.');
+        Object.assign(x,{costureiraId:id,costureiraNome:c?.nome||antigo.costureiraNome||antigo.contato,contato:c?.nome||antigo.costureiraNome||antigo.contato});
+      }
       if(x.documentoId && x.status!=='Cancelado'){
         const reservado=(dados.lancamentos || []).filter(a=>a.id!==x.id && a.documentoId===x.documentoId && a.tipo==='entrada' && a.status!=='Cancelado').reduce((s,a)=>s+M.centavos(a.valorBruto ?? a.valor),0);
         if(reservado+M.centavos(x.valorBruto)>M.centavos(p.valorTotal || 0))throw Error('O valor vinculado supera o saldo do pedido. Ajuste as parcelas existentes ou registre o valor sem vínculo com pedido.');

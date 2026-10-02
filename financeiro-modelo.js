@@ -21,6 +21,7 @@
     const bruto = Number(x.valorBruto), liquido = x.valorLiquido === '' || x.valorLiquido == null ? bruto : Number(x.valorLiquido);
     if (!Number.isFinite(bruto) || bruto <= 0 || !Number.isFinite(liquido) || liquido < 0 || liquido > bruto) throw Error('Informe um valor bruto maior que zero e um líquido entre zero e o valor bruto.');
     if (x.categoria === 'Pró-labore' && (x.tipo !== 'saida' || !x.administradorId)) throw Error('O pró-labore deve ser uma saída da empresa vinculada a um administrador.');
+    if (x.categoria === 'Confecção' && x.tipo !== 'saida') throw Error('Pagamento de confecção deve ser uma saída da empresa.');
     if (x.documentoId && x.tipo !== 'entrada') throw Error('Vincule pedidos somente a contas a receber.');
     return {...x,descricao:x.descricao.trim(),valorBruto:dinheiro(bruto),valorLiquido:dinheiro(liquido)};
   }

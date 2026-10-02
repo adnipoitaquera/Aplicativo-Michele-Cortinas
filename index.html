@@ -949,11 +949,12 @@ body{padding:0!important;background:#0d0d0d!important}
       <form id="fin-form" onsubmit="event.preventDefault();salvarLancamentoFinanceiro()">
         <div class="grid-forms">
           <div class="form-group"><label for="fin-tipo">Tipo</label><select id="fin-tipo" onchange="atualizarFormularioFinanceiro()"><option value="entrada">Entrada / Conta a receber</option><option value="saida">Saída / Conta a pagar</option></select></div>
-          <div class="form-group"><label for="fin-categoria">Categoria</label><select id="fin-categoria" onchange="atualizarFormularioFinanceiro()"><option>Recebimento</option><option>Despesa</option><option>Pró-labore</option><option>Aporte</option><option>Retirada</option><option>Outro</option></select></div>
+          <div class="form-group"><label for="fin-categoria">Categoria</label><select id="fin-categoria" onchange="atualizarFormularioFinanceiro()"><option>Recebimento</option><option>Despesa</option><option>Confecção</option><option>Pró-labore</option><option>Aporte</option><option>Retirada</option><option>Outro</option></select></div>
           <div class="form-group"><label for="fin-descricao">Descrição</label><input id="fin-descricao" required maxlength="300"></div>
           <div class="form-group"><label for="fin-contato">Cliente / Fornecedor / Favorecido</label><input id="fin-contato"></div>
           <div class="form-group"><label for="fin-documento">Pedido vinculado</label><select id="fin-documento" onchange="vincularPedidoFinanceiro()"><option value="">Sem vínculo com pedido</option></select></div>
           <div class="form-group"><label for="fin-administrador">Administrador vinculado</label><select id="fin-administrador"><option value="">Sem administrador</option></select></div>
+          <div class="form-group" id="fin-costureira-grupo" hidden><label for="fin-costureira">Costureira vinculada</label><select id="fin-costureira"><option value="">Selecione a costureira</option></select></div>
           <div class="form-group"><label for="fin-vencimento">Data de vencimento</label><input id="fin-vencimento" type="date" required></div>
           <div class="form-group"><label for="fin-situacao">Situação</label><select id="fin-situacao" onchange="atualizarFormularioFinanceiro()"><option value="Pendente">A receber</option><option value="Liquidado">Recebido</option><option value="Cancelado">Cancelado</option></select></div>
           <div class="form-group"><label for="fin-data-movimento" id="fin-data-label">Data do recebimento</label><input id="fin-data-movimento" type="date"></div>
@@ -4093,6 +4094,7 @@ function abrirAbaComando(id) {
   if (id === 'aba-logistica') atualizarLogistica();
 
   if (id === 'aba-relatorio-pedidos') {
+    atualizarRelatorioConfeccao();
     atualizarRelatorioTotalPedidos();
     atualizarRelatorioGeralPedidos();
     atualizarRelatorioVendasVendedor();
@@ -4542,6 +4544,8 @@ function imprimirEtiquetas(todas = false){const etiquetas = Array.from(document.
 <script src="categorias-edicao.js"></script>
 <script src="confeccao-cortinas.js"></script>
 <script src="relatorios-organizacao.js"></script>
+<script src="relatorio-confeccao-modelo.js"></script>
+<script src="relatorio-confeccao.js"></script>
 <script src="interface-moderna.js"></script>
 </body>
 </html>

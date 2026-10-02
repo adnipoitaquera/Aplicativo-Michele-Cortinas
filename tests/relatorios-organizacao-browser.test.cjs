@@ -29,6 +29,26 @@ test('menu único de relatórios alterna vendas e materiais e imprime apenas o e
     assert.equal(await page.locator('#relatorio-geral-pedidos').isVisible(),true);
     assert.match(await page.locator('#corpo-relatorio-geral-pedidos').innerText(),/Maria/);
     assert.equal(await page.locator('#relatorio-individual').isVisible(),false);
+    await page.evaluate(()=>{
+      dadosStorage.setItem('michele_config_empresa',JSON.stringify({costureiras:[{id:'C1',nome:'Ana',status:'Ativa',valorAltura:45}]}));
+      pedidos[0].itens[0].costureiraId='C1';pedidos[0].itens[0].calculoCortina={tecidos:{voal:{metros:14},forro:{metros:7}}};
+      pedidos[0].itens[0].rentabilidade.push({nome:'Mão de obra de confecção',quantidade:15,custoTotal:675});
+    });
+    await page.getByRole('tab',{name:'Confecção',exact:true}).click();
+    assert.match(await page.locator('#rel-conf-corpo').innerText(),/Ana\s+21\s+R\$\s*675,00\s+R\$\s*0,00/);
+    await page.getByRole('button',{name:'Registrar pagamento',exact:true}).click();
+    assert.equal(await page.locator('#fin-costureira').inputValue(),'C1');
+    await page.locator('#fin-bruto').fill('200');await page.getByRole('button',{name:'Salvar lançamento',exact:true}).click();
+    const pagamento=await page.evaluate(()=>JSON.parse(dadosStorage.getItem('michele_config_empresa')).financeiro.lancamentos[0]);
+    assert.equal(pagamento.costureiraId,'C1');assert.equal(pagamento.status,'Liquidado');assert.equal(pagamento.valorLiquido,200);
+    await page.locator('.sidebar').getByRole('button',{name:'Relatórios',exact:true}).click();
+    await page.getByRole('tab',{name:'Confecção',exact:true}).click();
+    assert.match(await page.locator('#rel-conf-corpo').innerText(),/200,00/);
+    await page.evaluate(()=>imprimirRelatorioLista('relatorio-confeccao'));await page.emulateMedia({media:'print'});
+    assert.equal(await page.locator('#relatorio-confeccao').isVisible(),true);
+    assert.equal(await page.locator('#relatorio-grupo-vendas').isVisible(),false);
+    assert.equal(await page.locator('#aba-relatorio-materiais').isVisible(),false);
+    await page.emulateMedia({media:'screen'});await page.evaluate(()=>limparEstadoImpressao());
     await page.getByRole('tab',{name:'Materiais',exact:true}).click();
     assert.equal(await page.locator('#relatorio-individual').isVisible(),true);
     assert.equal(await page.locator('#relatorio-geral-pedidos').isVisible(),false);

@@ -22,7 +22,7 @@
         const alturaCorte = Math.round((altura + cabecote + barra) * 1000000) / 1000000;
         const adicionar = (chave,qtd,unidade,descricao,extra={}) => {
             const valor = positivo(ler(chave));
-            if (qtd > 0 && ler(chave) !== '' && ler(chave) != null) materiais.push({nome:descricao || nome(chave), quantidade:qtd, unidade, valorUnitario:valor, valorTotal:qtd*valor,...extra});
+            if (qtd > 0 && ler(chave) !== '' && ler(chave) != null) materiais.push({produtoChave:chave,nome:descricao || nome(chave), quantidade:qtd, unidade, valorUnitario:valor, valorTotal:qtd*valor,...extra});
         };
         for (const tipo of ['voal','forro','terceiro']) {
             const selecionado = ler(`select-${tipo}`) !== '' && ler(`select-${tipo}`) != null;
@@ -36,7 +36,8 @@
             adicionar(`select-${tipo}`,corte.metros,'m',null,{partes:corte.partes || '',dimensao:corte.comprimento ? `${corte.comprimento.toFixed(2)} m` : '',tecido:tipo});
         }
         const metros = Object.values(tecidos).reduce((s,t)=>s+t.metros,0);
-        if (metros) materiais.push({nome:'Mão de obra de confecção',quantidade:metros/1.4,unidade:'faixa',valorUnitario:45,valorTotal:metros/1.4*45});
+        const valorCostureira = ler('costureira-valor') == null || ler('costureira-valor') === '' ? 45 : positivo(ler('costureira-valor'));
+        if (metros) materiais.push({nome:'Mão de obra de confecção',quantidade:metros/1.4,unidade:'faixa',valorUnitario:valorCostureira,valorTotal:metros/1.4*valorCostureira,custoUnitario:valorCostureira,custoTotal:metros/1.4*valorCostureira});
         for (const tipo of ['rodizio','argola','gancho','clip']) adicionar(`select-${tipo}`,largura/0.08*quantidade,'un.');
         for (const tipo of ['entretela','wave']) adicionar(`select-${tipo}`,tecidos.voal.metros,'m');
         adicionar('select-tubo-trilho',positivo(ler('tubo-trilho-tamanho'))*positivo(ler('tubo-trilho-qtd')),'m');

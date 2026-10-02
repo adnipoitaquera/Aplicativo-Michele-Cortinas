@@ -5,7 +5,8 @@ function montarLinhasDescritivoImpressao(cards) {
     const texto = id => {
         const el = campo(id);
         const nome = el?.selectedOptions?.[0]?.textContent ?? el?.value ?? '';
-        return String(nome).replace(/\s*-\s*R\$.*$/, '').trim();
+        const resultado = String(nome).replace(/\s*-\s*R\$.*$/, '').trim();
+        return /^(?:selecionar|selecione)\b|^não informad[oa]$/i.test(resultado) ? '' : resultado;
     };
     const medida = n => n ? `${Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 3 })} m` : '-';
     const juntar = itens => itens.filter(Boolean).join('\n') || '-';
@@ -23,6 +24,7 @@ function montarLinhasDescritivoImpressao(cards) {
             });
             linhas.push({
                 tipo: 'Cortina de tecido', quantidade: valor(`quantidade-${id}`) || '1',
+                acabada: valor(`cortina-acabada-${id}`),
                 tecidos: juntar(tecidos), modeloCortina: juntar(modelos),
                 instalacao: texto(`instalacao-${id}`) || '-',
                 tubo: Number(valor(`select-tubo-trilho-${id}`)) > 0 ? texto(`select-tubo-trilho-${id}`) : 'Não',
@@ -60,7 +62,7 @@ function montarLinhasDescritivoImpressao(cards) {
         const total = campo(`resumo-valor-${id}`)?.textContent || formatarMoeda(0);
         return linhas.map((linha, indiceLinha) => {
             const valores = [linha.tecidos, linha.modeloCortina, linha.instalacao, linha.tubo, linha.motorizacao, linha.modeloPersiana, linha.bando, linha.corBando, linha.largura, linha.altura, linha.quantidade];
-            return `<tr><td>${esc(String(index + 1).padStart(2, '0') + ' — ' + ambiente)}<br><strong>${esc(String(linha.quantidade).padStart(2, '0') + ' ' + linha.tipo)}</strong></td>${valores.map(v => `<td>${esc(v).replace(/\n/g, '<br>')}</td>`).join('')}${indiceLinha === 0 ? `<td rowspan="${linhas.length}" style="white-space:nowrap;font-weight:700">${esc(total)}</td>` : ''}</tr>`;
+            return `<tr><td>${esc(String(index + 1).padStart(2, '0') + ' — ' + ambiente)}<br><strong>${esc(String(linha.quantidade).padStart(2, '0') + ' ' + linha.tipo)}</strong>${linha.acabada ? `<br>Acabada: ${esc(linha.acabada)}` : ''}</td>${valores.map(v => `<td>${esc(v).replace(/\n/g, '<br>')}</td>`).join('')}${indiceLinha === 0 ? `<td rowspan="${linhas.length}" style="white-space:nowrap;font-weight:700">${esc(total)}</td>` : ''}</tr>`;
         }).join('');
     }).join('');
 }

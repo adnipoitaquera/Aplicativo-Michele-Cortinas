@@ -6,10 +6,25 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
 test('scripts inline possuem sintaxe valida', () => {
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 });
+
+test('impressão de confecção não prepara a proposta e limpa o estado ao retornar', () => {
+  const listeners = {}, classes = new Set(['imprimindo-confeccao']);
+  let propostas = 0;
+  const ctx = {document:{body:{matches:seletores=>seletores.split(',').some(s=>classes.has(s.trim().slice(1))),classList:{remove:(...nomes)=>nomes.forEach(n=>classes.delete(n))}},querySelectorAll:()=>[],getElementById:()=>null},window:{addEventListener:(nome,cb)=>listeners[nome]=cb},prepararPropostaImpressao:()=>propostas++};
+  vm.createContext(ctx);
+  const inicio=html.indexOf("window.addEventListener('beforeprint'");
+  const fim=html.indexOf('// Módulos operacionais:',inicio);
+  vm.runInContext(html.slice(inicio,fim),ctx);
+  listeners.beforeprint();
+  assert.equal(propostas,0);
+  assert.ok(classes.has('imprimindo-confeccao'));
+  listeners.afterprint();
+  assert.equal(classes.size,0);
+});
 test('cancelar a proposta limpa o estado e nao agenda outra impressao', () => {
   const listeners = {};
   const classes = new Set();
-  const root = { innerHTML: '', setAttribute(k,v) { this[k] = v; } };
+  const root = { innerHTML: '', style: { removeProperty() {} }, setAttribute(k,v) { this[k] = v; } };
   let prints = 0;
   const ctx = {
     document: { getElementById: id => id === 'area-impressao-profissional' ? root : null,

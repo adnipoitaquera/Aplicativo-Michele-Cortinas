@@ -144,5 +144,5 @@ function imprimirMateriaisPersianas() {
     if (!pedido || !obterLinhasMateriaisPersianas(pedido).length) return;
     document.getElementById('area-impressao-persianas').innerHTML = montarFichaMateriaisPersianas(pedido, false);
     document.body.classList.add('imprimindo-persianas');
-    window.print();
+    imprimirComRetorno();
 }

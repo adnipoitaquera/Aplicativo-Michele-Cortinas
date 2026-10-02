@@ -39,6 +39,16 @@ Somente a chave pública do projeto fica no frontend. Nunca publique uma chave s
 
 ## Validação
 
-`npm test`: 60 testes aprovados. A confirmação de gravação também foi testada no banco real em uma transação revertida.
+`npm test`: 97 testes aprovados. A confirmação de gravação também foi testada no banco real em uma transação revertida.
+
+## Atualização de 02/10/2026
+
+Costureiras e seus valores por altura, categorias, financeiro, responsáveis e rotas usam campos de `michele_config_empresa`. Confecção, custos registrados na venda, produção, códigos individuais e histórico de logística usam os pedidos em `michele_pedidos`. As RPCs existentes gravam esses campos sem alteração de esquema ou execução de migrações históricas.
+
+Os 1.152 tecidos do catálogo remoto já têm custo e largura preenchidos. O preenchimento automático de produtos incompletos só é persistido por administrador. Cadastros completos e preços finais existentes são preservados.
+
+Foi confirmado no banco real que `michele_u_salvar` grava os novos campos e `michele_u_ler` recupera o mesmo documento. O teste usou uma sessão transitória em um bloco transacional revertido, sem deixar pedido, sessão ou configuração de teste na base; revisão e hash permaneceram iguais.
+
+As etiquetas de 50 × 30 mm têm um código Code 128 numérico exclusivo por peça, salvo antes da impressão. A leitura na logística registra recebimento, saída para entrega e entrega concluída. O ambiente só fica pronto depois do recebimento de todas as peças ativas. Rotas podem ser vinculadas a motoristas ou instaladores e abertas no mapa. Os avisos de saída para WhatsApp ficam pendentes até configurar um serviço de envio no servidor; nenhuma mensagem automática é enviada nesta versão.
 
 O verificador do Supabase ainda aponta que a tabela pública antiga `clientes` não tem RLS. Ela não é usada pelo salvamento atual; suas permissões não foram alteradas para não interromper usos antigos. Revisão indicada: https://supabase.com/docs/guides/database/database-linter?lint=0013_rls_disabled_in_public . As tabelas privadas têm RLS e acesso direto bloqueado; as RPCs validam sessão e cargo.

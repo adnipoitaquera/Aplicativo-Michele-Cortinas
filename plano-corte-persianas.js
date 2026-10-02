@@ -125,5 +125,5 @@ function imprimirPlanoCortePersianas() {
     const barras = organizarBarrasAluminio(cortes);
     document.getElementById('area-impressao-plano-corte').innerHTML = `<h1>Plano de Corte de Persianas</h1>${htmlPlanoCortePersianas(cortes, barras)}`;
     document.body.classList.add('imprimindo-plano-corte');
-    window.print();
+    imprimirComRetorno();
 }

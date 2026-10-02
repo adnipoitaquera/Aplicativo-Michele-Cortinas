@@ -26,6 +26,7 @@
                     ${campo(id,'cor','Cor dos acessórios',['Não informado','Branco','Preto','Cromado','Marfim','Outro'])}
                     ${campo(id,'barra','Barra',['Não informado','10 cm','20 cm','30 cm','40 cm'])}
                     ${campo(id,'dupla','Dupla',['Não','Sim'])}
+                    ${campo(id,'acabada','Acabada',['','Sim','Não'])}
                     ${campo(id,'cabecote-tipo','Tipo de cabeçote',['Não informado','Cabeçote simples — 5 cm','Cabeçote simples — 8 cm','Cabeçote com franzidor — 5 cm','Cabeçote com franzidor — 8 cm'])}
                     ${campo(id,'kit','Kit')}
                     ${campo(id,'costurar','Costurar forro / blackout',['Não informado','Junto','Separado'])}
@@ -80,8 +81,9 @@
         const medidas = corpo.querySelector('.cortina-medidas');
         const extras = corpo.querySelector('.cortina-extras');
         extras.appendChild(grupo('quantidade'));
-        ['modelo-voal','cortina-cor','largura','altura','cortina-barra','cortina-dupla'].forEach(chave => medidas.appendChild(grupo(chave)));
+        ['modelo-voal','cortina-cor','largura','altura','cortina-barra','cortina-dupla','cortina-acabada'].forEach(chave => medidas.appendChild(grupo(chave)));
         const complementos = corpo.querySelector('.cortina-complementos');
+        if (grupo('costureira-id')) complementos.appendChild(grupo('costureira-id'));
         complementos.appendChild(grupo('cortina-observacao'));
         grupo('cortina-observacao').classList.add('cortina-observacao');
         const acessorios = corpo.querySelector('.cortina-acessorios');
@@ -149,6 +151,36 @@
         });
         corpo.querySelector('.cortina-abas').insertAdjacentHTML('afterend', `<div id="cortina-alerta-inversao-${id}" class="cortina-alerta-inversao" role="alert" hidden></div>`);
         window.MichelePagamento?.montar(id, corpo);
+        // Agrupa os campos sem recriar os controles nem perder seus eventos.
+        const formulario = corpo.querySelector('.cortina-form');
+        function organizarSecao(conteudo, titulo, descricao) {
+            const secao = document.createElement('section');
+            secao.className = 'cortina-secao';
+            const cabecalho = document.createElement('div');
+            cabecalho.className = 'cortina-secao-cabecalho';
+            const heading = document.createElement('h3');
+            heading.textContent = titulo;
+            const ajuda = document.createElement('p');
+            ajuda.textContent = descricao;
+            cabecalho.append(heading, ajuda);
+            conteudo.before(secao);
+            secao.append(cabecalho, conteudo);
+            return secao;
+        }
+        medidas.appendChild(grupo('quantidade'));
+        grupo('largura').querySelector('label').textContent = 'Largura da parede (m)';
+        grupo('altura').querySelector('label').textContent = 'Altura da parede (m)';
+        organizarSecao(medidas, '1. Modelo e medidas', 'Defina o modelo, as dimensões e a quantidade de cortinas.');
+        organizarSecao(complementos, '2. Acabamentos', 'Configure o cabeçote, o kit e a costura do forro ou blackout.');
+        const observacao = grupo('cortina-observacao');
+        observacao.classList.remove('cortina-observacao');
+        formulario.insertBefore(observacao, extras);
+        organizarSecao(observacao, '5. Observações', 'Registre orientações adicionais para a fabricação.');
+        organizarSecao(acessorios, '3. Trilhos e acessórios', 'Selecione os componentes e informe as quantidades necessárias.');
+        organizarSecao(corpo.querySelector('.cortina-tecidos'), '4. Tecidos e franzimento', 'Escolha o tecido, o forro e o blackout de cada cortina.');
+        ['voal', 'forro', 'terceiro'].forEach(tipo => {
+            grupo(`prop-${tipo}`).querySelector('label').textContent = 'Franzimento';
+        });
         catalogos();
         const cancelar = corpo.querySelector('[data-acao="voltar"]');
         cancelar.textContent = 'Cancelar';
@@ -213,7 +245,7 @@
         const normalizar = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
         const filtros = {'tubo-trilho':/tubo|trilho/,rodizio:/rodizio|deslizante/,argola:/argola/,entretela:/entretela/,suporte:/suporte/,ponteira:/ponteira|terminal/,terceiro:/blackout|black out|blecaute/};
         for (const [tipo,filtro] of Object.entries(filtros)) {
-            const itens = Object.values(categoriasProduto).flatMap(c => (c.lista || []).filter(p => filtro.test(normalizar(`${c.nome} ${p.subcategoria || ''} ${p.nome}`))));
+            const itens = Object.entries(categoriasProduto).flatMap(([categoria,c]) => (c.lista || []).filter(p => MicheleCatalogoUso.permite(p,`${categoria} ${c.nome}`,'cortinas') && filtro.test(normalizar(`${c.nome} ${p.subcategoria || ''} ${p.nome}`))));
             document.querySelectorAll(`select[id^="select-${tipo}-"]`).forEach(select => {
                 atualizarSelectProduto(select,itens,'');
                 if (tipo === 'terceiro') {

@@ -1,16 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="supabase-sync.css">
-    <script src="supabase-config.js"></script>
-    <script src="nuvem-store.js"></script>
-    <script src="tecidos-larguras.js"></script>
-    <script src="catalogo-uso.js"></script>
-    <script src="supabase-instalacao.js"></script>
-    <script src="supabase-usuario.js"></script>
-    <script src="supabase-sync.js"></script>
     <title>Michele Cortinas - Sistema de Gestão e Orçamentos</title>
     <style>
         :root {
@@ -544,6 +536,8 @@ body{padding:0!important;background:#0d0d0d!important}
            telas de impressão e impede que a área fique oculta. */
         body.imprimindo-proposta > *:not(#area-impressao-profissional) { display:none !important; }
         body.imprimindo-proposta #area-impressao-profissional {
+        body:not(.imprimindo-persianas):not(.imprimindo-plano-corte):not(.imprimindo-materiais):not(.imprimindo-relatorio):not(.imprimindo-lista-relatorio) > *:not(#area-impressao-profissional) { display:none !important; }
+        body:not(.imprimindo-persianas):not(.imprimindo-plano-corte):not(.imprimindo-materiais):not(.imprimindo-relatorio):not(.imprimindo-lista-relatorio) #area-impressao-profissional {
             display:block !important;
             position:relative !important;
             width:100% !important;
@@ -611,13 +605,6 @@ body{padding:0!important;background:#0d0d0d!important}
         .print-total { margin-top:12px; border:2px solid #111; border-radius:7px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; background:#f8f8f8; }
         .print-total .label { font-size:10px; text-transform:uppercase; font-weight:800; }
         .print-total .value { font-size:20px; font-weight:900; }
-        .print-closing { break-inside:avoid; page-break-inside:avoid; }
-        .print-payment { margin-top:6px; padding:10px 12px; border:2px solid #111; border-radius:7px; color:#111; }
-        .print-payment h3 { margin:0 0 8px; font-size:12px; font-weight:800; text-transform:uppercase; }
-        .print-payment-item { break-inside:avoid; font-size:11px; line-height:1.5; }
-        .print-payment-item + .print-payment-item { margin-top:8px; padding-top:8px; border-top:1px solid #999; }
-        .print-payment-item strong { font-weight:800; }
-        .print-payment-item p { margin:2px 0 0; font-weight:600; }
         .print-note { margin-top:8px; font-size:8px; color:#555; line-height:1.4; }
         .print-signatures { display:grid; grid-template-columns:1fr 1fr; gap:50px; margin-top:24px; page-break-inside:avoid; }
         .print-sign { border-top:1px solid #555; padding-top:4px; text-align:center; font-size:8px; }
@@ -626,30 +613,12 @@ body{padding:0!important;background:#0d0d0d!important}
 </style>
 
 <link rel="stylesheet" href="persianas-materiais.css">
-<style id="modulos-operacionais">
-.operacao-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin:16px 0}.operacao-card{background:#191919;border:1px solid var(--borda);border-radius:13px;padding:16px}.operacao-card small{display:block;color:var(--texto-escuro);text-transform:uppercase;font-size:10px;letter-spacing:.07em}.operacao-card strong{display:block;font-size:24px;color:var(--dourado);margin-top:7px}.operacao-card p{margin:7px 0 0;color:#bdbdbd;font-size:12px}.modulo-cabecalho{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}.modulo-cabecalho h2{margin:0;color:var(--texto-claro);font-size:22px}.modulo-cabecalho p{margin:5px 0 0;color:var(--texto-escuro);font-size:13px}.status-pedido{font-size:11px;padding:5px 8px;border-radius:999px;white-space:nowrap}.status-novo{background:#263b57;color:#b9d6ff}.status-producao{background:#5a3f00;color:#ffe09a}.status-pronto{background:#153f32;color:#8ff0c5}.etiquetas-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}.etiqueta{background:#fff;color:#111;border-radius:6px;padding:15px;border:1px dashed #555;min-height:160px}.etiqueta-topo{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:10px;font-weight:800}.etiqueta small{color:#555}.etiqueta h3{margin:6px 0;font-size:16px}.etiqueta-dados{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.codigo-barras{height:28px;margin-top:13px;background:repeating-linear-gradient(90deg,#111 0 2px,transparent 2px 4px,#111 4px 5px,transparent 5px 8px,#111 8px 12px,transparent 12px 14px)}.vazio-modulo{padding:28px;border:1px dashed var(--borda);border-radius:12px;color:var(--texto-escuro);text-align:center}.pagamento-linha{display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr auto;gap:9px;align-items:end;margin-top:10px}@media(max-width:700px){.modulo-cabecalho{flex-direction:column}.pagamento-linha{grid-template-columns:1fr 1fr}.pagamento-linha .btn{grid-column:1/-1}.etiquetas-grade{grid-template-columns:1fr}}
-@media print{body.imprimindo-etiquetas .sidebar,body.imprimindo-etiquetas .v6-topbar,body.imprimindo-etiquetas .header-comercial,body.imprimindo-etiquetas .conteudo-aba:not(#aba-etiquetas),body.imprimindo-etiquetas #aba-etiquetas>.modulo-cabecalho,body.imprimindo-etiquetas #aba-etiquetas>.historico-toolbar{display:none!important}body.imprimindo-etiquetas #aba-etiquetas{display:block!important}body.imprimindo-etiquetas .etiqueta{break-inside:avoid}}
-</style>
 <link rel="stylesheet" href="plano-corte-persianas.css">
-<link rel="stylesheet" href="erp-classico.css">
-<link rel="stylesheet" href="cortina-editor.css">
-<link rel="stylesheet" href="interface-moderna.css">
-<link rel="stylesheet" href="confeccao-cortinas.css">
-<link rel="stylesheet" href="financeiro.css">
-<link rel="stylesheet" href="etiquetas.css">
 </head>
 <body>
 <div id="area-impressao-persianas" aria-hidden="true"></div>
 <div id="area-impressao-plano-corte" aria-hidden="true"></div>
 <div id="area-impressao-profissional" aria-hidden="true"></div>
-<div id="nuvem-status" role="status" aria-live="polite" hidden>
-  <span id="nuvem-mensagem"></span>
-  <button type="button" id="nuvem-tentar" hidden>Tentar salvar novamente</button>
-  <button type="button" id="nuvem-exportar" hidden>Exportar alterações pendentes</button>
-  <button type="button" id="nuvem-recarregar" hidden>Carregar versão da nuvem</button>
-  <button type="button" id="nuvem-backup-local" hidden>Baixar cópia dos dados deste navegador</button>
-  <button type="button" id="nuvem-instalar" hidden>Preparar nuvem com meus dados</button>
-</div>
 <div id="login-screen">
   <main class="login-box" aria-labelledby="login-titulo">
     <div class="login-brand">Michele Cortinas</div>
@@ -671,58 +640,36 @@ body{padding:0!important;background:#0d0d0d!important}
   <aside class="sidebar">
     <div class="sidebar-brand"><strong>MICHELE CORTINAS</strong><span>Sistema de Gestão</span></div>
     <div class="sidebar-section">Principal</div>
-    <button title="Início" aria-label="Início" class="sidebar-btn ativo" data-tab="home" onclick="abrirDashboard();marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg><span>Início</span></button>
-    <button title="Orçamentos" aria-label="Orçamentos" class="sidebar-btn" data-tab="aba-orcamento" onclick="abrirAbaComando('aba-orcamento');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>Orçamentos</span></button>
-    <button title="Pedidos" aria-label="Pedidos" class="sidebar-btn" data-tab="aba-pedidos" onclick="abrirAbaComando('aba-pedidos');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10"/></svg><span>Pedidos</span></button>
-    <button title="Financeiro" aria-label="Financeiro" class="sidebar-btn" data-tab="aba-financeiro" onclick="abrirAbaComando('aba-financeiro');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>Financeiro</span></button>
-    <button title="Produção" aria-label="Produção" class="sidebar-btn" data-tab="aba-producao" onclick="abrirAbaComando('aba-producao');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6M3 9h18"/></svg><span>Produção</span></button>
-    <button title="Logística" aria-label="Logística" class="sidebar-btn" data-tab="aba-logistica" onclick="abrirAbaComando('aba-logistica');marcarMenu(this)"><span>Logística e entregas</span></button><button title="Etiquetas" aria-label="Etiquetas" class="sidebar-btn" data-tab="aba-etiquetas" onclick="abrirAbaComando('aba-etiquetas');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h18v14H3zM7 9h10M7 13h6M7 17h8"/></svg><span>Etiquetas</span></button>
-    <button title="Relatórios" aria-label="Relatórios" class="sidebar-btn" data-tab="aba-relatorio-pedidos" onclick="abrirAbaComando('aba-relatorio-pedidos');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v17h17M9 16v-5M14 16V7M19 16V4"/></svg><span>Relatórios</span></button>
-<details class="menu-dominio"><summary>Cadastro</summary>
-    <button title="Profissionais" aria-label="Profissionais" class="sidebar-btn" data-tab="aba-profissionais" onclick="abrirAbaComando('aba-profissionais');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12l9 3 9-3M12 12v5"/></svg><span>Profissionais</span></button>
-<button title="Cadastro de costureiras" aria-label="Cadastro de costureiras" class="sidebar-btn" data-tab="aba-costureiras" onclick="abrirAbaComando('aba-costureiras');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h18M5 4v16l5-3V4M14 4v13l5 3V4"/></svg><span>Cadastro de costureiras</span></button>
-    <button title="Fornecedores" aria-label="Fornecedores" class="sidebar-btn" data-tab="aba-fornecedores" onclick="abrirAbaComando('aba-fornecedores');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l6 3V6l6 3V3h6v18zM6 16v2M11 16v2M17 15v3"/></svg><span>Fornecedores</span></button>
-    <button title="Clientes" aria-label="Clientes" class="sidebar-btn" data-tab="aba-clientes" onclick="abrirAbaComando('aba-clientes');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M18 15a5 5 0 0 1 3 5"/></svg><span>Clientes</span></button>
-    <button title="Produtos e Subprodutos" aria-label="Produtos e Subprodutos" class="sidebar-btn" data-tab="aba-produtos" onclick="abrirAbaComando('aba-produtos');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h8l10 10-8 8L3 11z"/><circle cx="7.5" cy="7.5" r="1"/></svg><span>Produtos e Subprodutos</span></button>
-</details>
-<details class="menu-dominio" data-admin-only><summary>Cortinas</summary>
-<button title="Confecção de cortinas" aria-label="Confecção de cortinas" class="sidebar-btn" data-tab="aba-confeccao" onclick="abrirAbaComando('aba-confeccao');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h18M5 4v16l5-3V4M14 4v13l5 3V4"/></svg><span>Confecção de cortinas</span></button>
-    <button title="Materiais para cortinas" aria-label="Materiais para cortinas" class="sidebar-btn" data-tab="aba-materiais-cortinas" onclick="abrirAbaComando('aba-materiais-cortinas');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18M5 4v16l5-3V4M14 4v13l5 3V4M3 20h7M14 20h7"/></svg><span>Materiais para cortinas</span></button>
-</details>
-<details class="menu-dominio" data-admin-only><summary>Persianas</summary>
-    <button title="Materiais de persianas" aria-label="Materiais de persianas" class="sidebar-btn" data-tab="aba-materiais-persianas" onclick="abrirAbaComando('aba-materiais-persianas');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="16" height="14" rx="1"/><path d="M3 8h16M3 12h16M3 16h16M21 6v15"/></svg><span>Materiais de persianas</span></button>
-    <button title="Plano de Corte" aria-label="Plano de Corte" class="sidebar-btn" data-tab="aba-plano-corte-persianas" onclick="abrirAbaComando('aba-plano-corte-persianas');marcarMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m8 8 13 13M8 16 21 3"/></svg><span>Plano de Corte</span></button>
-</details>
+    <button class="sidebar-btn ativo" data-tab="home" onclick="abrirDashboard();marcarMenu(this)">🏠 <span>Início</span></button>
+    <button class="sidebar-btn" data-tab="aba-orcamento" onclick="abrirAbaComando('aba-orcamento');marcarMenu(this)">📋 <span>Orçamentos</span></button>
+    <button class="sidebar-btn" data-tab="aba-pedidos" onclick="abrirAbaComando('aba-pedidos');marcarMenu(this)">📦 <span>Pedidos</span></button>
+    <button class="sidebar-btn" data-tab="aba-relatorio-pedidos" onclick="abrirAbaComando('aba-relatorio-pedidos');marcarMenu(this)">📊 <span>Relatórios</span></button>
+    <button class="sidebar-btn" data-tab="aba-materiais-persianas" onclick="abrirAbaComando('aba-materiais-persianas');marcarMenu(this)">🪟 <span>Materias para Persianas</span></button>
+    <button class="sidebar-btn" data-tab="aba-plano-corte-persianas" onclick="abrirAbaComando('aba-plano-corte-persianas');marcarMenu(this)">✂️ <span>Plano de Corte</span></button>
+    <button class="sidebar-btn" data-tab="aba-materiais-cortinas" onclick="abrirAbaComando('aba-materiais-cortinas');marcarMenu(this)">🧵 <span>Materiais para cortinas</span></button>
+    <button class="sidebar-btn" data-tab="aba-clientes" onclick="abrirAbaComando('aba-clientes');marcarMenu(this)">👥 <span>Clientes</span></button>
+    <button class="sidebar-btn" data-tab="aba-fornecedores" onclick="abrirAbaComando('aba-fornecedores');marcarMenu(this)">🏭 <span>Fornecedores</span></button>
+    <button class="sidebar-btn" data-tab="aba-profissionais" onclick="abrirAbaComando('aba-profissionais');marcarMenu(this)">👔 <span>Profissionais</span></button>
+    <button class="sidebar-btn" data-tab="aba-produtos" onclick="abrirAbaComando('aba-produtos');marcarMenu(this)">🏷️ <span>Produtos e Subprodutos</span></button>
     <div class="sidebar-spacer"></div>
     <div class="sidebar-user"><strong id="sidebar-nome">-</strong><span id="sidebar-cargo">-</span></div>
-    <button title="Configurações" aria-label="Configurações" class="sidebar-btn" onclick="abrirConfiguracoes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg><span>Configurações</span></button>
-    <button title="Sair" aria-label="Sair" class="sidebar-btn" onclick="fazerLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H3v18h6M9 12h12m-5-5 5 5-5 5"/></svg><span>Sair</span></button>
+    <button class="sidebar-btn" onclick="abrirConfiguracoes()">⚙️ <span>Configurações</span></button>
+    <button class="sidebar-btn" onclick="fazerLogout()">🚪 <span>Sair</span></button>
   </aside>
   <main class="app-main">
    <div class="container">
     <div class="v6-topbar"><div class="v6-breadcrumb">Michele Cortinas / <strong id="v6-pagina-atual">Início</strong></div><div class="v6-actions"><button id="btn-voltar-tela" class="btn" style="display:none;padding:6px 10px;font-size:11px" onclick="voltarParaInicio()">← Voltar</button><button class="btn" style="padding:6px 10px;font-size:11px" onclick="abrirDashboard();marcarMenu(document.querySelector('[data-tab=home]'))">Início</button><span id="usuario-logado-nome" class="badge">-</span><span id="usuario-logado-cargo" class="badge">-</span><button class="btn" style="padding:6px 10px;font-size:11px" onclick="trocarUsuario()">Trocar usuário</button><button class="btn btn-erro" style="padding:6px 10px;font-size:11px" onclick="fazerLogout()">Sair do sistema</button></div></div>
     <div id="painel-dashboard" class="painel-home">
-      <div class="secao-titulo"><span>Início</span></div><p style="color:#aaa;margin:-8px 0 16px;font-size:13px">Selecione um atalho para consultar ou cadastrar. Os totais são atualizados ao abrir o início.</p>
+      <div class="secao-titulo"><span>Início</span></div><p style="color:#aaa;margin:-8px 0 16px;font-size:13px">Selecione o módulo que deseja acessar. O orçamento só abre quando você escolher essa opção.</p>
       <div class="busca-global"><input id="busca-global" type="search" placeholder="Buscar cliente, orçamento, pedido ou fornecedor..." oninput="buscarGlobal()"><button class="btn btn-ouro" onclick="buscarGlobal()">Buscar</button></div>
       <div id="resultado-global" style="display:none;margin-bottom:18px"></div>
-      <div class="dashboard" aria-label="Atalhos do sistema">
-        <button type="button" class="dash-card"  onclick="iniciarNovoOrcamento()"><span class="atalho-icone" aria-hidden="true">&#x1F4DD;</span><span class="atalho-titulo">Novo orçamento</span></button>
-        <button type="button" class="dash-card"  onclick="abrirAbaComando('aba-clientes')"><span class="atalho-icone" aria-hidden="true">&#x1F465;</span><span class="atalho-titulo">Clientes</span><span class="dash-num" id="dash-clientes">0</span></button>
-        <button type="button" class="dash-card"  onclick="abrirAbaComando('aba-pedidos')"><span class="atalho-icone" aria-hidden="true">&#x1F4CB;</span><span class="atalho-titulo">Orçamentos / Pedidos</span><span class="dash-num" id="dash-documentos">0</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-fornecedores')"><span class="atalho-icone" aria-hidden="true">&#x1F3ED;</span><span class="atalho-titulo">Fornecedores</span><span class="dash-num" id="dash-fornecedores">0</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-profissionais')"><span class="atalho-icone" aria-hidden="true">&#x1F454;</span><span class="atalho-titulo">Profissionais</span><span class="dash-num" id="dash-profissionais">0</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-produtos')"><span class="atalho-icone" aria-hidden="true">&#x1F3F7;</span><span class="atalho-titulo">Produtos e Subprodutos</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-relatorio-pedidos')"><span class="atalho-icone" aria-hidden="true">&#x1F4CA;</span><span class="atalho-titulo">Relatórios</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-materiais-persianas')"><span class="atalho-icone" aria-hidden="true">&#x1FA9F;</span><span class="atalho-titulo">Materiais para Persianas</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-plano-corte-persianas')"><span class="atalho-icone" aria-hidden="true">&#x2702;</span><span class="atalho-titulo">Plano de Corte</span></button>
-        <button type="button" class="dash-card" data-admin-only onclick="abrirAbaComando('aba-materiais-cortinas')"><span class="atalho-icone" aria-hidden="true">&#x1F9F5;</span><span class="atalho-titulo">Materiais para Cortinas</span></button>
+      <div class="dashboard">
+        <div class="dash-card" onclick="iniciarNovoOrcamento()"><h3>＋ Novo orçamento</h3><div class="dash-sub">Criar um novo orçamento</div></div>
+        <div class="dash-card" onclick="abrirAbaComando('aba-clientes')"><h3>👥 Clientes</h3><div class="dash-num" id="dash-clientes">0</div><div class="dash-sub">Localizar e cadastrar clientes</div></div>
+        <div class="dash-card" data-admin-only onclick="abrirAbaComando('aba-fornecedores')"><h3>🏭 Fornecedores</h3><div class="dash-num" id="dash-fornecedores">0</div><div class="dash-sub">Cadastro de fornecedores</div></div>
+        <div class="dash-card" data-admin-only onclick="abrirAbaComando('aba-profissionais')"><h3>👔 Profissionais</h3><div class="dash-num" id="dash-profissionais">0</div><div class="dash-sub">Vendedores, gerentes e equipe</div></div>
+        <div class="dash-card" onclick="abrirAbaComando('aba-pedidos')"><h3>📋 Orçamentos / Pedidos</h3><div class="dash-num" id="dash-documentos">0</div><div class="dash-sub">Histórico e consulta</div></div>
       </div>
-      <section class="inicio-atalhos" aria-labelledby="inicio-atalhos-titulo">
-        <div class="inicio-atalhos-titulo"><p class="inicio-eyebrow">ROTINA DA EMPRESA</p><h2 id="inicio-atalhos-titulo">Como podemos começar?</h2><p>Acesse as etapas do seu trabalho.</p></div>
-        <button type="button" class="atalho-trabalho" onclick="iniciarNovoOrcamento()"><span class="atalho-numero">01</span><span><strong>Preparar um orçamento</strong><small>Defina ambientes, tecidos e acabamentos.</small></span><span aria-hidden="true">→</span></button>
-        <button type="button" class="atalho-trabalho" onclick="abrirAbaComando('aba-pedidos')"><span class="atalho-numero">02</span><span><strong>Acompanhar pedidos</strong><small>Consulte documentos e detalhes dos projetos.</small></span><span aria-hidden="true">→</span></button>
-        <button type="button" class="atalho-trabalho" data-admin-only onclick="abrirAbaComando('aba-materiais-cortinas')"><span class="atalho-numero">03</span><span><strong>Organizar a produção</strong><small>Confira materiais de cortinas e planos de corte.</small></span><span aria-hidden="true">→</span></button>
-      </section>
     </div>
     <header class="header-comercial">
         <div class="header-dados">
@@ -768,7 +715,7 @@ body{padding:0!important;background:#0d0d0d!important}
 
         <div class="secao-titulo">
             <span>Itens do Orçamento / Ambientes</span>
-            <button class="btn btn-sucesso" style="padding: 6px 14px; font-size: 12px;" onclick="adicionarItemOrcamentoPadrao()">+ Adicionar Novo Orçamento</button>
+            <button class="btn btn-sucesso" style="padding: 6px 14px; font-size: 12px;" onclick="adicionarItemOrcamentoPadrao()">+ Adicionar Novo Ambiente</button>
         </div>
 
         <div class="resumo-orcamento-fixo">
@@ -779,7 +726,7 @@ body{padding:0!important;background:#0d0d0d!important}
         <div class="ambientes-toolbar">
             <input id="busca-ambiente" type="search" placeholder="Pesquisar ambiente..." oninput="filtrarAmbientes()">
             <button class="btn btn-ouro" style="padding:8px 12px;font-size:12px" onclick="abrirTodosAmbientes()">Abrir todos</button>
-            <button class="btn" style="padding:8px 12px;font-size:12px;background:var(--bg-input);color:var(--texto-claro);border:1px solid var(--borda)" onclick="fecharTodosAmbientes()">Fechar todos</button>
+            <button class="btn" style="padding:8px 12px;font-size:12px;background:var(--bg-input);color:#fff;border:1px solid var(--borda)" onclick="fecharTodosAmbientes()">Fechar todos</button>
             <span class="ambientes-contador" id="ambientes-contador">0 ambientes</span>
         </div>
 
@@ -825,16 +772,9 @@ body{padding:0!important;background:#0d0d0d!important}
             <div class="form-group"><label>E-mail</label><input type="text" id="c-email" placeholder="cliente@provedor.com"></div>
             <div class="form-group"><label>Endereço de Instalação</label><input type="text" id="c-endereco" placeholder="Rua, número, bairro e cidade"></div>
         </div>
-        <button class="btn btn-ouro" style="margin-top:10px;" id="btn-salvar-cliente" onclick="salvarNovoClienteNoBanco()">Salvar cliente</button>
-        <button class="btn" onclick="limparCliente()">Novo / Cancelar edição</button>
+        <button class="btn btn-ouro" style="margin-top:10px;" onclick="salvarNovoClienteNoBanco()">Gravar Registro do Cliente</button>
 
         <div class="secao-titulo" style="margin-top:40px;">Clientes Registrados no Sistema</div>
-        <div class="historico-toolbar">
-            <label for="busca-cliente">Buscar cliente</label>
-            <input id="busca-cliente" type="search" placeholder="Nome, CPF/CNPJ, telefone ou código..." oninput="atualizarTabelaClientes()">
-            <button class="btn" onclick="document.getElementById('busca-cliente').value='';atualizarTabelaClientes()">Limpar busca</button>
-        </div>
-        <p id="clientes-status" role="status" aria-live="polite"></p>
         <table id="tabela-clientes-dados">
             <thead>
                 <tr>
@@ -843,7 +783,6 @@ body{padding:0!important;background:#0d0d0d!important}
                     <th>CPF</th>
                     <th>Telefone</th>
                     <th>Endereço</th>
-                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -858,7 +797,7 @@ body{padding:0!important;background:#0d0d0d!important}
     <div class="form-group"><label>Categoria</label><select id="f-categoria"><option>Tecidos</option><option>Trilhos</option><option>Persianas</option><option>Motorização</option><option>Componentes</option><option>Acessórios</option><option>Outros</option></select></div><div class="form-group"><label>CEP</label><input id="f-cep"></div><div class="form-group" style="grid-column:span 2"><label>Endereço</label><input id="f-endereco"></div>
     <div class="form-group" style="grid-column:1/-1"><label>Observações</label><textarea id="f-observacoes"></textarea></div>
   </div>
-  <button class="btn btn-ouro" id="btn-salvar-fornecedor" onclick="salvarFornecedor()">Salvar fornecedor</button>
+  <button class="btn btn-ouro" onclick="salvarFornecedor()">Salvar fornecedor</button>
   <div class="secao-titulo" style="margin-top:30px">Fornecedores cadastrados</div>
   <div class="historico-toolbar"><input id="busca-fornecedor" oninput="atualizarFornecedores()" placeholder="Pesquisar fornecedor, CNPJ, telefone ou código..."></div>
   <div class="tabela-scroll"><table><thead><tr><th>Código</th><th>Razão Social</th><th>Fantasia</th><th>CNPJ</th><th>Categoria</th><th>Ações</th></tr></thead><tbody id="tabela-fornecedores"></tbody></table></div>
@@ -867,32 +806,25 @@ body{padding:0!important;background:#0d0d0d!important}
   <div class="secao-titulo"><span>Profissionais da Loja</span><button class="btn btn-sucesso" style="padding:6px 12px" onclick="limparProfissional()">+ Novo profissional</button></div>
   <div class="form-inline-grid">
     <div class="form-group"><label>Código</label><input id="p-codigo" readonly></div><div class="form-group"><label>Nome</label><input id="p-nome"></div><div class="form-group"><label>Cargo</label><select id="p-cargo"><option>Vendedor</option><option>Gerente</option><option>Administrador</option><option>Instalador</option><option>Técnico</option><option>Outro</option></select></div><div class="form-group"><label>Comissão (%)</label><input id="p-comissao" type="number" step="0.01" min="0" value="5"></div>
-    <div class="form-group"><label>Usuário</label><input id="p-usuario"></div><div class="form-group"><label>Senha</label><input id="p-senha" type="password"></div><div class="form-group"><label>Desconto máximo à vista (%)</label><input id="p-desconto-maximo" type="number" min="0" max="100" step="0.01" value="0"></div><div class="form-group"><label>Telefone</label><input id="p-telefone"></div><div class="form-group"><label>E-mail</label><input id="p-email"></div>
+    <div class="form-group"><label>Usuário</label><input id="p-usuario"></div><div class="form-group"><label>Senha</label><input id="p-senha" type="password"></div><div class="form-group"><label>Telefone</label><input id="p-telefone"></div><div class="form-group"><label>E-mail</label><input id="p-email"></div>
     <div class="form-group"><label>Status</label><select id="p-status"><option>Ativo</option><option>Inativo</option></select></div><div class="form-group" style="grid-column:span 3"><label>Observações</label><input id="p-observacoes"></div>
   </div>
-  <button class="btn btn-ouro" id="btn-salvar-profissional" onclick="salvarProfissional()">Salvar profissional</button>
+  <button class="btn btn-ouro" onclick="salvarProfissional()">Salvar profissional</button>
   <div class="secao-titulo" style="margin-top:30px">Equipe cadastrada</div>
   <div class="tabela-scroll"><table><thead><tr><th>Código</th><th>Nome</th><th>Cargo</th><th>Usuário</th><th>Comissão</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabela-profissionais"></tbody></table></div>
 </div>
 <div id="aba-produtos" class="conteudo-aba">
   <div class="secao-titulo"><span>Produtos e Subprodutos</span><div style="display:flex;gap:8px"><button class="btn btn-sucesso" style="padding:6px 12px" onclick="iniciarNovaCategoria()">+ Nova categoria</button><button class="btn btn-ouro" style="padding:6px 12px" onclick="limparProduto()">+ Novo produto</button></div></div>
-  <div class="historico-toolbar"><input id="busca-produto" type="search" oninput="pesquisarProdutoCadastro()" aria-label="Pesquisar produto em todas as categorias" placeholder="Pesquisar produto em todas as categorias..."><select id="produto-uso-filtro" aria-label="Filtrar uso dos produtos" onchange="atualizarTabelaProdutos()"><option value="">Todos os produtos</option><option value="cortinas">Cortinas</option><option value="persianas">Persianas</option><option value="ambos">Cortinas e Persianas</option></select></div>
-  <p id="produto-busca-status" role="status" aria-live="polite"></p>
   <div class="form-inline-grid">
-    <div class="form-group"><label>Categoria</label><select id="produto-categoria" onchange="document.getElementById('busca-produto').value='';document.getElementById('produto-busca-status').textContent='';alternarNovoProduto();document.getElementById('produto-uso').value=MicheleCatalogoUso.uso({},this.value+' '+(categoriasProduto[this.value]?.nome||''))"><option value="voal">Tecido principal</option><option value="forro">Forro</option><option value="persiana">Persiana</option><option value="novo">+ Cadastrar nova categoria</option></select></div>
+    <div class="form-group"><label>Categoria</label><select id="produto-categoria" onchange="alternarNovoProduto()"><option value="voal">Tecido principal</option><option value="forro">Forro</option><option value="persiana">Persiana</option><option value="novo">+ Cadastrar nova categoria</option></select></div>
     <div class="form-group" id="grupo-novo-produto" style="display:none"><label>Nova categoria</label><input id="produto-novo-nome" placeholder="Ex.: Cortina rolô"></div>
     <div class="form-group" style="grid-column:span 2"><label>Produto</label><input id="produto-nome" placeholder="Ex.: Screen 3%"></div>
-    <div class="form-group"><label>Preço de custo (R$)</label><input id="produto-custo" type="number" min="0" step="0.001" oninput="calcularPrecoProduto()"></div>
-    <div class="form-group"><label>Acréscimo sobre o custo (%)</label><input id="produto-acrescimo" type="number" min="0" step="0.01" value="100" oninput="calcularPrecoProduto()"></div>
-    <div class="form-group"><label>Preço final (R$)</label><input id="produto-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>
-    <div class="form-group"><label>Subcategoria</label><input id="produto-subcategoria" placeholder="Ex.: Blackout, Suportes, Ponteiras"></div>
-    <div class="form-group"><label for="produto-uso">Uso do produto</label><select id="produto-uso"><option value="cortinas">Cortinas</option><option value="persianas">Persianas</option><option value="ambos">Cortinas e Persianas</option></select></div>
-    <div class="form-group"><label>Largura do tecido (m)</label><input id="produto-largura-tecido" type="number" min="0.01" step="0.01" placeholder="Ex.: 3,00"></div>
+    <div class="form-group"><label>Valor (R$)</label><input id="produto-preco" type="number" min="0" step="0.01" placeholder="0,00"></div>
   </div>
   <button class="btn btn-ouro" onclick="salvarProduto()">Salvar produto</button>
-  <section class="produto-categoria-edicao"><h3>Editar nome da categoria</h3><p>Selecione a categoria acima, altere o nome abaixo e clique em Atualizar categoria.</p><div class="form-group"><label for="produto-categoria-nome">Novo nome da categoria selecionada</label><input id="produto-categoria-nome"><button class="btn btn-ouro" type="button" onclick="salvarNomeCategoriaProduto()">Atualizar categoria</button></div><p id="produto-categoria-status" role="status" aria-live="polite"></p></section>
   <div class="secao-titulo" style="margin-top:30px">Categorias e produtos cadastrados</div>
-  <div class="tabela-scroll"><table><thead><tr><th>Categoria</th><th>Produto</th><th>Largura do tecido (m)</th><th>Custo</th><th>Acréscimo</th><th>Preço final</th><th>Ações</th></tr></thead><tbody id="tabela-produtos"></tbody></table></div>
+  <div class="historico-toolbar"><input id="busca-produto" type="search" oninput="atualizarTabelaProdutos()" placeholder="Pesquisar categoria ou produto..."></div>
+  <div class="tabela-scroll"><table><thead><tr><th>Categoria</th><th>Produto</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="tabela-produtos"></tbody></table></div>
 </div>
 <div id="aba-pedidos" class="conteudo-aba">
         <div class="secao-titulo">Histórico de Orçamentos e Pedidos</div>
@@ -916,85 +848,6 @@ body{padding:0!important;background:#0d0d0d!important}
             <tbody></tbody>
         </table>
     </div>
-</div>
-<div id="aba-costureiras" class="conteudo-aba">
- <div class="modulo-cabecalho"><div><h2>Cadastro de costureiras</h2><p>Cadastre os contatos e mantenha as respons?veis pela confec??o atualizadas.</p></div></div>
- <form id="cost-form" onsubmit="event.preventDefault();salvarCostureira()">
- <div class="grid-forms">
- <div class="form-group"><label for="cost-nome">Nome da costureira</label><input id="cost-nome" required></div>
- <div class="form-group"><label for="cost-telefone">Telefone / WhatsApp</label><input id="cost-telefone" type="tel"></div>
- <div class="form-group"><label for="cost-email">E-mail</label><input id="cost-email" type="email"></div>
- <div class="form-group"><label for="cost-valor-altura">Mão de obra por altura (R$)</label><input id="cost-valor-altura" type="number" min="0" step="0.01" value="45" required><small>Total dos tecidos ÷ 1,40 × valor por altura.</small></div><div class="form-group"><label for="cost-status">Situação</label><select id="cost-status"><option>Ativa</option><option>Inativa</option></select></div>
- <div class="form-group"><label for="cost-observacoes">Observações</label><input id="cost-observacoes"></div>
- </div><div class="conf-acoes"><button class="btn btn-ouro" type="submit">Salvar costureira</button><button class="btn" type="button" onclick="limparCostureira()">Novo cadastro</button></div></form>
- <div class="tabela-scroll"><table><thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Situação</th><th>Valor por altura</th><th>Ações</th></tr></thead><tbody id="cost-lista"></tbody></table></div>
-</div>
-<div id="aba-confeccao" class="conteudo-aba">
- <div class="modulo-cabecalho"><div><h2>Confecção de cortinas</h2><p>Procure e insira um pedido para preparar a ficha da costureira.</p></div></div>
- <div class="grid-forms"><div class="form-group"><label for="conf-busca">Procurar por número do pedido ou cliente</label><input id="conf-busca" oninput="buscarPedidosConfeccao()"></div><div class="form-group"><label for="conf-pedido">Pedido</label><select id="conf-pedido"></select></div></div>
- <p id="conf-resultado" role="status"></p><button class="btn btn-ouro" onclick="inserirPedidoConfeccao()">Inserir pedido</button>
- <div id="conf-editor" hidden><h3 id="conf-identificacao"></h3><div class="grid-forms"><div class="form-group"><label for="conf-costureira">Costureira responsável</label><select id="conf-costureira"></select></div><div class="form-group"><label for="conf-entrega">Data da entrega</label><input id="conf-entrega" type="date"></div></div><p id="conf-vazio"></p><div id="conf-itens"></div><div class="conf-acoes"><button class="btn btn-ouro" onclick="salvarConfeccao()">Salvar ficha</button><button class="btn btn-ouro" onclick="enviarParaCostureira()">Enviar para costureira</button><button class="btn" onclick="imprimirConfeccao()">Imprimir / Salvar em PDF</button></div></div>
- <div id="conf-impressao"></div>
-</div>
-<div id="aba-financeiro" class="conteudo-aba">
-  <div class="modulo-cabecalho"><div><h2>Financeiro</h2><p>Contas, recebimentos líquidos, despesas e pró-labore da empresa.</p></div></div>
-  <nav class="fin-abas" aria-label="Áreas do Financeiro"><button type="button" class="btn" onclick="abrirPainelFinanceiro('contas')">Contas a pagar e receber</button><button type="button" class="btn" onclick="abrirPainelFinanceiro('relatorios')">Relatórios</button><button type="button" class="btn" onclick="abrirPainelFinanceiro('administradores')">Administradores e pró-labore</button></nav>
-  <div id="fin-painel-contas" class="fin-painel">
-    <div class="operacao-grid"><div class="operacao-card"><small>A receber</small><strong id="fin-a-receber">R$ 0,00</strong><p>Valores brutos pendentes</p></div><div class="operacao-card"><small>A pagar</small><strong id="fin-a-pagar">R$ 0,00</strong><p>Contas pendentes</p></div><div class="operacao-card"><small>Entradas líquidas</small><strong id="fin-recebido">R$ 0,00</strong><p>Valores efetivamente recebidos</p></div><div class="operacao-card"><small>Saídas</small><strong id="fin-pago">R$ 0,00</strong><p>Valores efetivamente pagos</p></div><div class="operacao-card"><small>Saldo das movimentações</small><strong id="fin-saldo">R$ 0,00</strong><p>Entradas líquidas menos saídas</p></div></div>
-    <div class="conf-acoes"><button type="button" class="btn btn-ouro" onclick="novoLancamentoFinanceiro('entrada')">+ Conta a receber</button><button type="button" class="btn" onclick="novoLancamentoFinanceiro('saida')">+ Conta a pagar</button></div>
-    <div id="fin-importacao" class="fin-aviso" hidden><p id="fin-importacao-resumo"></p><button type="button" class="btn" onclick="importarFinanceiroAnterior()">Importar lançamentos anteriores</button></div>
-    <p id="fin-sem-data" role="status"></p>
-    <section id="fin-editor" class="fin-editor" hidden>
-      <h3 id="fin-editor-titulo">Novo lançamento</h3>
-      <form id="fin-form" onsubmit="event.preventDefault();salvarLancamentoFinanceiro()">
-        <div class="grid-forms">
-          <div class="form-group"><label for="fin-tipo">Tipo</label><select id="fin-tipo" onchange="atualizarFormularioFinanceiro()"><option value="entrada">Entrada / Conta a receber</option><option value="saida">Saída / Conta a pagar</option></select></div>
-          <div class="form-group"><label for="fin-categoria">Categoria</label><select id="fin-categoria" onchange="atualizarFormularioFinanceiro()"><option>Recebimento</option><option>Despesa</option><option>Pró-labore</option><option>Aporte</option><option>Retirada</option><option>Outro</option></select></div>
-          <div class="form-group"><label for="fin-descricao">Descrição</label><input id="fin-descricao" required maxlength="300"></div>
-          <div class="form-group"><label for="fin-contato">Cliente / Fornecedor / Favorecido</label><input id="fin-contato"></div>
-          <div class="form-group"><label for="fin-documento">Pedido vinculado</label><select id="fin-documento" onchange="vincularPedidoFinanceiro()"><option value="">Sem vínculo com pedido</option></select></div>
-          <div class="form-group"><label for="fin-administrador">Administrador vinculado</label><select id="fin-administrador"><option value="">Sem administrador</option></select></div>
-          <div class="form-group"><label for="fin-vencimento">Data de vencimento</label><input id="fin-vencimento" type="date" required></div>
-          <div class="form-group"><label for="fin-situacao">Situação</label><select id="fin-situacao" onchange="atualizarFormularioFinanceiro()"><option value="Pendente">A receber</option><option value="Liquidado">Recebido</option><option value="Cancelado">Cancelado</option></select></div>
-          <div class="form-group"><label for="fin-data-movimento" id="fin-data-label">Data do recebimento</label><input id="fin-data-movimento" type="date"></div>
-          <div class="form-group"><label for="fin-conta">Forma / Conta</label><select id="fin-conta"><option>Caixa</option><option>Pix</option><option>Cartão de crédito</option><option>Cartão de débito</option><option>Transferência bancária</option><option>Boleto</option><option>Outro</option></select></div>
-          <div class="form-group"><label for="fin-bruto">Valor bruto (R$)</label><input id="fin-bruto" type="number" min="0.01" step="0.01" required oninput="atualizarTaxasFinanceiro()"></div>
-          <div class="form-group"><label for="fin-liquido">Valor líquido recebido / pago (R$)</label><input id="fin-liquido" type="number" min="0" step="0.01" placeholder="Sem taxas: igual ao bruto" oninput="atualizarTaxasFinanceiro()"></div>
-          <div class="form-group"><label>Taxas / Descontos</label><output id="fin-taxas">R$ 0,00</output></div>
-        </div>
-        <p id="fin-prolabore-nota" class="fin-nota" hidden>O pró-labore é uma saída da empresa. O administrador vinculado recebe esse valor; ele será identificado no relatório.</p>
-        <div class="conf-acoes"><button type="submit" class="btn btn-ouro">Salvar lançamento</button><button type="button" class="btn" onclick="fecharFinanceiro()">Cancelar edição</button></div>
-      </form>
-    </section>
-    <div class="historico-toolbar"><input id="fin-busca" type="search" placeholder="Buscar descrição, contato, pedido ou administrador..." oninput="atualizarFinanceiro()"><select id="fin-filtro-tipo" aria-label="Filtrar contas" onchange="atualizarFinanceiro()"><option value="">Entradas e saídas</option><option value="entrada">Contas a receber / Entradas</option><option value="saida">Contas a pagar / Saídas</option></select><select id="fin-status" aria-label="Filtrar situação" onchange="atualizarFinanceiro()"><option value="">Todas as situações</option><option value="Pendente">Pendentes</option><option value="Liquidado">Recebidas / Pagas</option><option value="Cancelado">Canceladas</option></select></div>
-    <div class="tabela-scroll"><table class="fin-tabela"><thead><tr><th>Tipo</th><th>Descrição / Contato</th><th>Categoria / Administrador</th><th>Vencimento</th><th>Recebimento / Pagamento</th><th>Conta</th><th>Bruto</th><th>Taxas / Descontos</th><th>Líquido</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="fin-corpo"></tbody></table></div>
-  </div>
-  <div id="fin-painel-relatorios" class="fin-painel" hidden>
-    <h2>Relatório financeiro</h2>
-    <div class="grid-forms fin-rel-filtros"><div class="form-group"><label for="fin-rel-periodo">Período</label><select id="fin-rel-periodo" onchange="atualizarRelatorioFinanceiro()"><option value="semanal">Semanal (segunda a domingo)</option><option value="mensal">Mensal</option></select></div><div class="form-group"><label for="fin-rel-data">Data de referência</label><input id="fin-rel-data" type="date" onchange="atualizarRelatorioFinanceiro()"></div><div class="form-group"><label for="fin-rel-admin">Administrador</label><select id="fin-rel-admin" onchange="atualizarRelatorioFinanceiro()"><option value="">Todos os administradores</option></select></div></div>
-    <p id="fin-rel-faixa"></p><p id="fin-rel-administrador"></p>
-    <div class="operacao-grid fin-rel-resumo"><div class="operacao-card"><small>Entradas brutas</small><strong id="fin-rel-bruto">R$ 0,00</strong></div><div class="operacao-card"><small>Taxas das entradas</small><strong id="fin-rel-taxas">R$ 0,00</strong></div><div class="operacao-card"><small>Entradas líquidas</small><strong id="fin-rel-entradas">R$ 0,00</strong></div><div class="operacao-card"><small>Saídas pagas</small><strong id="fin-rel-saidas">R$ 0,00</strong></div><div class="operacao-card"><small>Saldo do período</small><strong id="fin-rel-saldo">R$ 0,00</strong></div><div class="operacao-card"><small>Pró-labore pago</small><strong id="fin-rel-prolabore">R$ 0,00</strong><p>Incluído nas saídas</p></div></div>
-    <div class="conf-acoes fin-rel-acoes"><button type="button" class="btn" onclick="exportarRelatorioFinanceiro()">Exportar CSV</button><button type="button" class="btn btn-ouro" onclick="imprimirRelatorioFinanceiro()">Imprimir / Salvar em PDF</button></div>
-    <div class="tabela-scroll"><table class="fin-tabela"><thead><tr><th>Tipo</th><th>Descrição / Contato</th><th>Categoria / Administrador</th><th>Vencimento</th><th>Recebimento / Pagamento</th><th>Conta</th><th>Bruto</th><th>Taxas / Descontos</th><th>Líquido</th></tr></thead><tbody id="fin-rel-corpo"></tbody></table></div>
-  </div>
-  <div id="fin-painel-administradores" class="fin-painel" hidden>
-    <h2>Administradores e pró-labore</h2><p>Vincule entradas e saídas a um administrador. O pró-labore pago é registrado como saída da empresa.</p>
-    <div class="conf-acoes"><button type="button" class="btn btn-ouro" onclick="novoProlaboreFinanceiro()">Registrar pró-labore</button><button type="button" class="btn" onclick="novoMovimentoAdministradorFinanceiro('entrada')">Entrada vinculada ao administrador</button><button type="button" class="btn" onclick="novoMovimentoAdministradorFinanceiro('saida')">Saída vinculada ao administrador</button></div>
-    <form id="fin-admin-form" onsubmit="event.preventDefault();salvarAdministradorFinanceiro()"><div class="grid-forms"><div class="form-group"><label for="fin-admin-nome">Nome do administrador</label><input id="fin-admin-nome" required></div><div class="form-group"><label for="fin-admin-telefone">Telefone</label><input id="fin-admin-telefone" type="tel"></div><div class="form-group"><label for="fin-admin-email">E-mail</label><input id="fin-admin-email" type="email"></div><div class="form-group"><label for="fin-admin-status">Situação</label><select id="fin-admin-status"><option>Ativo</option><option>Inativo</option></select></div></div><div class="conf-acoes"><button type="submit" class="btn btn-ouro">Salvar administrador</button><button type="button" class="btn" onclick="limparAdministradorFinanceiro()">Novo cadastro</button></div></form>
-    <div class="tabela-scroll"><table><thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Situação</th><th>Cadastro</th></tr></thead><tbody id="fin-admin-lista"></tbody></table></div>
-  </div>
-</div>
-
-<div id="aba-producao" class="conteudo-aba">
-  <div class="modulo-cabecalho"><div><h2>Produção</h2><p>Organize a confecção por pedido, ambiente e prazo de entrega.</p></div><button class="btn btn-ouro" onclick="exportarProducaoCSV()">Exportar CSV</button></div>
-  <div class="operacao-grid"><div class="operacao-card"><small>Na fila</small><strong id="prod-fila">0</strong><p>Itens aguardando início</p></div><div class="operacao-card"><small>Em produção</small><strong id="prod-andamento">0</strong><p>Itens em produção</p></div><div class="operacao-card"><small>Em confecção</small><strong id="prod-confeccao">0</strong><p>Cortinas com a costureira</p></div><div class="operacao-card"><small>Prontos</small><strong id="prod-prontos">0</strong><p>Aguardando instalação/entrega</p></div></div>
-  <div class="historico-toolbar"><input id="prod-busca" type="search" placeholder="Filtrar cliente, pedido, ambiente, produto ou costureira..." oninput="atualizarProducao()"><select id="prod-status" onchange="atualizarProducao()"><option value="">Todos os status</option><option value="Na fila">Na fila</option><option value="Em produção">Em produção</option><option value="Em confecção">Em confecção</option><option value="Pronto">Pronto</option></select></div>
-  <div class="tabela-scroll"><table><thead><tr><th>Pedido</th><th>Cliente / Ambiente</th><th>Produto</th><th>Medidas</th><th>Entrega</th><th>Costureira responsável</th><th>Status</th><th>Atualizar</th></tr></thead><tbody id="prod-corpo"></tbody></table></div>
-</div>
-<div id="aba-logistica" class="conteudo-aba"><div id="log-shell"></div></div><div id="aba-etiquetas" class="conteudo-aba">
-  <div class="modulo-cabecalho"><div><h2>Etiquetas de produção</h2><p>Etiquetas de 50 × 30 mm por ambiente. Imprima em tamanho real (100%), sem cabeçalho e rodapé.</p></div><button class="btn btn-ouro" onclick="imprimirEtiquetas(true)">Imprimir todas as etiquetas</button></div>
-  <div class="historico-toolbar"><input id="etiq-busca" type="search" placeholder="Buscar pedido ou cliente..." oninput="atualizarEtiquetas()"><select id="etiq-pedido" onchange="atualizarEtiquetas()"><option value="">Todos os pedidos</option></select></div>
-  <div id="etiq-exportacao" class="historico-toolbar"><label for="etiq-imagem">Escolha a etiqueta</label><select id="etiq-imagem"></select><button class="btn btn-ouro" type="button" onclick="imprimirEtiquetas()">Imprimir etiqueta selecionada</button><button id="etiq-baixar" class="btn" type="button" onclick="baixarEtiquetaNiimbot()">Baixar imagem 50 × 30 mm</button><p>Celular: importe a imagem no aplicativo NIIMBOT e use uma etiqueta de 50 × 30 mm, ocupando toda a área, sem margens adicionais.</p></div><div id="etiquetas-corpo" class="etiquetas-grade"></div>
 </div>
 <div id="aba-materiais-persianas" class="conteudo-aba">
     <div class="plano-corte-cabecalho"><div><h2>Materias para Persianas</h2><p>Selecione um pedido. Os campos de tecido e acabamento são salvos ao editar.</p></div><button id="mp-imprimir" class="btn btn-ouro" onclick="imprimirMateriaisPersianas()" disabled>Imprimir / Salvar em PDF</button></div>
@@ -1052,7 +905,7 @@ body{padding:0!important;background:#0d0d0d!important}
   <div id="relatorio-geral-pedidos" class="relatorio-interno" style="display:none">
     <h2>Relatório Geral de Pedidos</h2>
     <div class="historico-toolbar"><input id="busca-relatorio-geral" type="search" placeholder="Buscar por nº do pedido, CPF ou cliente..." oninput="atualizarRelatorioGeralPedidos()"><button class="btn btn-ouro" onclick="atualizarRelatorioGeralPedidos()">Atualizar</button><button class="btn" onclick="imprimirRelatorioLista('relatorio-geral-pedidos')">🖨 Imprimir / Salvar em PDF</button></div>
-    <div class="tabela-scroll"><table><thead><tr><th>Nº do pedido</th><th>Cliente</th><th>Data do pedido</th><th>Data da entrega</th><th>Vendedor</th><th>Total do pedido</th><th>Custo</th><th>Lucro bruto</th></tr></thead><tbody id="corpo-relatorio-geral-pedidos"></tbody></table></div>
+    <div class="tabela-scroll"><table><thead><tr><th>Nº do pedido</th><th>Cliente</th><th>Data do pedido</th><th>Data da entrega</th><th>Vendedor</th><th>Total do pedido</th></tr></thead><tbody id="corpo-relatorio-geral-pedidos"></tbody></table></div>
     <div class="print-total"><div class="label">Total geral dos pedidos</div><div class="value" id="total-relatorio-geral-pedidos">R$ 0,00</div></div>
   </div>
   <div id="relatorio-vendas-vendedor" class="relatorio-interno" style="display:none">
@@ -1065,7 +918,7 @@ body{padding:0!important;background:#0d0d0d!important}
   <div id="relatorio-geral-produtos" class="relatorio-interno" style="display:none">
     <h2>Relatório Geral de Produtos</h2>
     <div class="historico-toolbar"><input id="busca-pedido-relatorio-produtos" type="search" placeholder="Buscar por nº do pedido, CPF ou cliente..." oninput="atualizarRelatorioGeralProdutos()"><input id="busca-relatorio-produtos" type="search" placeholder="Pesquisar produto..." oninput="atualizarRelatorioGeralProdutos()"><button class="btn btn-ouro" onclick="atualizarRelatorioGeralProdutos()">Atualizar</button><button class="btn" onclick="alternarGraficoRelatorio('grafico-relatorio-produtos')">📊 Mostrar / ocultar gráfico</button><button class="btn" onclick="imprimirRelatorioLista('relatorio-geral-produtos')">🖨 Imprimir / Salvar em PDF</button></div>
-    <div class="tabela-scroll"><table><thead><tr><th>Produto</th><th>Quantidade total</th><th>Unidade</th><th>Valor total vendido</th><th>Custo</th><th>Lucro bruto</th></tr></thead><tbody id="corpo-relatorio-geral-produtos"></tbody></table></div>
+    <div class="tabela-scroll"><table><thead><tr><th>Produto</th><th>Quantidade total</th><th>Unidade</th><th>Valor total vendido</th></tr></thead><tbody id="corpo-relatorio-geral-produtos"></tbody></table></div>
     <div class="print-total"><div class="label">Total geral dos produtos</div><div class="value" id="total-relatorio-geral-produtos">R$ 0,00</div></div>
     <div id="grafico-relatorio-produtos" class="grafico-relatorio" style="display:none"></div>
   </div>
@@ -1128,7 +981,7 @@ body{padding:0!important;background:#0d0d0d!important}
     </div>
     <div style="display:flex;gap:10px;margin-top:24px">
       <button class="btn btn-ouro" onclick="salvarConfiguraciones()">💾 Salvar Configurações</button>
-      <button class="btn" style="background:var(--bg-input);color:var(--texto-claro);border:1px solid var(--borda)" onclick="fecharConfiguracoes()">Cancelar</button>
+      <button class="btn" style="background:var(--bg-input);color:#fff;border:1px solid var(--borda)" onclick="fecharConfiguracoes()">Cancelar</button>
     </div>
   </div>
 <script>
@@ -1686,43 +1539,34 @@ function restaurarCatalogoProdutos() {
     ['michele_produtos_motorizacao', PRECOS_MOTORIZACAO]
   ];
   categorias.forEach(([chave, lista]) => {
-    const salvo = JSON.parse(dadosStorage.getItem(chave) || 'null');
+    const salvo = JSON.parse(localStorage.getItem(chave) || 'null');
     if (Array.isArray(salvo)) lista.splice(0, lista.length, ...salvo);
     if (lista === PRECOS_VOAL || lista === PRECOS_FORRO) {
-        lista.splice(0, lista.length, ...MicheleTecidosLarguras.completar(separarVariacoesTecidos(lista)));
+        lista.splice(0, lista.length, ...separarVariacoesTecidos(lista));
     }
   });
-  const nomesCategorias = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}').nomesCategorias || {};
-  Object.entries(nomesCategorias).forEach(([id,nome]) => { if (categoriasProduto[id] && typeof nome === 'string' && nome.trim()) categoriasProduto[id].nome = nome; });
   completarCatalogoMateriaisPersianas();
-  produtosPersonalizados = JSON.parse(dadosStorage.getItem('michele_produtos_personalizados') || '[]');
+  produtosPersonalizados = JSON.parse(localStorage.getItem('michele_produtos_personalizados') || '[]');
   if (!Array.isArray(produtosPersonalizados)) produtosPersonalizados = [];
   produtosPersonalizados.forEach(produto => {
     if (!produto?.id || !produto?.nome || !Array.isArray(produto.lista)) return;
     categoriasProduto[produto.id] = { nome: produto.nome, lista: produto.lista, chave: 'michele_produtos_personalizados', unidade: '' };
   });
-  Object.values(categoriasProduto).forEach(dados => {
-    let mudou = false;
-    dados.lista.forEach((item, indice) => { const novo = MicheleProdutoPrecos.completar(item); if (novo !== item) { dados.lista[indice] = novo; mudou = true; } });
-    if (mudou && usuarioEhAdministrador()) persistirCategoriaProduto(dados);
-  });
   atualizarCategoriasProdutoSelecionaveis();
 }
 
 // Estado da aplicação
-let clientes = JSON.parse(dadosStorage.getItem('michele_clientes')) || [];
-let pedidos = JSON.parse(dadosStorage.getItem('michele_pedidos')) || [];
+let clientes = JSON.parse(localStorage.getItem('michele_clientes')) || [];
+let pedidos = JSON.parse(localStorage.getItem('michele_pedidos')) || [];
 let objetoOrcamentoCorrente = null;
 let contadorItensId = 0;
-let fornecedores = JSON.parse(dadosStorage.getItem('michele_fornecedores')) || [];
-let profissionais = JSON.parse(dadosStorage.getItem('michele_profissionais')) || [];
+let fornecedores = JSON.parse(localStorage.getItem('michele_fornecedores')) || [];
+let profissionais = JSON.parse(localStorage.getItem('michele_profissionais')) || [];
 let usuarioAtual = JSON.parse(sessionStorage.getItem('michele_usuario_atual') || 'null');
-let clienteEditando = null;
 let fornecedorEditando = null;
 let profissionalEditando = null;
 
 window.onload = function() {
-    if (MicheleNuvem.ativo) { usuarioAtual = null; MicheleNuvem.iniciar(); return; }
     restaurarCatalogoProdutos();
     atualizarOpcoesProdutos();
     normalizarDadosExistentes();
@@ -1730,29 +1574,6 @@ window.onload = function() {
     garantirNumeracaoHistorico();
     if (usuarioAtual) iniciarAplicacao(); else mostrarLogin();
 };
-
-async function avisarGravacao(mensagem) {
-    try {
-        await MicheleNuvem.sincronizar();
-        alert(mensagem + (MicheleNuvem.ativo ? ' Dados confirmados na nuvem.' : ' Salvo somente neste navegador; ainda não foi enviado ao Supabase.'));
-        return true;
-    } catch (_) {
-        alert('O envio à nuvem ainda não foi confirmado. Veja o aviso no topo do sistema e tente novamente.');
-        return false;
-    }
-}
-
-function iniciarComDadosNuvem(conta) {
-    clientes = JSON.parse(dadosStorage.getItem('michele_clientes') || '[]');
-    pedidos = JSON.parse(dadosStorage.getItem('michele_pedidos') || '[]');
-    fornecedores = JSON.parse(dadosStorage.getItem('michele_fornecedores') || '[]');
-    profissionais = JSON.parse(dadosStorage.getItem('michele_profissionais') || '[]');
-    usuarioAtual = conta;
-    restaurarCatalogoProdutos();
-    atualizarOpcoesProdutos();
-    // Abrir a nuvem não regrava nem renumera os registros existentes.
-    iniciarAplicacao();
-}
 
 function alternarAba(e, idAba) {
     const ph=document.getElementById('painel-dashboard'); if(ph) ph.style.display='none';
@@ -1914,29 +1735,16 @@ function alternarNovoProduto() {
   const novo = document.getElementById('produto-categoria')?.value === 'novo';
   if (grupo) grupo.style.display = novo ? '' : 'none';
   if (!novo) document.getElementById('produto-novo-nome').value = '';
-  const categoria = document.getElementById('produto-categoria')?.value;
-  const nomeCategoria = document.getElementById('produto-categoria-nome');
-  if (nomeCategoria) {
-    if (nomeCategoria.dataset.categoria !== categoria || !nomeCategoria.value) nomeCategoria.value = categoriasProduto[categoria]?.nome || '';
-    nomeCategoria.dataset.categoria = categoria;
-    nomeCategoria.disabled = novo;
-  }
-  const filtroUso = document.getElementById('produto-uso-filtro');
-  if (filtroUso) filtroUso.value = '';
-  atualizarTabelaProdutos();
 }
 function iniciarNovaCategoria() {
   produtoEditando = null;
   atualizarCategoriasProdutoSelecionaveis('novo');
   document.getElementById('produto-nome').value = '';
   document.getElementById('produto-preco').value = '';
-  document.getElementById('produto-preco').readOnly = false;
-  document.getElementById('produto-custo').value = '';
-  document.getElementById('produto-acrescimo').value = 100;
   document.getElementById('produto-novo-nome').focus();
 }
 function persistirCategoriaProduto(dados) {
-  dadosStorage.setItem(dados.chave, JSON.stringify(dados.chave === 'michele_produtos_personalizados' ? produtosPersonalizados : dados.lista));
+  localStorage.setItem(dados.chave, JSON.stringify(dados.chave === 'michele_produtos_personalizados' ? produtosPersonalizados : dados.lista));
 }
 function precoCatalogo(categoria, nome, valorPadrao = 0) {
   const item = categoriasProduto[categoria]?.lista.find(produto => produto.nome === nome);
@@ -1960,55 +1768,57 @@ function atualizarSelectProduto(select, itens, unidade) {
     if (select.atualizarFiltro) select.atualizarFiltro();
 }
 function atualizarOpcoesProdutos() {
-  if (typeof atualizarCatalogoCamposPersianas === 'function') atualizarCatalogoCamposPersianas();
-  document.querySelectorAll('select[id^="select-voal-"]').forEach(select => atualizarSelectProduto(select, PRECOS_VOAL.filter(item => MicheleCatalogoUso.permite(item,'voal','cortinas')), ''));
-  document.querySelectorAll('select[id^="select-terceiro-"]').forEach(select => atualizarSelectProduto(select, PRECOS_VOAL.filter(item => MicheleCatalogoUso.permite(item,'voal','cortinas')), ''));
-  document.querySelectorAll('select[id^="select-forro-"]').forEach(select => atualizarSelectProduto(select, PRECOS_FORRO.filter(item => MicheleCatalogoUso.permite(item,'forro','cortinas')), ''));
-  document.querySelectorAll('select[id^="persiana-modelo-"]').forEach(select => atualizarSelectProduto(select, PRECOS_PERSIANA.filter(item => !item.tipoMaterial && MicheleCatalogoUso.permite(item,'persiana','persianas')), '/m²'));
-  document.querySelectorAll('select[id^="select-argola-"]').forEach(select => atualizarSelectProduto(select, PRECOS_ACESSORIOS.filter(item => MicheleCatalogoUso.permite(item,'acessorios','cortinas') && /argola/i.test(item.nome)), ''));
-  document.querySelectorAll('select[id^="select-clip-"]').forEach(select => atualizarSelectProduto(select, PRECOS_ACESSORIOS.filter(item => MicheleCatalogoUso.permite(item,'acessorios','cortinas') && /clip/i.test(item.nome)), ''));
+  atualizarCatalogoCamposPersianas();
+  document.querySelectorAll('select[id^="select-voal-"]').forEach(select => atualizarSelectProduto(select, PRECOS_VOAL, ''));
+  document.querySelectorAll('select[id^="select-terceiro-"]').forEach(select => atualizarSelectProduto(select, PRECOS_VOAL, ''));
+  document.querySelectorAll('select[id^="select-forro-"]').forEach(select => atualizarSelectProduto(select, PRECOS_FORRO, ''));
+  document.querySelectorAll('select[id^="persiana-modelo-"]').forEach(select => atualizarSelectProduto(select, PRECOS_PERSIANA.filter(item => !item.tipoMaterial), '/m²'));
+  document.querySelectorAll('select[id^="select-argola-"]').forEach(select => atualizarSelectProduto(select, PRECOS_ACESSORIOS.filter(item => /argola/i.test(item.nome)), ''));
+  document.querySelectorAll('select[id^="select-clip-"]').forEach(select => atualizarSelectProduto(select, PRECOS_ACESSORIOS.filter(item => /clip/i.test(item.nome)), ''));
   
   // Atualizar acessórios padrão e personalizados
   produtosPersonalizados.forEach(produto => {
     document.querySelectorAll(`select[id^="select-${produto.id}-"]`).forEach(select => {
-      atualizarSelectProduto(select, produto.lista.filter(item => MicheleCatalogoUso.permite(item,produto.nome,'cortinas')), '');
+      atualizarSelectProduto(select, produto.lista, '');
     });
   });
   
-  const tubosCortinas = Object.entries(categoriasProduto).flatMap(([categoria,dados]) =>
-    (dados.lista || []).filter(item => MicheleCatalogoUso.permite(item,`${categoria} ${dados.nome}`,'cortinas') && /tubo|trilho/i.test(`${dados.nome} ${item.subcategoria || ''} ${item.nome}`))
+  // Atualizar tubo-trilho: usa qualquer categoria cujo nome contenha "tubo" ou "trilho".
+  const categoriaTuboTrilho = Object.values(categoriasProduto).find(dados =>
+    typeof dados.nome === 'string' && (dados.nome.toLowerCase().includes('tubo') || dados.nome.toLowerCase().includes('trilho'))
   );
-  document.querySelectorAll('select[id^="select-tubo-trilho-"]').forEach(select => atualizarSelectProduto(select,tubosCortinas,''));
-  if (window.MicheleCortinaEditor) window.MicheleCortinaEditor.catalogos();
+  document.querySelectorAll('select[id^="select-tubo-trilho-"]').forEach(select => {
+    if (categoriaTuboTrilho && Array.isArray(categoriaTuboTrilho.lista) && categoriaTuboTrilho.lista.length > 0) {
+      atualizarSelectProduto(select, categoriaTuboTrilho.lista, '');
+    } else {
+      select.innerHTML = '<option value="0">Nenhuma categoria de Tubos e Trilhos cadastrada</option>';
+      select.value = '0';
+    }
+  });
 }
 function atualizarTabelaProdutos() {
   const tabela = document.getElementById('tabela-produtos');
   if (!tabela) return;
-  const busca = (document.getElementById('busca-produto')?.value || '').trim().toLowerCase();
-  const categoriaSelecionada = document.getElementById('produto-categoria')?.value;
-  const grupos = MicheleCatalogoUso.grupos(categoriasProduto, busca ? '' : document.getElementById('produto-uso-filtro')?.value || '', busca).filter(grupo => busca || grupo.categoria === categoriaSelecionada);
-  const nomesUso = {cortinas:'Cortinas',persianas:'Persianas',ambos:'Cortinas e Persianas'};
+  const busca = (document.getElementById('busca-produto')?.value || '').toLowerCase();
+  const grupos = Object.entries(categoriasProduto).map(([categoria, dados]) => ({
+    categoria,
+    dados,
+    itens: dados.lista.map((item, indice) => ({ item, indice }))
+      .filter(x => `${dados.nome} ${x.item.nome}`.toLowerCase().includes(busca))
+  })).filter(grupo => grupo.itens.length);
   tabela.innerHTML = grupos.map(grupo =>
-    `<tr><td colspan="7" style="background:#292929;color:#d4af37;font-weight:700">${nomesUso[grupo.dominio]} — ${escaparHtmlProduto(grupo.dados.nome)}</td></tr>` +
-    grupo.itens.map(x => `<tr><td>${escaparHtmlProduto(grupo.dados.nome)}</td><td>${escaparHtmlProduto(x.item.nome)}</td><td>${Number(x.item.larguraTecido) > 0 ? Number(x.item.larguraTecido).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'}</td><td>${x.item.custo == null ? "—" : formatarMoeda(x.item.custo)}</td><td>${x.item.acrescimo ?? "—"}%</td><td>${formatarMoeda(x.item.preco)} ${escaparHtmlProduto(x.item.unidade || grupo.dados.unidade)}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProduto('${grupo.categoria}',${x.indice})">Editar</button></td></tr>`).join('')
-  ).join('') || '<tr><td colspan="7">Nenhum produto encontrado.</td></tr>';
+    `<tr><td colspan="4" style="background:#292929;color:#d4af37;font-weight:700">${escaparHtmlProduto(grupo.dados.nome)}</td></tr>` +
+    grupo.itens.map(x => `<tr><td>${escaparHtmlProduto(grupo.dados.nome)}</td><td>${escaparHtmlProduto(x.item.nome)}</td><td>${formatarMoeda(x.item.preco)} ${escaparHtmlProduto(x.item.unidade || grupo.dados.unidade)}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProduto('${grupo.categoria}',${x.indice})">Editar</button></td></tr>`).join('')
+  ).join('') || '<tr><td colspan="4">Nenhum produto encontrado.</td></tr>';
 }
 function limparProduto() {
-  document.getElementById('busca-produto').value = '';
-  document.getElementById('produto-busca-status').textContent = '';
-  document.getElementById('produto-subcategoria').value = '';
   produtoEditando = null;
   atualizarCategoriasProdutoSelecionaveis('voal');
-  document.getElementById('produto-largura-tecido').value = 3;
-  document.getElementById('produto-uso').value = 'cortinas';
   document.getElementById('produto-nome').value = '';
   document.getElementById('produto-novo-nome').value = '';
   document.getElementById('produto-preco').value = '';
-  document.getElementById('produto-preco').readOnly = false;
-  document.getElementById('produto-custo').value = '';
-  document.getElementById('produto-acrescimo').value = 100;
 }
-function editarProduto(categoria, indice, semRolar = false) {
+function editarProduto(categoria, indice) {
   const dados = categoriasProduto[categoria];
   const item = dados?.lista[indice];
   if (!item) return;
@@ -2016,51 +1826,13 @@ function editarProduto(categoria, indice, semRolar = false) {
   atualizarCategoriasProdutoSelecionaveis(categoria);
   document.getElementById('produto-nome').value = item.nome;
   document.getElementById('produto-preco').value = item.preco;
-  document.getElementById('produto-custo').value = item.custo ?? '';
-  document.getElementById('produto-acrescimo').value = item.acrescimo ?? 100;
-  document.getElementById('produto-preco').readOnly = item.custo != null;
-  document.getElementById('produto-subcategoria').value = item.subcategoria || '';
-  document.getElementById('produto-largura-tecido').value = item.larguraTecido || '';
-  document.getElementById('produto-uso').value = MicheleCatalogoUso.uso(item,`${categoria} ${dados.nome}`);
-  document.getElementById('produto-busca-status').textContent = 'Produto preenchido: ' + item.nome + ' — Categoria: ' + dados.nome + '.';
-  if (!semRolar) window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-function pesquisarProdutoCadastro() {
-  const busca = document.getElementById('busca-produto').value.trim();
-  const status = document.getElementById('produto-busca-status');
-  const encontrado = MicheleCatalogoUso.preencher(categoriasProduto, busca);
-  if (encontrado) editarProduto(encontrado.categoria, encontrado.indice, true);
-  else {
-    const quantidade = MicheleCatalogoUso.buscar(categoriasProduto, busca).length;
-    status.textContent = !busca ? '' : quantidade > 1 ? 'Há mais de um produto correspondente. Use Editar no cadastro desejado.' : quantidade === 1 ? 'Continue digitando o nome do produto.' : 'Nenhum produto encontrado com esse nome.';
-  }
-  atualizarTabelaProdutos();
-}
-function calcularPrecoProduto() {
-  const custo = document.getElementById('produto-custo').value;
-  const percentual = document.getElementById('produto-acrescimo').value;
-  const final = document.getElementById('produto-preco');
-  final.readOnly = custo !== '';
-  if (custo !== '' && percentual !== '') {
-    try { final.value = MicheleProdutoPrecos.preco(custo, percentual); } catch (_) { final.value = ''; }
-  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function salvarProduto() {
-  const custoTexto = document.getElementById('produto-custo').value;
-  const percentualTexto = document.getElementById('produto-acrescimo').value;
-  if (custoTexto === '' || percentualTexto === '') { alert('Informe o preço de custo e o percentual de acréscimo.'); return; }
-  const custo = Number(custoTexto), acrescimo = Number(percentualTexto);
-  try { MicheleProdutoPrecos.preco(custo, acrescimo); } catch (erro) { alert(erro.message); return; }
-  calcularPrecoProduto();
   let categoria = document.getElementById('produto-categoria').value;
   let dados = categoriasProduto[categoria];
   const nome = document.getElementById('produto-nome').value.trim();
   const preco = Number(document.getElementById('produto-preco').value);
-  const subcategoria = document.getElementById('produto-subcategoria').value.trim();
-  const uso = document.getElementById('produto-uso').value;
-  const valorLarguraTecido = document.getElementById('produto-largura-tecido').value;
-  const larguraTecido = valorLarguraTecido === '' ? (['voal','forro'].includes(categoria) ? MicheleTecidosLarguras.padrao(nome) : null) : Number(valorLarguraTecido);
-  if (larguraTecido !== null && (!Number.isFinite(larguraTecido) || larguraTecido <= 0)) { alert('Informe uma largura de tecido maior que zero.'); return; }
   if (categoria === 'novo') {
     const nomeProduto = document.getElementById('produto-novo-nome').value.trim();
     if (!nomeProduto) { alert('Informe o nome da nova categoria.'); return; }
@@ -2078,19 +1850,19 @@ function salvarProduto() {
   if (!dados || !nome || !Number.isFinite(preco) || preco < 0) { alert('Informe categoria, produto e um valor válido.'); return; }
   if (produtoEditando) {
     const origem = categoriasProduto[produtoEditando.categoria];
-    if (produtoEditando.categoria === categoria) dados.lista[produtoEditando.indice] = { ...dados.lista[produtoEditando.indice], nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso };
+    if (produtoEditando.categoria === categoria) dados.lista[produtoEditando.indice] = { ...dados.lista[produtoEditando.indice], nome, preco };
     else {
       origem.lista.splice(produtoEditando.indice, 1);
-      dados.lista.push({ nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso });
+      dados.lista.push({ nome, preco });
       persistirCategoriaProduto(origem);
     }
-  } else dados.lista.push({ nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso });
+  } else dados.lista.push({ nome, preco });
   persistirCategoriaProduto(dados);
   atualizarCategoriasProdutoSelecionaveis(categoria);
   atualizarOpcoesProdutos();
   atualizarTabelaProdutos();
   limparProduto();
-  avisarGravacao('Produto salvo.');
+  alert('Produto salvo.');
 }
 
 function adicionarItemOrcamentoPadrao() {
@@ -2192,7 +1964,7 @@ function adicionarItemOrcamentoPadrao() {
                 </div>
             </div>
 
-            <div class="form-group"><label>Costureira responsável</label><select id="costureira-id-${id}" onchange="selecionarCostureiraOrcamento('${id}')"><option value="">Não definida — valor padrão</option>${(window.listarCostureirasOrcamento?.() || []).map(c => `<option value="${escaparHtmlProduto(c.id)}">${escaparHtmlProduto(c.nome)}</option>`).join('')}</select><input type="hidden" id="costureira-valor-${id}" value="45"></div><!-- 2. SELEÇÃO DE TECIDOS E PROPORÇÕES MANUAIS -->
+            <!-- 2. SELEÇÃO DE TECIDOS E PROPORÇÕES MANUAIS -->
             <div class="secao-titulo">
                 <span>2. Seleção de Tecidos e Proporções Manuais</span>
             </div>
@@ -2258,7 +2030,7 @@ function adicionarItemOrcamentoPadrao() {
                         <label>Tecido terciário</label>
                     </div>
                     <input type="search" id="search-terceiro-${id}" placeholder="Pesquisar tecido..." style="margin-bottom:6px;padding:8px;border-radius:6px;">
-                    <select id="select-terceiro-${id}"></select>
+                    <select id="select-terceiro-${id}" disabled></select>
                 </div>
                 <div class="form-group">
                     <label>Proporção Tecido 3</label>
@@ -2484,8 +2256,7 @@ function adicionarItemOrcamentoPadrao() {
     const acoesAmbiente = document.createElement('div');
     acoesAmbiente.className = 'acoes-flex';
     acoesAmbiente.style.cssText = 'justify-content:flex-end;margin-top:18px';
-    acoesAmbiente.classList.add('ficha-acoes');
-    acoesAmbiente.innerHTML = `<span class="ficha-total">Total do ambiente <strong id="ficha-total-${id}">R$ 0,00</strong></span><button type="button" class="btn" onclick="processarCalculoGeral()">Calcular</button><button type="button" class="btn btn-ouro" onclick="salvarAmbiente(${id})">Salvar ambiente</button><button type="button" class="btn" onclick="alternarAmbiente(${id})">Recolher</button>`;
+    acoesAmbiente.innerHTML = `<button type="button" class="btn btn-sucesso" onclick="salvarAmbiente(${id})">Salvar ambiente</button>`;
     card.querySelector('.ambiente-conteudo').appendChild(acoesAmbiente);
     container.appendChild(card);
     inserirCamposAcabamentoPersiana(String(id));
@@ -2494,7 +2265,6 @@ function adicionarItemOrcamentoPadrao() {
     attachFiltroSelect(`select-forro-${id}`, `search-forro-${id}`);
     attachFiltroSelect(`select-terceiro-${id}`, `search-terceiro-${id}`);
     atualizarOpcoesProdutos();
-    if (window.MicheleCortinaEditor) window.MicheleCortinaEditor.montar(id);
     const campos = card.querySelectorAll('input, select');
     campos.forEach(campo => {
         const atualizar = () => { atualizarResumoAmbiente(id); processarCalculoGeral(); };
@@ -2635,7 +2405,7 @@ function aplicarEstadoCard(id, estado) {
         const cor = document.getElementById(`persiana-cor-bando-${sufixo}`);
         if (cor && !estado.campos?.[cor.id]) cor.value = Number(bando?.value) === 95 ? 'Preto' : Number(bando?.value) === 85 ? 'Branco' : '';
         atualizarAcabamentoPersiana(sufixo, !document.getElementById(`chk-persiana-${sufixo}`)?.checked);
-        if (!estado.campos?.[`persiana-base-inferior-${sufixo}`] && typeof aplicarPadroesPersianaSeNecessario === 'function') aplicarPadroesPersianaSeNecessario(sufixo);
+        if (!estado.campos?.[`persiana-base-inferior-${sufixo}`]) aplicarPadroesPersianaSeNecessario(sufixo);
     });
     const modeloLegado = document.getElementById(`modelo-${id}`)?.value;
     const modeloPrincipal = document.getElementById(`modelo-voal-${id}`);
@@ -2654,28 +2424,21 @@ function obterSnapshotAmbientes() {
 
 function alternarAmbiente(id) {
     const card = document.getElementById(`item-card-${id}`);
-    if (card?.querySelector('.editor-ambiente')) {
-        const janela = card.querySelector('.editor-ambiente');
-        if (janela.open) janela.close(); else abrirFichaAmbiente(id);
-        return;
-    }
     if (card) card.classList.toggle('aberto');
 }
 
-async function salvarAmbiente(id) {
+function salvarAmbiente(id) {
     const card = document.getElementById(`item-card-${id}`);
     if (!card) return;
     processarCalculoGeral();
     if (!objetoOrcamentoCorrente) return;
-    const salvo = await salvarComoOrcamentoOuPedido(objetoOrcamentoCorrente.tipo || 'Orçamento');
-    if (salvo === null) return;
+    salvarComoOrcamentoOuPedido(objetoOrcamentoCorrente.tipo || 'Orçamento');
     document.getElementById('btn-salvar-alteracoes').disabled = false;
     if (objetoOrcamentoCorrente.tipo !== 'Pedido') {
         document.getElementById('btn-salvar-pedido').textContent = 'Atualizar Orçamento';
     }
     atualizarResumoAmbiente(id);
     card.classList.remove('aberto');
-    card.querySelector('.editor-ambiente[open]')?.close();
 }
 
 function atualizarResumoAmbiente(id) {
@@ -2699,7 +2462,7 @@ function atualizarResumoAmbiente(id) {
     const partes = [];
     const possuiDados = !!(nomeEl?.value.trim() || larg || alt);
     if(cortina && possuiDados) partes.push(`${modelo}`, `${larg.toFixed(2)} × ${alt.toFixed(2)} m`, `Qtd ${qtd}`);
-    else if(cortina) partes.push('Preencha Aqui os dados do ambiente');
+    else if(cortina) partes.push('Preencha os dados do ambiente');
     else partes.push('Cortina desativada');
     if (persiana) partes.push('Persiana');
     if (moto) partes.push('Motorização');
@@ -2708,8 +2471,6 @@ function atualizarResumoAmbiente(id) {
 }
 
 function atualizarValorResumoAmbiente(id, valor) {
-    const totalFicha = document.getElementById(`ficha-total-${id}`);
-    if (totalFicha) totalFicha.textContent = (Number(valor)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
     const el = document.getElementById(`resumo-valor-${id}`);
     if (el) el.textContent = (Number(valor)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 }
@@ -2744,7 +2505,6 @@ function removerItemOrcamento(id) {
         }
         card.remove();
         atualizarContadoresAmbientes();
-        processarCalculoGeral();
     }
 }
 
@@ -2792,23 +2552,15 @@ function iniciarNovoOrcamento() {
     abrirAbaComando('aba-orcamento');
 }
 
-async function salvarEAnular(tipoDocumento) {
-    if (salvarEAnular.emAndamento) return;
+function salvarEAnular(tipoDocumento) {
     if(!objetoOrcamentoCorrente) return;
-    salvarEAnular.emAndamento = true;
-    const painel = document.getElementById('aba-orcamento');
-    if (painel) painel.inert = true;
-    try {
-        processarCalculoGeral();
-        const documentoAtualizado = await salvarComoOrcamentoOuPedido(tipoDocumento);
-        if(documentoAtualizado === false) resetarFormularioOrcamento();
-    } catch (erro) {
-        alert('Não foi possível salvar o orçamento. O formulário foi mantido. ' + erro.message);
-    } finally { salvarEAnular.emAndamento = false; if (painel) painel.inert = false; }
+    processarCalculoGeral();
+    const documentoAtualizado = salvarComoOrcamentoOuPedido(tipoDocumento);
+    if(!documentoAtualizado) resetarFormularioOrcamento();
 }
 
 function inserirCamposAcabamentoPersiana(sufixo) {
-    if (typeof montarAcabamentosPersiana === 'function') montarAcabamentosPersiana(sufixo);
+    montarAcabamentosPersiana(sufixo);
 }
 
 function atualizarAcabamentoPersiana(sufixo, desativado) {
@@ -3132,19 +2884,11 @@ function processarCalculoGeral() {
             const quantidadeTrilho = (parseInt(document.getElementById(`tubo-trilho-qtd-${id}`).value) || 0) * (parseFloat(document.getElementById(`tubo-trilho-tamanho-${id}`).value) || 0);
             adicionarMaterial(document.getElementById(`select-tubo-trilho-${id}`).selectedOptions[0].textContent.split(' - R$')[0], quantidadeTrilho, 'm', Number(document.getElementById(`select-tubo-trilho-${id}`).value), quantidadeTrilho * Number(document.getElementById(`select-tubo-trilho-${id}`).value));
         }
-        const calculoCortina = window.MicheleCortinaCalculo ? (cortinaAtiva ? window.MicheleCortinaCalculo.calcular(
-            chave => document.getElementById(`${chave}-${id}`)?.value,
-            chave => document.getElementById(`${chave}-${id}`)?.selectedOptions[0]?.textContent || chave
-        ) : {materiais:[],tecidos:{},total:0}) : null;
-        if (calculoCortina) materiais.splice(0, materiais.length, ...calculoCortina.materiais);
-        const materiaisCortina = cortinaAtiva ? materiais.map(material => ({...material})) : [];
         adicionarMaterial(descPersiana || 'Persianas', totalPersiana > 0 ? 1 : 0, 'conj.', totalPersiana, totalPersiana);
         adicionarMaterial('Motorização', totalMotorizacao > 0 ? 1 : 0, 'conj.', totalMotorizacao, totalMotorizacao);
-        if (!calculoCortina) adicionarMaterial('Instalação', instalacaoQtd, 'un.', instalacaoValorUnitario, totalInstalacao);
+        adicionarMaterial('Instalação', instalacaoQtd, 'un.', instalacaoValorUnitario, totalInstalacao);
 
-        const subtotalBruto = calculoCortina ? calculoCortina.total + totalPersiana + totalMotorizacao : precoMetragemVoal + precoMetragemForro + precoMetragemTerceiro + maoDeObraOculta + subtotalComponentes + totalPersiana + totalMotorizacao + totalInstalacao;
-        const pagamento = window.MichelePagamento?.calcular(id, subtotalBruto) || {total:subtotalBruto};
-        const subtotalItem = pagamento.total;
+        const subtotalItem = precoMetragemVoal + precoMetragemForro + precoMetragemTerceiro + maoDeObraOculta + subtotalComponentes + totalPersiana + totalMotorizacao + totalInstalacao;
         valorGeralConsolidado += subtotalItem;
 
         listaItensProcessados.push({
@@ -3162,12 +2906,7 @@ function processarCalculoGeral() {
             instalacaoQuantidade: instalacaoQtd,
             instalacaoValorUnitario: instalacaoValorUnitario,
             instalacaoTotal: totalInstalacao,
-            costureiraId: document.getElementById(`costureira-id-${id}`)?.value || '',
-            costureiraNome: document.getElementById(`costureira-id-${id}`)?.value ? document.getElementById(`costureira-id-${id}`).selectedOptions[0]?.textContent : '',
-            rentabilidade: MicheleProdutoPrecos.registrar(materiaisCustosAmbiente(materiais, id, card), subtotalItem),
             materiais: materiais,
-            materiaisCortina: materiaisCortina,
-            calculoCortina: calculoCortina,
             abertura: document.getElementById(`abertura-${id}`).value,
             voalAtivo: voalAtivo,
             forroAtivo: forroAtivo,
@@ -3180,7 +2919,6 @@ function processarCalculoGeral() {
             motorizacaoAtiva: motorizacaoAtiva,
             cortinaAtiva: cortinaAtiva,
             subtotal: subtotalItem,
-            subtotalBruto, pagamento,
             configuracao: capturarEstadoCard(card)
         });
     });
@@ -3189,7 +2927,6 @@ function processarCalculoGeral() {
         const cardId = cards[idx].id.replace('item-card-','');
         atualizarValorResumoAmbiente(cardId, it.subtotal);
         atualizarResumoAmbiente(cardId);
-        if (window.MicheleCortinaEditor) window.MicheleCortinaEditor.renderizar(cardId, it);
     });
     atualizarContadoresAmbientes();
 
@@ -3209,9 +2946,6 @@ function processarCalculoGeral() {
         numeroPedido: objetoOrcamentoCorrente?.numeroPedido || null,
         itens: listaItensProcessados,
         materiaisPersianas: objetoOrcamentoCorrente?.materiaisPersianas || {},
-        confeccao: objetoOrcamentoCorrente?.confeccao,
-        producao: objetoOrcamentoCorrente?.producao,
-        logistica: objetoOrcamentoCorrente?.logistica,
         configuracaoAmbientes: obterSnapshotAmbientes(),
         valorTotal: valorGeralConsolidado
     };
@@ -3248,7 +2982,6 @@ function processarCalculoGeral() {
         if(it.motorizacaoAtiva) {
             textoComercial += `• Motorização Eletrônica: Ativada\n`;
         }
-        if (it.pagamento?.forma) textoComercial += `• Pagamento: ${it.pagamento.descricao}\n`;
         textoComercial += `• Subtotal do Item: ${it.subtotal.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}\n`;
     });
 
@@ -3268,12 +3001,10 @@ function processarCalculoGeral() {
 
 function proximoNumero(tipo) {
     const chave = tipo === 'Pedido' ? 'michele_numero_pedido' : 'michele_numero_orcamento';
-    let atual = parseInt(dadosStorage.getItem(chave) || '0', 10);
+    let atual = parseInt(localStorage.getItem(chave) || '0', 10);
     if(!Number.isFinite(atual) || atual < 0) atual = 0;
-    const campo = tipo === 'Pedido' ? 'numeroPedido' : 'numeroOrcamento';
-    for (const doc of pedidos) atual = Math.max(atual, parseInt(doc[campo], 10) || 0);
     atual += 1;
-    dadosStorage.setItem(chave, String(atual));
+    localStorage.setItem(chave, String(atual));
     return String(atual).padStart(6, '0');
 }
 
@@ -3284,8 +3015,8 @@ function numeroExibicao(doc) {
 
 function garantirNumeracaoHistorico() {
     let alterou = false;
-    let maiorOrc = parseInt(dadosStorage.getItem('michele_numero_orcamento') || '0', 10) || 0;
-    let maiorPed = parseInt(dadosStorage.getItem('michele_numero_pedido') || '0', 10) || 0;
+    let maiorOrc = parseInt(localStorage.getItem('michele_numero_orcamento') || '0', 10) || 0;
+    let maiorPed = parseInt(localStorage.getItem('michele_numero_pedido') || '0', 10) || 0;
     pedidos.forEach(doc => {
         if(doc.tipo === 'Pedido') {
             if(doc.numeroPedido) maiorPed = Math.max(maiorPed, parseInt(doc.numeroPedido,10) || 0);
@@ -3300,12 +3031,12 @@ function garantirNumeracaoHistorico() {
             maiorOrc += 1; doc.numeroOrcamento = String(maiorOrc).padStart(6,'0'); alterou = true;
         }
     });
-    dadosStorage.setItem('michele_numero_orcamento', String(maiorOrc));
-    dadosStorage.setItem('michele_numero_pedido', String(maiorPed));
-    if(alterou) dadosStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+    localStorage.setItem('michele_numero_orcamento', String(maiorOrc));
+    localStorage.setItem('michele_numero_pedido', String(maiorPed));
+    if(alterou) localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
 }
 
-async function salvarComoOrcamentoOuPedido(tipoDocumento) {
+function salvarComoOrcamentoOuPedido(tipoDocumento) {
     if(!objetoOrcamentoCorrente) return;
     const base = JSON.parse(JSON.stringify(objetoOrcamentoCorrente));
 
@@ -3318,13 +3049,12 @@ async function salvarComoOrcamentoOuPedido(tipoDocumento) {
     }
     if(indiceExistente >= 0 && (base.tipo || 'Orçamento') === tipoDocumento) {
         const docAtualizado = {...base, tipo:tipoDocumento, idDocumento:base.idDocumento || pedidos[indiceExistente].idDocumento};
-        const atualizados = pedidos.map((pedido, indice) => indice === indiceExistente ? docAtualizado : pedido);
-        dadosStorage.setItem('michele_pedidos', JSON.stringify(atualizados));
-        pedidos = atualizados;
+        pedidos[indiceExistente] = docAtualizado;
         objetoOrcamentoCorrente = JSON.parse(JSON.stringify(docAtualizado));
+        localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
         atualizarTabelaPedidos();
         atualizarRelatorioTotalPedidos();
-        if (!await avisarGravacao(`${tipoDocumento} ${numeroExibicao(docAtualizado)} atualizado com sucesso!`)) return null;
+        alert(`${tipoDocumento} ${numeroExibicao(docAtualizado)} atualizado com sucesso!`);
         return true;
     }
 
@@ -3341,17 +3071,15 @@ async function salvarComoOrcamentoOuPedido(tipoDocumento) {
     }
 
     const transformouOrcamento = tipoDocumento === 'Pedido' && indiceExistente >= 0 && (base.tipo || 'Orçamento') !== 'Pedido';
-    const atualizados = transformouOrcamento
-      ? pedidos.map((pedido, indice) => indice === indiceExistente ? doc : pedido)
-      : [...pedidos, doc];
-    dadosStorage.setItem('michele_pedidos', JSON.stringify(atualizados));
-    pedidos = atualizados;
+    if(transformouOrcamento) pedidos.splice(indiceExistente, 1, doc);
+    else pedidos.push(doc);
+    localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
     objetoOrcamentoCorrente = JSON.parse(JSON.stringify(doc));
     atualizarTabelaPedidos();
-    const confirmado = await avisarGravacao(transformouOrcamento
+    alert(transformouOrcamento
         ? `Orçamento ${base.numeroOrcamento ? 'ORC-' + base.numeroOrcamento : ''} transformado no Pedido ${numeroExibicao(doc)} com sucesso!`
         : `${tipoDocumento} ${numeroExibicao(doc)} gravado com sucesso no histórico!`);
-    return confirmado ? false : null;
+    return false;
 }
 
 function salvarAlteracoesHistorico() {
@@ -3363,9 +3091,9 @@ function salvarAlteracoesHistorico() {
     const indice=pedidos.findIndex(pedido=>pedido.idDocumento===objetoOrcamentoCorrente.idDocumento);
     if(indice<0){alert('O registro original não foi encontrado no histórico.');return;}
     pedidos[indice]=JSON.parse(JSON.stringify(objetoOrcamentoCorrente));
-    dadosStorage.setItem('michele_pedidos',JSON.stringify(pedidos));
+    localStorage.setItem('michele_pedidos',JSON.stringify(pedidos));
     atualizarTabelaPedidos();
-    avisarGravacao(`${numeroExibicao(objetoOrcamentoCorrente)} atualizado com sucesso.`);
+    alert(`${numeroExibicao(objetoOrcamentoCorrente)} atualizado com sucesso.`);
 }
 
 
@@ -3379,40 +3107,32 @@ function gerarCodigosUnicos() {
     document.getElementById('c-codigo').value = 'CLI-' + Math.floor(1000 + Math.random() * 9000);
 }
 
-function limparCliente() {
-    clienteEditando = null;
-    ['nome','cpf','telefone','email','endereco'].forEach(k => document.getElementById('c-'+k).value = '');
-    gerarCodigosUnicos();
-    document.getElementById('btn-salvar-cliente').textContent = 'Salvar cliente';
-}
-function editarCliente(index) {
-    const cli = clientes[index]; if (!cli) return;
-    clienteEditando = cli;
-    ['codigo','nome','cpf','telefone','email','endereco'].forEach(k => document.getElementById('c-'+k).value = cli[k] || '');
-    document.getElementById('btn-salvar-cliente').textContent = 'Atualizar cliente';
-    document.getElementById('c-nome').focus();
-}
 function salvarNovoClienteNoBanco() {
     const nome = document.getElementById('c-nome').value.trim();
-    if (!nome) { alert('Insira o nome do cliente.'); return; }
-    const editando = clienteEditando !== null;
-    const novo = {...(clienteEditando || {})};
-    ['codigo','nome','cpf','telefone','email','endereco'].forEach(k => novo[k] = document.getElementById('c-'+k).value.trim());
-    const atualizados = editando ? clientes.map(c => c === clienteEditando ? novo : c) : [...clientes, novo];
-    dadosStorage.setItem('michele_clientes', JSON.stringify(atualizados));
-    clientes = atualizados;
-    limparCliente(); popularClientesSelect(); atualizarTabelaClientes(); atualizarDashboard();
-    avisarGravacao(editando ? 'Cliente atualizado.' : 'Cliente salvo.');
-}
-function excluirCliente(index) {
-    const cli = clientes[index];
-    if (!cli || !confirm(`Excluir o cliente ${cli.nome}? Os pedidos e or?amentos anteriores ser?o preservados.`)) return;
-    const atualizados = clientes.filter((_, i) => i !== index);
-    dadosStorage.setItem('michele_clientes', JSON.stringify(atualizados));
-    clientes = atualizados;
-    if (clienteEditando === cli) limparCliente();
-    popularClientesSelect(); atualizarTabelaClientes(); atualizarDashboard();
-    avisarGravacao('Cliente exclu?do.');
+    if(!nome) { alert('Insira o nome do cliente.'); return; }
+
+    const novo = {
+        codigo: document.getElementById('c-codigo').value,
+        nome: nome,
+        cpf: document.getElementById('c-cpf').value,
+        telefone: document.getElementById('c-telefone').value,
+        email: document.getElementById('c-email').value,
+        endereco: document.getElementById('c-endereco').value
+    };
+
+    clientes.push(novo);
+    localStorage.setItem('michele_clientes', JSON.stringify(clientes));
+    
+    document.getElementById('c-nome').value = "";
+    document.getElementById('c-cpf').value = "";
+    document.getElementById('c-telefone').value = "";
+    document.getElementById('c-email').value = "";
+    document.getElementById('c-endereco').value = "";
+    
+    gerarCodigosUnicos();
+    popularClientesSelect();
+    atualizarTabelaClientes();
+    alert('Cliente cadastrado com sucesso!');
 }
 
 function popularClientesSelect() {
@@ -3428,22 +3148,14 @@ function popularClientesSelect() {
 
 function atualizarTabelaClientes() {
     const tbody = document.querySelector('#tabela-clientes-dados tbody');
-    const normalizar = valor => String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const termo = normalizar(document.getElementById('busca-cliente')?.value);
-    let encontrados = 0;
     if(tbody) {
         tbody.innerHTML = "";
-        clientes.forEach((cli, index) => {
-            if (termo && ![cli.nome, cli.cpf, cli.telefone, cli.codigo].some(valor => normalizar(valor).includes(termo))) return;
-            encontrados++;
+        clientes.forEach(cli => {
             let tr = document.createElement('tr');
-            tr.innerHTML = `<td>${cli.codigo}</td><td>${cli.nome}</td><td>${cli.cpf}</td><td>${cli.telefone}</td><td>${cli.endereco}</td><td><button class="btn" onclick="editarCliente(${index})">Editar</button> <button class="btn btn-erro" onclick="excluirCliente(${index})">Excluir</button></td>`;
+            tr.innerHTML = `<td>${cli.codigo}</td><td>${cli.nome}</td><td>${cli.cpf}</td><td>${cli.telefone}</td><td>${cli.endereco}</td>`;
             tbody.appendChild(tr);
         });
-        if (!encontrados) tbody.innerHTML = '<tr><td colspan="6">Nenhum cliente encontrado.</td></tr>';
     }
-    const status = document.getElementById('clientes-status');
-    if (status) status.textContent = `${encontrados} cliente${encontrados === 1 ? '' : 's'} encontrado${encontrados === 1 ? '' : 's'}.`;
 }
 
 function formatarMoeda(v) {
@@ -3456,7 +3168,6 @@ function obterTermoHistorico() {
 
 function obterMateriaisRelatorio(item) {
     if(!item) return [];
-    if (item.calculoCortina) return item.materiais || [];
     const estado = item.configuracao || {};
     let m;
     try {
@@ -3569,8 +3280,7 @@ function atualizarRelatorioTotalPedidos() {
     const doc = documentos[0];
     tbody.innerHTML = linhas.join('') || '<tr><td colspan="5" style="text-align:center">Nenhum material registrado neste documento.</td></tr>';
     if(relatorio) relatorio.style.display = doc ? 'block' : 'none';
-    const custosRelatorio = MicheleProdutoPrecos.resumo({valorTotal:documentos.reduce((s,d)=>s+Number(d.valorTotal||0),0),itens:documentos.flatMap(d=>d.itens||[])});
-    document.getElementById('relatorio-total-valor').textContent = formatarMoeda(totalGeral) + ' | Custo: ' + formatarMoeda(custosRelatorio.custo) + (custosRelatorio.completo ? ' | Lucro bruto: ' + formatarMoeda(custosRelatorio.lucro) : ' (parcial; há custos não informados)');
+    document.getElementById('relatorio-total-valor').textContent = formatarMoeda(totalGeral);
     document.getElementById('relatorio-pedidos-status').textContent = doc ? `Relatório de ${numeroExibicao(doc)} pronto para imprimir ou salvar em PDF.` : 'Selecione um documento para gerar o relatório completo.';
     const cabecalho = document.getElementById('relatorio-pedidos-cabecalho');
     if(cabecalho) cabecalho.innerHTML = doc ? `<span><strong>Número do orçamento / pedido</strong> ${escapar(numeroExibicao(doc))}</span><span><strong>Nome do cliente</strong> ${escapar(doc.cliente?.nome || 'Cliente Avulso')}</span><span><strong>Total de itens</strong> ${contadorMateriais}</span>` : '';
@@ -3584,7 +3294,7 @@ function imprimirRelatorioTotalPedido() {
     }
     atualizarRelatorioTotalPedidos();
     document.body.classList.add('imprimindo-relatorio');
-    imprimirComRetorno();
+    window.print();
 }
 
 function abrirRelatorioInterno(id) {
@@ -3600,7 +3310,7 @@ function imprimirRelatorioLista(id) {
     if(!secao) return;
     secao.classList.add('relatorio-impressao-ativo');
     document.body.classList.add('imprimindo-lista-relatorio');
-    imprimirComRetorno();
+    window.print();
 }
 
 function alternarGraficoRelatorio(id) {
@@ -3626,10 +3336,9 @@ function atualizarRelatorioGeralPedidos() {
         const busca = `${numeroExibicao(doc)} ${doc.numeroPedido || ''} ${doc.cliente?.nome || ''} ${doc.cliente?.cpf || ''} ${doc.vendedorNome || ''} ${doc.data || ''}`.toLowerCase();
         return !termo || busca.includes(termo);
     }).slice().reverse();
-    tbody.innerHTML = lista.map(doc => `<tr><td style="font-weight:800">${escaparHtmlProduto(numeroExibicao(doc))}</td><td>${escaparHtmlProduto(doc.cliente?.nome || 'Cliente Avulso')}</td><td>${escaparHtmlProduto(doc.data || '-')}</td><td>${escaparHtmlProduto(doc.dataEntrega ? formatarDataMaterial(doc.dataEntrega) : 'Não finalizado/informado')}</td><td>${escaparHtmlProduto(doc.vendedorNome || 'Não informado')}</td><td style="font-weight:800;white-space:nowrap">${formatarMoeda(doc.valorTotal)}</td>${celulasRentabilidade(doc)}</tr>`).join('') || '<tr><td colspan="8" style="text-align:center">Nenhum pedido encontrado.</td></tr>';
+    tbody.innerHTML = lista.map(doc => `<tr><td style="font-weight:800">${escaparHtmlProduto(numeroExibicao(doc))}</td><td>${escaparHtmlProduto(doc.cliente?.nome || 'Cliente Avulso')}</td><td>${escaparHtmlProduto(doc.data || '-')}</td><td>${escaparHtmlProduto(doc.dataEntrega ? formatarDataMaterial(doc.dataEntrega) : 'Não finalizado/informado')}</td><td>${escaparHtmlProduto(doc.vendedorNome || 'Não informado')}</td><td style="font-weight:800;white-space:nowrap">${formatarMoeda(doc.valorTotal)}</td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center">Nenhum pedido encontrado.</td></tr>';
     const total = lista.reduce((soma, doc) => soma + (Number(doc.valorTotal) || 0), 0);
-    const resumo = MicheleProdutoPrecos.resumo({valorTotal:total,itens:lista.flatMap(doc=>doc.itens||[])});
-    document.getElementById('total-relatorio-geral-pedidos').textContent = formatarMoeda(total) + ' | Custo: ' + formatarMoeda(resumo.custo) + (resumo.completo ? ' | Lucro bruto: ' + formatarMoeda(resumo.lucro) : ' (parcial; há custos não informados)');
+    document.getElementById('total-relatorio-geral-pedidos').textContent = formatarMoeda(total);
 }
 
 function atualizarRelatorioVendasVendedor() {
@@ -3679,24 +3388,22 @@ function atualizarRelatorioGeralProdutos() {
         return !termoPedido || busca.includes(termoPedido);
     }).forEach(doc => {
         (doc.itens || []).forEach(item => {
-            (item.rentabilidade || obterMateriaisRelatorio(item)).forEach(material => {
+            obterMateriaisRelatorio(item).forEach(material => {
                 const nomeOriginal = String(material.nome || 'Produto não informado');
                 const nomeNormalizado = nomeOriginal.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                 if(nomeNormalizado.includes('mao de obra') || nomeNormalizado === 'instalacao') return;
                 const nome = nomeOriginal.replace(/\s+[—-]\s+(Tecido principal|Forro|Tecido 3).*$/i, '').trim();
                 const unidade = material.unidade || '-';
                 const chave = `${nome.toLowerCase()}|${unidade}`;
-                const atual = agrupados.get(chave) || {nome, unidade, quantidade:0, valor:0, custo:0, completo:true};
+                const atual = agrupados.get(chave) || {nome, unidade, quantidade:0, valor:0};
                 atual.quantidade += Number(material.quantidade) || 0;
-                atual.valor += Number(material.receita ?? material.valorTotal) || 0;
-                atual.custo += Number(material.custoTotal) || 0;
-                atual.completo = atual.completo && material.custoTotal != null;
+                atual.valor += Number(material.valorTotal) || 0;
                 agrupados.set(chave, atual);
             });
         });
     });
     const produtos = [...agrupados.values()].filter(item => !termo || item.nome.toLowerCase().includes(termo)).sort((a,b) => b.valor-a.valor);
-    tbody.innerHTML = produtos.map(item => `<tr><td>${escaparHtmlProduto(item.nome)}</td><td style="text-align:right">${item.quantidade.toLocaleString('pt-BR', {maximumFractionDigits:2})}</td><td>${escaparHtmlProduto(item.unidade)}</td><td style="font-weight:800;white-space:nowrap">${formatarMoeda(item.valor)}</td><td>${formatarMoeda(item.custo)}${item.completo ? "" : " (parcial)"}</td><td>${item.completo ? formatarMoeda(item.valor-item.custo) : "—"}</td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center">Nenhum produto vendido encontrado.</td></tr>';
+    tbody.innerHTML = produtos.map(item => `<tr><td>${escaparHtmlProduto(item.nome)}</td><td style="text-align:right">${item.quantidade.toLocaleString('pt-BR', {maximumFractionDigits:2})}</td><td>${escaparHtmlProduto(item.unidade)}</td><td style="font-weight:800;white-space:nowrap">${formatarMoeda(item.valor)}</td></tr>`).join('') || '<tr><td colspan="4" style="text-align:center">Nenhum produto vendido encontrado.</td></tr>';
     const total = produtos.reduce((soma, item) => soma + item.valor, 0);
     document.getElementById('total-relatorio-geral-produtos').textContent = formatarMoeda(total);
     montarGraficoBarras('grafico-relatorio-produtos', 'Produtos em alta por valor vendido', produtos.slice(0, 15).map(item => ({nome:item.nome, valor:item.valor})));
@@ -3728,7 +3435,7 @@ function atualizarTabelaPedidos() {
             <td><div class="acoes-historico">
                 <button class="btn btn-ouro" onclick="consultarOrcamentoHistorico(${index})">Consultar</button>
                 <button class="btn btn-sucesso" onclick="gerarPedidoDoHistorico(${index})" ${ped.tipo === 'Pedido' ? 'disabled' : ''}>Gerar Pedido</button>
-                <button class="btn btn-erro" onclick="deletarPedido(${index})">Excluir</button>
+                <button class="btn btn-erro" onclick="deletarPedido(${index})">Remover</button>
             </div></td>`;
         tbody.appendChild(tr);
     });
@@ -3784,22 +3491,17 @@ function gerarPedidoDoHistorico(index) {
     pedido.numeroPedido = proximoNumero('Pedido');
     pedido.numeroOrcamento = doc.numeroOrcamento || null;
     pedidos.splice(index, 1, pedido);
-    dadosStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+    localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
     atualizarTabelaPedidos();
-    avisarGravacao(`Orçamento ${doc.numeroOrcamento ? 'ORC-' + doc.numeroOrcamento : ''} transformado no Pedido ${numeroExibicao(pedido)} de ${pedido.cliente?.nome || 'Cliente Avulso'}.`);
+    alert(`Orçamento ${doc.numeroOrcamento ? 'ORC-' + doc.numeroOrcamento : ''} transformado no Pedido ${numeroExibicao(pedido)} de ${pedido.cliente?.nome || 'Cliente Avulso'}.`);
 }
 
 function deletarPedido(index) {
-    const doc = pedidos[index];
-    if (!doc || !confirm(`Excluir ${doc.tipo || 'Or?amento'} ${numeroExibicao(doc)} de ${doc.cliente?.nome || 'Cliente Avulso'}? Esta a??o n?o pode ser desfeita.`)) return;
-    const atualizados = pedidos.filter((_, i) => i !== index);
-    dadosStorage.setItem('michele_pedidos', JSON.stringify(atualizados));
-    pedidos = atualizados;
-    if (objetoOrcamentoCorrente && doc.idDocumento && objetoOrcamentoCorrente.idDocumento === doc.idDocumento) resetarFormularioOrcamento();
-    atualizarTabelaPedidos(); atualizarDashboard();
-    atualizarRelatorioTotalPedidos(); atualizarRelatorioGeralPedidos(); atualizarRelatorioVendasVendedor(); atualizarRelatorioGeralProdutos();
-    atualizarListaMateriais(); atualizarMateriaisPersianas(); atualizarPlanoCortePersianas(); atualizarPlanoCorteTubosTrilhos();
-    avisarGravacao(`${doc.tipo || 'Or?amento'} exclu?do.`);
+    if(confirm("Deseja realmente remover este registro?")) {
+        pedidos.splice(index, 1);
+        localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+        atualizarTabelaPedidos();
+    }
 }
 
 function normalizarDadosExistentes(){
@@ -3830,17 +3532,16 @@ function normalizarDadosExistentes(){
     senha: x.senha || '',
     cargo: x.cargo || 'Vendedor',
     comissao: Number(x.comissao || 0),
-    descontoMaximo: Number(x.descontoMaximo || 0),
     telefone: x.telefone || '',
     email: x.email || '',
     status: x.status || 'Ativo',
     observacoes: x.observacoes || ''
   }));
 
-  dadosStorage.setItem('michele_clientes', JSON.stringify(clientes));
-  dadosStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
-  dadosStorage.setItem('michele_fornecedores', JSON.stringify(fornecedores));
-  dadosStorage.setItem('michele_profissionais', JSON.stringify(profissionais));
+  localStorage.setItem('michele_clientes', JSON.stringify(clientes));
+  localStorage.setItem('michele_pedidos', JSON.stringify(pedidos));
+  localStorage.setItem('michele_fornecedores', JSON.stringify(fornecedores));
+  localStorage.setItem('michele_profissionais', JSON.stringify(profissionais));
 }
 
 function inicializarUsuarios(){
@@ -3850,11 +3551,10 @@ function inicializarUsuarios(){
   if(!profissionais.some(p=>String(p.usuario||'').toLowerCase()==='elton')){
     profissionais.push({id:novoCodigo(profissionais,'PROF-'),nome:'Elton',cargo:'Vendedor',comissao:5,usuario:'Elton',senha:'1234',telefone:'',email:'',status:'Ativo',observacoes:''});
   }
-  dadosStorage.setItem('michele_profissionais',JSON.stringify(profissionais));
+  localStorage.setItem('michele_profissionais',JSON.stringify(profissionais));
 }
 function mostrarLogin(){document.getElementById('login-screen').style.display='flex';document.getElementById('app-shell').style.display='none';}
 function usuarioEhAdministrador() {
-  if (MicheleNuvem.ativo) return usuarioAtual?.cargo === 'Administrador';
   const cadastroAtual = profissionais.find(p => p.id === usuarioAtual?.id) || profissionais.find(p => p.usuario === usuarioAtual?.usuario);
   if(cadastroAtual) {
     usuarioAtual = cadastroAtual;
@@ -3872,36 +3572,27 @@ function iniciarAplicacao(){
     popularClientesSelect(); popularVendedores(); atualizarTabelaClientes(); atualizarFornecedores(); atualizarProfissionais(); atualizarTabelaProdutos(); atualizarTabelaPedidos(); atualizarDashboard();
     resetarFormularioOrcamento();
   aplicarPermissoes();
-  abrirDashboard();
 }
 function fazerLogin(){
-  if (MicheleNuvem.ativo) { MicheleNuvem.login(); return; }
-  const u = document.getElementById('login-usuario').value.trim().toLocaleLowerCase('pt-BR');
-  const s = document.getElementById('login-senha').value;
-  const p = profissionais.find(x =>
-    String(x.usuario || '').trim().toLocaleLowerCase('pt-BR') === u &&
-    String(x.senha || '') === s &&
-    String(x.status || '').trim().toLocaleLowerCase('pt-BR') === 'ativo'
+  const u=document.getElementById('login-usuario').value.trim().toLocaleLowerCase('pt-BR'), s=document.getElementById('login-senha').value;
+  const p=profissionais.find(x=>
+    String(x.usuario || '').trim().toLocaleLowerCase('pt-BR')===u &&
+    String(x.senha || '')===s &&
+    String(x.status || '').trim().toLocaleLowerCase('pt-BR')==='ativo'
   );
-  if (!p) {
-    document.getElementById('login-erro').textContent = 'Usuário ou senha inválidos.';
-    return;
-  }
-  usuarioAtual = p;
-  sessionStorage.setItem('michele_usuario_atual', JSON.stringify(p));
-  document.getElementById('login-erro').textContent = '';
-  iniciarAplicacao();
+  if(!p){document.getElementById('login-erro').textContent='Usuário ou senha inválidos.';return;}
+  usuarioAtual=p;sessionStorage.setItem('michele_usuario_atual',JSON.stringify(p));document.getElementById('login-erro').textContent='';iniciarAplicacao();
 }
 
 // Configurações da Empresa
 const LOGO_EMPRESA_PADRAO = 'https://drive.google.com/thumbnail?id=1YCQITXdbaT8o7OP0GkgX5rtJt56OElzT&sz=w1200';
 function carregarConfiguracoes() {
-  const config = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
+  const config = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
     aplicarPaleta(config.paleta || 'padrao');
   atualizarCabecalhoEmpresa({ ...config, logo: config.logo || LOGO_EMPRESA_PADRAO });
 }
 function abrirConfiguracoes() {
-  const config = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
+  const config = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
   document.getElementById('config-nome-empresa').value = config.nomeEmpresa || 'Michele Cortinas';
   document.getElementById('config-endereco').value = config.endereco || '';
   document.getElementById('config-bairro-cidade').value = config.bairroCidade || '';
@@ -3932,7 +3623,6 @@ function previsualizarLogoEmpresa(event) {
   leitor.onload = () => {
     const preview = document.getElementById('config-logo-preview');
     if (preview) { preview.src = leitor.result; preview.style.display = 'block'; }
-    window.MicheleAutoSave?.agendar('configuracoes');
   };
   leitor.readAsDataURL(arquivo);
 }
@@ -3941,9 +3631,9 @@ function removerLogoEmpresa() {
   if (preview) { preview.src = ''; preview.style.display = 'none'; }
   const arquivo = document.getElementById('config-logo');
   if (arquivo) arquivo.value = '';
-  const config = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
+  const config = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
   delete config.logo;
-  dadosStorage.setItem('michele_config_empresa', JSON.stringify(config));
+  localStorage.setItem('michele_config_empresa', JSON.stringify(config));
   atualizarCabecalhoEmpresa(config);
 }
 // Fechar modal ao clicar fora dele
@@ -3952,10 +3642,9 @@ document.addEventListener('click', (e) => {
   if (e.target === modal) fecharConfiguracoes();
 });
 function salvarConfiguraciones() {
-  const configAnterior = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
+  const configAnterior = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
   const logoPreview = document.getElementById('config-logo-preview');
   const config = {
-    ...configAnterior,
     nomeEmpresa: document.getElementById('config-nome-empresa').value || 'Michele Cortinas',
     endereco: document.getElementById('config-endereco').value,
     bairroCidade: document.getElementById('config-bairro-cidade').value,
@@ -3967,21 +3656,19 @@ function salvarConfiguraciones() {
         logo: logoPreview?.src || configAnterior.logo || LOGO_EMPRESA_PADRAO,
         paleta: document.getElementById('config-paleta').value
   };
-  dadosStorage.setItem('michele_config_empresa', JSON.stringify(config));
+  localStorage.setItem('michele_config_empresa', JSON.stringify(config));
     aplicarPaleta(config.paleta);
   atualizarCabecalhoEmpresa(config);
   fecharConfiguracoes();
-  avisarGravacao('✅ Configurações salvas com sucesso!');
+  alert('✅ Configurações salvas com sucesso!');
 }
 function aplicarPaleta(nome) {
-    // Todas as paletas usam superficies claras com texto de alto contraste.
-    const base = { card:'#ffffff', input:'#ffffff', borda:'#a7b4c3', texto:'#172536', apoio:'#405166' };
     const paletas = {
-        padrao: { ...base, bg:'#edf1f5', destaque:'#244f79', hover:'#183b5e' },
-        amarela: { ...base, bg:'#f5f1e6', destaque:'#705314', hover:'#513b0d' },
-        azul: { ...base, bg:'#eaf0f7', destaque:'#205382', hover:'#173e61' },
-        verde: { ...base, bg:'#eaf2ed', destaque:'#245f45', hover:'#17452f' },
-        rosa: { ...base, bg:'#f5edf0', destaque:'#813c57', hover:'#60293f' }
+        padrao: { bg:'#0f0f0f', card:'#1a1a1a', input:'#2a2a2a', borda:'#3a3a3a', texto:'#f8f8f8', apoio:'#b0b0b0', destaque:'#e5c158', hover:'#d4af37' },
+        amarela: { bg:'#f2c94c', card:'#ffe58a', input:'#fff3bd', borda:'#9b7200', texto:'#17130a', apoio:'#463b1b', destaque:'#17130a', hover:'#5d4700' },
+        azul: { bg:'#123b66', card:'#1c588d', input:'#2c70a7', borda:'#76b9e8', texto:'#ffffff', apoio:'#d5eaff', destaque:'#ffd166', hover:'#ffe29a' },
+        verde: { bg:'#164b3a', card:'#216b4e', input:'#2c825f', borda:'#8bd3ae', texto:'#ffffff', apoio:'#d8f3e5', destaque:'#ffe082', hover:'#fff0ad' },
+        rosa: { bg:'#f4b6c2', card:'#ffd9df', input:'#fff0f3', borda:'#a84d63', texto:'#27151a', apoio:'#5c3540', destaque:'#27151a', hover:'#6d263b' }
     };
     let chave=nome;
     if(nome==='automatica') chave=new Date().getHours() >= 7 && new Date().getHours() < 18 ? 'amarela' : 'padrao';
@@ -4012,9 +3699,8 @@ function atualizarCabecalhoEmpresa(config) {
   }
 }
 
-function fazerLogout(){if(MicheleNuvem.ativo){MicheleNuvem.sair();return;}sessionStorage.removeItem('michele_usuario_atual');usuarioAtual=null;location.reload();}
+function fazerLogout(){sessionStorage.removeItem('michele_usuario_atual');usuarioAtual=null;location.reload();}
 function trocarUsuario(){
-  if (MicheleNuvem.ativo) { MicheleNuvem.sair(); return; }
   sessionStorage.removeItem('michele_usuario_atual');
   usuarioAtual=null;
   const campoUsuario=document.getElementById('login-usuario');
@@ -4024,10 +3710,10 @@ function trocarUsuario(){
   mostrarLogin();
   if(campoUsuario) campoUsuario.focus();
 }
-function abrirDashboard(){atualizarDashboard();document.getElementById('painel-dashboard').style.display='block';document.querySelectorAll('.conteudo-aba').forEach(aba=>aba.classList.remove('ativa'));const voltar=document.getElementById('btn-voltar-tela');if(voltar)voltar.style.display='none';window.scrollTo({top:0,behavior:'smooth'});}
+function abrirDashboard(){document.getElementById('painel-dashboard').style.display='block';document.querySelectorAll('.conteudo-aba').forEach(aba=>aba.classList.remove('ativa'));const voltar=document.getElementById('btn-voltar-tela');if(voltar)voltar.style.display='none';window.scrollTo({top:0,behavior:'smooth'});}
 function voltarParaInicio(){abrirDashboard();marcarMenu(document.querySelector('.sidebar-btn[data-tab="home"]'));}
 function abrirAbaComando(id) {
-    const restritosAdmin = ['aba-logistica','aba-financeiro', 'aba-costureiras', 'aba-confeccao', 'aba-relatorio-pedidos', 'aba-materiais-cortinas', 'aba-materiais-persianas', 'aba-plano-corte-persianas', 'aba-fornecedores', 'aba-profissionais', 'aba-produtos'];
+    const restritosAdmin = ['aba-relatorio-pedidos', 'aba-materiais-cortinas', 'aba-materiais-persianas', 'aba-plano-corte-persianas', 'aba-fornecedores', 'aba-profissionais', 'aba-produtos'];
 
   if (restritosAdmin.includes(id) && !usuarioEhAdministrador()) {
     alert('Acesso restrito. Somente o Administrador pode acessar esta área.');
@@ -4078,14 +3764,6 @@ function abrirAbaComando(id) {
     atualizarTabelaPedidos();
   }
 
-  if (id === 'aba-costureiras') atualizarCostureiras();
-  if (id === 'aba-confeccao') buscarPedidosConfeccao();
-
-  if (id === 'aba-financeiro') atualizarFinanceiro();
-  if (id === 'aba-producao') atualizarProducao();
-  if (id === 'aba-etiquetas') atualizarEtiquetas();
-  if (id === 'aba-logistica') atualizarLogistica();
-
   if (id === 'aba-relatorio-pedidos') {
     atualizarRelatorioTotalPedidos();
     atualizarRelatorioGeralPedidos();
@@ -4116,10 +3794,7 @@ function aplicarPermissoes() {
   document.querySelectorAll('[data-admin-only]').forEach(elemento => elemento.style.display = admin ? '' : 'none');
 
   // Exclusivos do administrador
-  const restritosAdmin = ['aba-logistica',
-    'aba-financeiro',
-    'aba-costureiras',
-    'aba-confeccao',
+  const restritosAdmin = [
     'aba-relatorio-pedidos',
     'aba-materiais-cortinas',
     'aba-materiais-persianas',
@@ -4135,7 +3810,7 @@ function aplicarPermissoes() {
     );
 
     if (btn) {
-      btn.style.display = admin ? '' : 'none';
+      btn.style.display = admin ? 'block' : 'none';
     }
     const aba = document.getElementById(id);
     if(aba) aba.style.display = admin ? '' : 'none';
@@ -4167,45 +3842,21 @@ function atualizarDashboard(){
   const q=id=>document.getElementById(id); q('dash-clientes').textContent=clientes.length;q('dash-fornecedores').textContent=fornecedores.length;q('dash-profissionais').textContent=profissionais.length;q('dash-documentos').textContent=pedidos.length;
 }
 function novoCodigo(lista,prefixo){let n=lista.length+1;let c=prefixo+String(n).padStart(6,'0');while(lista.some(x=>x.id===c))c=prefixo+String(++n).padStart(6,'0');return c;}
-function excluirFornecedor(id) {
-    if (usuarioAtual?.cargo !== 'Administrador') { alert('Acesso restrito ao administrador.'); return; }
-    const item = fornecedores.find(x => x.id === id);
-    if (!item || !confirm(`Excluir o fornecedor ${item.razao || item.fantasia}?`)) return;
-    const atualizados = fornecedores.filter(x => x.id !== id);
-    dadosStorage.setItem('michele_fornecedores', JSON.stringify(atualizados));
-    fornecedores = atualizados;
-    if (fornecedorEditando === id) limparFornecedor();
-    atualizarFornecedores(); atualizarDashboard(); avisarGravacao('Fornecedor exclu?do.');
-}
-function excluirProfissional(id) {
-    if (usuarioAtual?.cargo !== 'Administrador') { alert('Acesso restrito ao administrador.'); return; }
-    const item = profissionais.find(x => x.id === id); if (!item) return;
-    if (id === usuarioAtual.id || item.usuario === usuarioAtual.usuario) { alert('N?o ? poss?vel excluir o usu?rio conectado.'); return; }
-    if (item.cargo === 'Administrador' && item.status === 'Ativo' && !profissionais.some(x => x.id !== id && x.cargo === 'Administrador' && x.status === 'Ativo')) { alert('Mantenha pelo menos um administrador ativo.'); return; }
-    if (!confirm(`Excluir o profissional ${item.nome}? Seu acesso ser? removido. Os documentos anteriores ser?o preservados.`)) return;
-    const atualizados = profissionais.filter(x => x.id !== id);
-    dadosStorage.setItem('michele_profissionais', JSON.stringify(atualizados));
-    profissionais = atualizados;
-    if (profissionalEditando === id) limparProfissional();
-    atualizarProfissionais(); popularVendedores(); atualizarDashboard(); avisarGravacao('Profissional exclu?do.');
-}
-
-function limparFornecedor(){document.getElementById('btn-salvar-fornecedor').textContent='Salvar fornecedor';fornecedorEditando=null;['f-razao','f-fantasia','f-cnpj','f-contato','f-telefone','f-whatsapp','f-email','f-cep','f-endereco','f-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-codigo').value=novoCodigo(fornecedores,'FOR-');}
+function limparFornecedor(){fornecedorEditando=null;['f-razao','f-fantasia','f-cnpj','f-contato','f-telefone','f-whatsapp','f-email','f-cep','f-endereco','f-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-codigo').value=novoCodigo(fornecedores,'FOR-');}
 function salvarFornecedor(){
  const obj={id:fornecedorEditando||document.getElementById('f-codigo').value||novoCodigo(fornecedores,'FOR-'),razao:document.getElementById('f-razao').value,fantasia:document.getElementById('f-fantasia').value,cnpj:document.getElementById('f-cnpj').value,contato:document.getElementById('f-contato').value,telefone:document.getElementById('f-telefone').value,whatsapp:document.getElementById('f-whatsapp').value,email:document.getElementById('f-email').value,categoria:document.getElementById('f-categoria').value,cep:document.getElementById('f-cep').value,endereco:document.getElementById('f-endereco').value,observacoes:document.getElementById('f-observacoes').value};
- if(!obj.razao&&!obj.fantasia){alert('Informe a razão social ou nome fantasia.');return} const i=fornecedores.findIndex(x=>x.id===obj.id);const atualizados=i>=0?fornecedores.map((x,n)=>n===i?{...x,...obj}:x):[...fornecedores,obj];dadosStorage.setItem('michele_fornecedores',JSON.stringify(atualizados));fornecedores=atualizados;atualizarFornecedores();atualizarDashboard();limparFornecedor();avisarGravacao(i>=0?'Fornecedor atualizado.':'Fornecedor salvo.');
+ if(!obj.razao&&!obj.fantasia){alert('Informe a razão social ou nome fantasia.');return} const i=fornecedores.findIndex(x=>x.id===obj.id);if(i>=0)fornecedores[i]=obj;else fornecedores.push(obj);localStorage.setItem('michele_fornecedores',JSON.stringify(fornecedores));atualizarFornecedores();atualizarDashboard();limparFornecedor();alert('Fornecedor salvo.');
 }
-function editarFornecedor(id){const x=fornecedores.find(v=>v.id===id);if(!x)return;fornecedorEditando=id;document.getElementById('btn-salvar-fornecedor').textContent='Atualizar fornecedor';document.getElementById('f-codigo').value=x.id;['razao','fantasia','cnpj','contato','telefone','whatsapp','email','cep','endereco','observacoes'].forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value=x[k]||''});document.getElementById('f-categoria').value=x.categoria||'Outros';window.scrollTo({top:0,behavior:'smooth'});}
-function atualizarFornecedores(){const q=(document.getElementById('busca-fornecedor')?.value||'').toLowerCase();const tb=document.getElementById('tabela-fornecedores');if(!tb)return;tb.innerHTML=fornecedores.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).map(x=>`<tr><td>${x.id}</td><td>${x.razao||''}</td><td>${x.fantasia||''}</td><td>${x.cnpj||''}</td><td>${x.categoria||''}</td><td><button class="btn" style="padding:5px 8px" onclick="editarFornecedor('${x.id}')">Editar</button> <button class="btn btn-erro" onclick="excluirFornecedor('${x.id}')">Excluir</button></td></tr>`).join('');}
-function limparProfissional(){document.getElementById('btn-salvar-profissional').textContent='Salvar profissional';profissionalEditando=null;['p-nome','p-usuario','p-senha','p-telefone','p-email','p-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('p-codigo').value=novoCodigo(profissionais,'PROF-');document.getElementById('p-comissao').value=5;document.getElementById('p-desconto-maximo').value=0;document.getElementById('p-cargo').value='Vendedor';document.getElementById('p-status').value='Ativo';}
+function editarFornecedor(id){const x=fornecedores.find(v=>v.id===id);if(!x)return;fornecedorEditando=id;document.getElementById('f-codigo').value=x.id;['razao','fantasia','cnpj','contato','telefone','whatsapp','email','cep','endereco','observacoes'].forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value=x[k]||''});document.getElementById('f-categoria').value=x.categoria||'Outros';window.scrollTo({top:0,behavior:'smooth'});}
+function atualizarFornecedores(){const q=(document.getElementById('busca-fornecedor')?.value||'').toLowerCase();const tb=document.getElementById('tabela-fornecedores');if(!tb)return;tb.innerHTML=fornecedores.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).map(x=>`<tr><td>${x.id}</td><td>${x.razao||''}</td><td>${x.fantasia||''}</td><td>${x.cnpj||''}</td><td>${x.categoria||''}</td><td><button class="btn" style="padding:5px 8px" onclick="editarFornecedor('${x.id}')">Editar</button></td></tr>`).join('');}
+function limparProfissional(){profissionalEditando=null;['p-nome','p-usuario','p-senha','p-telefone','p-email','p-observacoes'].forEach(id=>document.getElementById(id).value='');document.getElementById('p-codigo').value=novoCodigo(profissionais,'PROF-');document.getElementById('p-comissao').value=5;document.getElementById('p-cargo').value='Vendedor';document.getElementById('p-status').value='Ativo';}
 function salvarProfissional(){
- if(!document.getElementById('p-desconto-maximo').checkValidity()){alert('Informe um desconto máximo entre 0 e 100%.');return;}
  if(usuarioAtual?.cargo!=='Administrador'){alert('Acesso restrito. Somente o Administrador pode cadastrar profissionais.');return}
- const obj={id:profissionalEditando||document.getElementById('p-codigo').value||novoCodigo(profissionais,'PROF-'),nome:document.getElementById('p-nome').value,usuario:document.getElementById('p-usuario').value,senha:document.getElementById('p-senha').value,cargo:document.getElementById('p-cargo').value,descontoMaximo:Number(document.getElementById('p-desconto-maximo').value)||0,comissao:Number(document.getElementById('p-comissao').value)||0,telefone:document.getElementById('p-telefone').value,email:document.getElementById('p-email').value,status:document.getElementById('p-status').value,observacoes:document.getElementById('p-observacoes').value};
- if(!obj.nome||!obj.usuario||(!profissionalEditando&&!obj.senha)){alert(MicheleNuvem.ativo?'Nome e usuário são obrigatórios.':'Nome, usuário e senha são obrigatórios.');return} if(profissionais.some(x=>x.usuario===obj.usuario&&x.id!==obj.id)){alert('Esse usuário já existe.');return} const i=profissionais.findIndex(x=>x.id===obj.id);if(i>=0&&!obj.senha&&!MicheleNuvem.ativo)obj.senha=profissionais[i].senha;const atualizados=i>=0?profissionais.map((x,n)=>n===i?{...x,...obj}:x):[...profissionais,obj];dadosStorage.setItem('michele_profissionais',JSON.stringify(atualizados));profissionais=atualizados;if(MicheleNuvem.ativo)profissionais.forEach(x=>delete x.senha);atualizarProfissionais();popularVendedores();atualizarDashboard();limparProfissional();avisarGravacao(i>=0?'Profissional atualizado.':'Profissional salvo.');
+ const obj={id:profissionalEditando||document.getElementById('p-codigo').value||novoCodigo(profissionais,'PROF-'),nome:document.getElementById('p-nome').value,usuario:document.getElementById('p-usuario').value,senha:document.getElementById('p-senha').value,cargo:document.getElementById('p-cargo').value,comissao:Number(document.getElementById('p-comissao').value)||0,telefone:document.getElementById('p-telefone').value,email:document.getElementById('p-email').value,status:document.getElementById('p-status').value,observacoes:document.getElementById('p-observacoes').value};
+ if(!obj.nome||!obj.usuario||(!profissionalEditando&&!obj.senha)){alert('Nome, usuário e senha são obrigatórios.');return} if(profissionais.some(x=>x.usuario===obj.usuario&&x.id!==obj.id)){alert('Esse usuário já existe.');return} const i=profissionais.findIndex(x=>x.id===obj.id);if(i>=0)profissionais[i]=obj;else profissionais.push(obj);localStorage.setItem('michele_profissionais',JSON.stringify(profissionais));atualizarProfissionais();popularVendedores();atualizarDashboard();limparProfissional();alert('Profissional salvo.');
 }
-function editarProfissional(id){if(usuarioAtual?.cargo!=='Administrador')return;const x=profissionais.find(v=>v.id===id);if(!x)return;profissionalEditando=id;document.getElementById('btn-salvar-profissional').textContent='Atualizar profissional';document.getElementById('p-codigo').value=x.id;['nome','usuario','senha','telefone','email','observacoes'].forEach(k=>document.getElementById('p-'+k).value=x[k]||'');document.getElementById('p-cargo').value=x.cargo;document.getElementById('p-comissao').value=x.comissao;document.getElementById('p-desconto-maximo').value=x.descontoMaximo||0;document.getElementById('p-status').value=x.status;}
-function atualizarProfissionais(){const tb=document.getElementById('tabela-profissionais');if(!tb)return;tb.innerHTML=profissionais.map(x=>`<tr><td>${x.id}</td><td>${x.nome}</td><td>${x.cargo}</td><td>${x.usuario}</td><td>${Number(x.comissao||0).toFixed(2)}%</td><td>${x.status}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProfissional('${x.id}')">Editar</button> <button class="btn btn-erro" onclick="excluirProfissional('${x.id}')">Excluir</button></td></tr>`).join('');}
+function editarProfissional(id){if(usuarioAtual?.cargo!=='Administrador')return;const x=profissionais.find(v=>v.id===id);if(!x)return;profissionalEditando=id;document.getElementById('p-codigo').value=x.id;['nome','usuario','senha','telefone','email','observacoes'].forEach(k=>document.getElementById('p-'+k).value=x[k]||'');document.getElementById('p-cargo').value=x.cargo;document.getElementById('p-comissao').value=x.comissao;document.getElementById('p-status').value=x.status;}
+function atualizarProfissionais(){const tb=document.getElementById('tabela-profissionais');if(!tb)return;tb.innerHTML=profissionais.map(x=>`<tr><td>${x.id}</td><td>${x.nome}</td><td>${x.cargo}</td><td>${x.usuario}</td><td>${Number(x.comissao||0).toFixed(2)}%</td><td>${x.status}</td><td><button class="btn" style="padding:5px 8px" onclick="editarProfissional('${x.id}')">Editar</button></td></tr>`).join('');}
 function popularVendedores(){const s=document.getElementById('orc-vendedor-select');if(!s)return;const ativos=profissionais.filter(x=>x.status==='Ativo'&&(x.cargo==='Vendedor'||x.cargo==='Gerente'||x.cargo==='Administrador'));s.innerHTML='<option value="">Selecionar vendedor</option>'+ativos.map(x=>`<option value="${x.id}">${x.nome}</option>`).join('');if(usuarioAtual&&usuarioAtual.cargo==='Vendedor')s.value=usuarioAtual.id;}
 function buscarGlobal(){const q=(document.getElementById('busca-global')?.value||'').trim().toLowerCase(), box=document.getElementById('resultado-global');if(!q){box.style.display='none';box.innerHTML='';return;}const cs=clientes.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).slice(0,5);const fs=fornecedores.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).slice(0,5);const ds=pedidos.filter(x=>Object.values(x).join(' ').toLowerCase().includes(q)).slice(0,8);box.style.display='block';box.innerHTML='<div class="secao-titulo">Resultados</div>'+((cs.length?'<h4>Clientes</h4>'+cs.map(x=>`<div class="dash-card" onclick="abrirAbaComando(\'aba-clientes\')"><strong>${x.nome}</strong> — ${x.id} — ${x.telefone||''}</div>`).join(''):'')+(fs.length?'<h4>Fornecedores</h4>'+fs.map(x=>`<div class="dash-card"><strong>${x.fantasia||x.razao}</strong> — ${x.id}</div>`).join(''):'')+(ds.length?'<h4>Orçamentos / Pedidos</h4>'+ds.map(x=>`<div class="dash-card"><strong>${x.numeroOrcamento||x.numeroPedido||x.numero||''}</strong> — ${x.clienteNome||''} — ${(Number(x.total)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</div>`).join(''):'')||'<p>Nenhum resultado encontrado.</p>');}
 
@@ -4218,17 +3869,16 @@ function marcadoMaterial(estado, sufixo) { const chave=Object.keys(estado?.campo
 function obterMateriaisAmbiente(item) {
     const estado=item.configuracao||{}, idAmbiente=item.id || Number(Object.keys(estado.campos||{}).map(chave=>chave.match(/(?:largura|altura|quantidade)-(\d+)$/)?.[1]).find(Boolean)) || 1, largura=Number(campoMaterial(estado,'largura-'+idAmbiente, item.largura))||0, altura=Number(campoMaterial(estado,'altura-'+idAmbiente,item.altura))||0, quantidade=Math.max(1,Number(campoMaterial(estado,'quantidade-'+idAmbiente,item.quantidade))||1);
     const propPrincipal=Number(campoMaterial(estado,'prop-voal-'+idAmbiente,0))||0, propForro=Number(campoMaterial(estado,'prop-forro-'+idAmbiente,0))||0, propTerceiro=Number(campoMaterial(estado,'prop-terceiro-'+idAmbiente,0))||0;
-    let principal=campoMaterial(estado,'select-voal-'+idAmbiente,'') !== '' ? largura*propPrincipal*quantidade : 0, forro=campoMaterial(estado,'select-forro-'+idAmbiente,'') !== '' ? largura*propForro*quantidade : 0, terceiro=campoMaterial(estado,'select-terceiro-'+idAmbiente,'') !== '' ? largura*propTerceiro*quantidade : 0;
-    if(item.calculoCortina) { principal=item.calculoCortina.tecidos.voal?.metros||0; forro=item.calculoCortina.tecidos.forro?.metros||0; terceiro=item.calculoCortina.tecidos.terceiro?.metros||0; }
+    const principal=campoMaterial(estado,'select-voal-'+idAmbiente,'') !== '' ? largura*propPrincipal*quantidade : 0, forro=campoMaterial(estado,'select-forro-'+idAmbiente,'') !== '' ? largura*propForro*quantidade : 0, terceiro=campoMaterial(estado,'select-terceiro-'+idAmbiente,'') !== '' ? largura*propTerceiro*quantidade : 0;
     const tipo=campoMaterial(estado,'tipo-instalacao-'+idAmbiente,'Trilho no teto'), desconto=campoMaterial(estado,'desconto-altura-'+idAmbiente,'Não'), alturaFinal=Math.max(0,desconto==='Sim' ? altura-(tipo==='Tubo trilho na parede'?0.055:0.02) : altura);
     const temAcessorio=Number(campoMaterial(estado,'select-tubo-trilho-'+idAmbiente,0))>0, trilhoQtd=temAcessorio ? Number(campoMaterial(estado,'tubo-trilho-qtd-'+idAmbiente,0))||0 : 0, trilhoTamanho=temAcessorio ? Number(campoMaterial(estado,'tubo-trilho-tamanho-'+idAmbiente,0))||0 : 0, comprimento=trilhoQtd*trilhoTamanho;
     const nomeTrilho=textoMaterial(estado,'select-tubo-trilho-'+idAmbiente,nomeCatalogoPorValor(campoMaterial(estado,'select-tubo-trilho-'+idAmbiente,0),Object.values(categoriasProduto).map(dados=>dados.lista))||'Trilho / tubo não selecionado'), nomePrincipal=textoMaterial(estado,'select-voal-'+idAmbiente,item.textoVoal||'Tecido principal não selecionado'), nomeForro=textoMaterial(estado,'select-forro-'+idAmbiente,item.textoForro||'Forro não selecionado'), nomeTerceiro=textoMaterial(estado,'select-terceiro-'+idAmbiente,item.textoTerceiro||'Tecido 3 não selecionado'), nomesAcessorios=['gancho','rodizio','argola','clip'].map(tipoAcessorio=>textoMaterial(estado,'select-'+tipoAcessorio+'-'+idAmbiente,nomeCatalogoPorValor(campoMaterial(estado,'select-'+tipoAcessorio+'-'+idAmbiente,0),[PRECOS_ACESSORIOS]))).filter(Boolean).join(' / ');
     const modeloUsaLargura=nome=>/FRANZIDA|PREGA MACHO|PREGA FEMEA|PREGA AMERICANA|PREGA FRANCESA/.test(String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase());
     const possuiModelosPorTecido=!!(item.modeloVoal||item.modeloForro||item.modeloTerceiro);
-    const camadasPorLargura=possuiModelosPorTecido ? [principal>0&&modeloUsaLargura(item.modeloVoal),forro>0&&modeloUsaLargura(item.modeloForro),terceiro>0&&modeloUsaLargura(item.modeloTerceiro)].filter(Boolean).length : (modeloUsaLargura(item.modelo)?1:0);
+    const camadasPorLargura=possuiModelosPorTecido ? [m.principal>0&&modeloUsaLargura(item.modeloVoal),m.forro>0&&modeloUsaLargura(item.modeloForro),m.terceiro>0&&modeloUsaLargura(item.modeloTerceiro)].filter(Boolean).length : (modeloUsaLargura(item.modelo)?1:0);
     const temFixadores=campoMaterial(estado,'select-gancho-'+idAmbiente,'') || campoMaterial(estado,'select-rodizio-'+idAmbiente,'') || campoMaterial(estado,'select-argola-'+idAmbiente,'') || campoMaterial(estado,'select-clip-'+idAmbiente,'');
-    const ganchos=temFixadores ? (item.calculoCortina ? largura/0.08*quantidade : camadasPorLargura>0 ? (largura/0.08)*camadasPorLargura : (principal+forro+terceiro)/0.08) : 0;
-    return { idAmbiente, ambiente:item.ambiente||'Ambiente', quantidade, largura, alturaParede:altura, altura:alturaFinal, modelo:item.modelo||'Cortina', tipo, desconto, principal, forro, terceiro, ganchos, nomesAcessorios, nomePrincipal, nomeForro, nomeTerceiro, nomeTrilho, trilhoQtd, trilhoTamanho, trilhos:comprimento, suportes:item.calculoCortina ? Number(campoMaterial(estado,'cortina-suporte-qtd-'+idAmbiente,0)) : comprimento>0 ? Math.max(2,Math.ceil(comprimento/1.5)+1) : 0, ponteiras:item.calculoCortina ? Number(campoMaterial(estado,'cortina-ponteira-qtd-'+idAmbiente,0)) : comprimento>0 ? trilhoQtd*2 : 0 };
+    const ganchos=temFixadores ? (camadasPorLargura>0 ? (largura/0.08)*camadasPorLargura : (principal+forro+terceiro)/0.08) : 0;
+    return { idAmbiente, ambiente:item.ambiente||'Ambiente', quantidade, largura, alturaParede:altura, altura:alturaFinal, modelo:item.modelo||'Cortina', tipo, desconto, principal, forro, terceiro, ganchos, nomesAcessorios, nomePrincipal, nomeForro, nomeTerceiro, nomeTrilho, trilhoQtd, trilhoTamanho, trilhos:comprimento, suportes:comprimento>0 ? Math.max(2,Math.ceil(comprimento/1.5)+1) : 0, ponteiras:comprimento>0 ? trilhoQtd*2 : 0 };
 }
 function orientacaoConfeccao(modelo) { const m=(modelo||'').toUpperCase(); if(m.includes('WAVE')) return 'Costurar a cortina com fita Wave e distribuir os ganchos conforme a fita, mantendo a largura acabada informada.'; if(m.includes('ILHÓS')) return 'Aplicar a quantidade de ilhós com espaçamento uniforme e finalizar a barra na altura acabada.'; if(m.includes('PREGA')) return 'Montar as pregas de forma uniforme, respeitando a proporção do tecido e a largura acabada.'; return 'Montar a cortina franzida, distribuindo o tecido pela proporção indicada e finalizando a barra na altura acabada.'; }
 function atualizarListaMateriais(){
@@ -4257,7 +3907,7 @@ function formatarFichaMateriais(){
         p.replaceWith(grid);
     });
 }
-function imprimirListaMateriais(){formatarFichaMateriais();document.body.classList.add('imprimindo-materiais');imprimirComRetorno();}
+function imprimirListaMateriais(){formatarFichaMateriais();document.body.classList.add('imprimindo-materiais');window.print();}
 function marcarMenu(el){
   document.querySelectorAll('.sidebar-btn[data-tab]').forEach(b=>b.classList.remove('ativo'));
   if(el) el.classList.add('ativo');
@@ -4272,10 +3922,7 @@ window.abrirDashboard = function(){
 const _abrirAbaComandoOriginal = window.abrirAbaComando;
 
 window.abrirAbaComando = function(id) {
-  const restritosAdmin = ['aba-logistica',
-    'aba-financeiro',
-    'aba-costureiras',
-    'aba-confeccao',
+  const restritosAdmin = [
     'aba-relatorio-pedidos',
     'aba-materiais-cortinas',
     'aba-materiais-persianas',
@@ -4344,9 +3991,8 @@ function exportarBackupSistema(){
     michele_produtos_acessorios: PRECOS_ACESSORIOS,
     michele_produtos_motorizacao: PRECOS_MOTORIZACAO,
     michele_produtos_personalizados: produtosPersonalizados,
-    michele_config_empresa: JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}'),
-    michele_numero_orcamento: dadosStorage.getItem('michele_numero_orcamento') || '0',
-    michele_numero_pedido: dadosStorage.getItem('michele_numero_pedido') || '0'
+    michele_numero_orcamento: localStorage.getItem('michele_numero_orcamento') || '0',
+    michele_numero_pedido: localStorage.getItem('michele_numero_pedido') || '0'
   };
   const blob = new Blob([JSON.stringify(dados, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -4362,33 +4008,26 @@ function importarBackupSistema(event){
   const file = event.target.files?.[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = async function(){
+  reader.onload = function(){
     try{
       const dados = JSON.parse(reader.result);
       if(!dados || typeof dados !== 'object') throw new Error('Formato inválido.');
 
-      if(!confirm(MicheleNuvem.ativo ? 'Importar este backup irá substituir os cadastros correspondentes na nuvem, em todos os dispositivos desta conta. Deseja continuar?' : 'Importar este backup irá substituir os dados atuais deste navegador. Deseja continuar?')) return;
-      if (MicheleNuvem.ativo) {
-        for (const chave of MicheleNuvemStore.CHAVES) {
-          if (dados[chave] !== undefined) MicheleNuvemStore.limpar(chave, JSON.stringify(chave.includes('_numero_') ? Number(dados[chave]) : dados[chave]));
-        }
-      }
+      if(!confirm('Importar este backup irá substituir os dados atuais deste navegador. Deseja continuar?')) return;
 
-      if(Array.isArray(dados.michele_clientes)) dadosStorage.setItem('michele_clientes', JSON.stringify(dados.michele_clientes));
-      if(Array.isArray(dados.michele_pedidos)) dadosStorage.setItem('michele_pedidos', JSON.stringify(dados.michele_pedidos));
-      if(Array.isArray(dados.michele_fornecedores)) dadosStorage.setItem('michele_fornecedores', JSON.stringify(dados.michele_fornecedores));
-      if(Array.isArray(dados.michele_profissionais)) dadosStorage.setItem('michele_profissionais', JSON.stringify(dados.michele_profissionais));
-      if(Array.isArray(dados.michele_produtos_voal)) dadosStorage.setItem('michele_produtos_voal', JSON.stringify(dados.michele_produtos_voal));
-      if(Array.isArray(dados.michele_produtos_forro)) dadosStorage.setItem('michele_produtos_forro', JSON.stringify(dados.michele_produtos_forro));
-      if(Array.isArray(dados.michele_produtos_persiana)) dadosStorage.setItem('michele_produtos_persiana', JSON.stringify(dados.michele_produtos_persiana));
-      if(Array.isArray(dados.michele_produtos_acessorios)) dadosStorage.setItem('michele_produtos_acessorios', JSON.stringify(dados.michele_produtos_acessorios));
-      if(Array.isArray(dados.michele_produtos_motorizacao)) dadosStorage.setItem('michele_produtos_motorizacao', JSON.stringify(dados.michele_produtos_motorizacao));
-      if(Array.isArray(dados.michele_produtos_personalizados)) dadosStorage.setItem('michele_produtos_personalizados', JSON.stringify(dados.michele_produtos_personalizados));
-      if(dados.michele_numero_orcamento != null) dadosStorage.setItem('michele_numero_orcamento', String(dados.michele_numero_orcamento));
-      if(dados.michele_numero_pedido != null) dadosStorage.setItem('michele_numero_pedido', String(dados.michele_numero_pedido));
+      if(Array.isArray(dados.michele_clientes)) localStorage.setItem('michele_clientes', JSON.stringify(dados.michele_clientes));
+      if(Array.isArray(dados.michele_pedidos)) localStorage.setItem('michele_pedidos', JSON.stringify(dados.michele_pedidos));
+      if(Array.isArray(dados.michele_fornecedores)) localStorage.setItem('michele_fornecedores', JSON.stringify(dados.michele_fornecedores));
+      if(Array.isArray(dados.michele_profissionais)) localStorage.setItem('michele_profissionais', JSON.stringify(dados.michele_profissionais));
+      if(Array.isArray(dados.michele_produtos_voal)) localStorage.setItem('michele_produtos_voal', JSON.stringify(dados.michele_produtos_voal));
+      if(Array.isArray(dados.michele_produtos_forro)) localStorage.setItem('michele_produtos_forro', JSON.stringify(dados.michele_produtos_forro));
+      if(Array.isArray(dados.michele_produtos_persiana)) localStorage.setItem('michele_produtos_persiana', JSON.stringify(dados.michele_produtos_persiana));
+      if(Array.isArray(dados.michele_produtos_acessorios)) localStorage.setItem('michele_produtos_acessorios', JSON.stringify(dados.michele_produtos_acessorios));
+      if(Array.isArray(dados.michele_produtos_motorizacao)) localStorage.setItem('michele_produtos_motorizacao', JSON.stringify(dados.michele_produtos_motorizacao));
+      if(Array.isArray(dados.michele_produtos_personalizados)) localStorage.setItem('michele_produtos_personalizados', JSON.stringify(dados.michele_produtos_personalizados));
+      if(dados.michele_numero_orcamento != null) localStorage.setItem('michele_numero_orcamento', String(dados.michele_numero_orcamento));
+      if(dados.michele_numero_pedido != null) localStorage.setItem('michele_numero_pedido', String(dados.michele_numero_pedido));
 
-      if(dados.michele_config_empresa && typeof dados.michele_config_empresa === 'object' && !Array.isArray(dados.michele_config_empresa)) dadosStorage.setItem('michele_config_empresa', JSON.stringify(dados.michele_config_empresa));
-      await MicheleNuvem.sincronizar();
       alert('Backup importado. O sistema será recarregado.');
       location.reload();
     }catch(e){
@@ -4409,7 +4048,7 @@ function importarBackupSistema(event){
    ================================================================ */
 function imprimirPropostaProfissional() {
     prepararPropostaImpressao();
-    imprimirComRetorno();
+    window.print();
 }
 
 function prepararPropostaImpressao() {
@@ -4432,7 +4071,7 @@ function prepararPropostaImpressao() {
         : (objetoOrcamentoCorrente?.numeroOrcamento || 'A DEFINIR');
     const data = objetoOrcamentoCorrente?.data || new Date().toLocaleDateString('pt-BR');
     const valorTotal = Number(objetoOrcamentoCorrente?.valorTotal || 0);
-    const configEmpresa = JSON.parse(dadosStorage.getItem('michele_config_empresa') || '{}');
+    const configEmpresa = JSON.parse(localStorage.getItem('michele_config_empresa') || '{}');
     const cards = Array.from(document.querySelectorAll('.item-carrinho-card'));
     const dataBase = (() => {
         const partes = String(data).split('/').map(Number);
@@ -4469,49 +4108,37 @@ function prepararPropostaImpressao() {
           <thead><tr><th>Ambiente / peça</th><th>Tecidos</th><th>Modelo da cortina</th><th>Instalação / acabamentos</th><th>Tubos e trilhos</th><th>Motorização</th><th>Modelo da persiana</th><th>Bandô</th><th>Cor do bandô</th><th>Largura</th><th>Altura</th><th>Quantidade</th><th>Valor do ambiente</th></tr></thead>
           <tbody>${linhasResumo || '<tr><td colspan="13">Nenhum ambiente informado.</td></tr>'}</tbody>
         </table>
-        <div class="print-closing">
-          <div class="print-total"><div class="label">Valor total</div><div class="value">${money(valorTotal)}</div></div>
-          ${montarPagamentoImpressao(cards)}
-        </div>
+        <div class="print-total"><div class="label">Valor total</div><div class="value">${money(valorTotal)}</div></div>
         <div class="print-note">Validade desta proposta: 15 dias. Valores sujeitos à confirmação de medidas no local.</div>
         <div class="print-footer">Michele Cortinas • AV Guilherme Giorgi, 220 - Vila Carrão - SP • WhatsApp (11) 96771-1701</div>
       </div>`;
+    // Aguarda o navegador aplicar o HTML e o CSS de impressão antes de abrir
+    // a caixa de diálogo. Sem esse ciclo de renderização alguns navegadores
+    // capturam a área ainda vazia.
+    const finalizarImpressao = () => {
+        document.body.classList.remove('imprimindo-proposta');
+        root.setAttribute('aria-hidden', 'true');
+        root.style.removeProperty('display');
+    };
     document.body.classList.add('imprimindo-proposta');
     root.setAttribute('aria-hidden', 'false');
+    // Reforça a visibilidade também para mecanismos de impressão que não
+    // recalculam imediatamente a regra @media print.
+    root.style.setProperty('display', 'block', 'important');
+    window.addEventListener('afterprint', finalizarImpressao, { once:true });
+    requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
 }
 
 // Também prepara o documento ao imprimir pelo menu do navegador ou Ctrl+P.
 window.addEventListener('beforeprint', () => {
-    if (!document.body.matches('.imprimindo-persianas, .imprimindo-plano-corte, .imprimindo-materiais, .imprimindo-relatorio, .imprimindo-lista-relatorio, .imprimindo-proposta, .imprimindo-etiquetas, .imprimindo-confeccao, .imprimindo-financeiro')) {
+    if (!document.body.matches('.imprimindo-persianas, .imprimindo-plano-corte, .imprimindo-materiais, .imprimindo-relatorio, .imprimindo-lista-relatorio')) {
         prepararPropostaImpressao();
     }
 });
-function limparEstadoImpressao(){
-    document.body.classList.remove('etiqueta-unica');
-    document.body.classList.remove('imprimindo-persianas', 'imprimindo-plano-corte', 'imprimindo-materiais', 'imprimindo-relatorio', 'imprimindo-lista-relatorio', 'imprimindo-proposta', 'imprimindo-etiquetas', 'imprimindo-confeccao', 'imprimindo-financeiro');
+window.addEventListener('afterprint', () => {
+    document.body.classList.remove('imprimindo-persianas', 'imprimindo-plano-corte', 'imprimindo-materiais', 'imprimindo-relatorio', 'imprimindo-lista-relatorio');
     document.querySelectorAll('.relatorio-impressao-ativo').forEach(secao => secao.classList.remove('relatorio-impressao-ativo'));
-    const proposta = document.getElementById('area-impressao-profissional');
-    if(proposta){ proposta.setAttribute('aria-hidden','true'); proposta.style.removeProperty('display'); }
-}
-function imprimirComRetorno(){
-    // Alguns navegadores não emitem afterprint quando a impressão é cancelada.
-    // O retorno do foco é um segundo sinal seguro para restaurar a tela.
-    const restaurarAoVoltar = () => setTimeout(limparEstadoImpressao, 120);
-    window.addEventListener('afterprint', limparEstadoImpressao, {once:true});
-    window.addEventListener('focus', restaurarAoVoltar, {once:true});
-    window.print();
-}
-window.addEventListener('afterprint', limparEstadoImpressao);
-
-// Módulos operacionais: usam os pedidos já gravados no sistema e mantêm seus
-// próprios estados no navegador, para que o protótipo funcione sem servidor.
-const escOperacao = valor => String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const moedaOperacao = valor => Number(valor || 0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-function pedidosOperacionais(){ return pedidos.filter(doc => doc.tipo === 'Pedido'); }
-function itensOperacionais(){ return pedidosOperacionais().flatMap(doc => (doc.itens || []).map((item,indice) => ({doc,item,indice,chave:`${doc.idDocumento}-${indice}`}))); }
-function atualizarEtiquetas(){const alvo=document.getElementById('etiquetas-corpo'),sel=document.getElementById('etiq-pedido');if(!alvo||!sel)return;const anterior=sel.value;sel.innerHTML='<option value="">Todos os pedidos</option>'+pedidosOperacionais().map(d=>`<option value="${escOperacao(d.idDocumento)}">${escOperacao(numeroExibicao(d))} — ${escOperacao(d.cliente?.nome||'Cliente')}</option>`).join('');sel.value=anterior;const termo=(document.getElementById('etiq-busca')?.value||'').toLowerCase();const lista=itensOperacionais().filter(x=>(!sel.value||x.doc.idDocumento===sel.value)&&`${numeroExibicao(x.doc)} ${x.doc.cliente?.nome}`.toLowerCase().includes(termo));alvo.innerHTML=lista.length?lista.map(x=>`<article class="etiqueta"><div class="etiqueta-topo"><span>MICHELE CORTINAS</span><small>${numeroExibicao(x.doc)}</small></div><h3>${escOperacao(String(x.doc.cliente?.nome||'Cliente').trim().split(/\s+/)[0])}</h3><div class="etiqueta-dados"><span class="etiqueta-ambiente">${escOperacao(x.item.ambiente||'-')}</span><span class="etiqueta-medidas">${Number(x.item.largura||0).toFixed(2)} × ${Number(x.item.altura||0).toFixed(2)} m <b>Qtd. ${Number(x.item.quantidade)||1}</b></span><span class="etiqueta-produto"> ${escOperacao(x.item.descPersiana||x.item.modelo||x.item.textoVoal||'Cortina')}</span></div></article>`).join(''):'<div class="vazio-modulo">Nenhuma etiqueta para os filtros selecionados.</div>';window.atualizarOpcoesEtiquetasNiimbot?.();}
-function imprimirEtiquetas(todas = false){const etiquetas = Array.from(document.querySelectorAll('#etiquetas-corpo .etiqueta'));if(!etiquetas.length){alert('Nenhuma etiqueta para imprimir.');return;}const indice = Number(document.getElementById('etiq-imagem')?.value || 0);etiquetas.forEach((el,i)=>el.classList.toggle('etiqueta-selecionada',i===indice));document.body.classList.toggle('etiqueta-unica',!todas);document.body.classList.add('imprimindo-etiquetas');imprimirComRetorno();}
-
+});
 
 </script>
 
@@ -4522,16 +4149,5 @@ function imprimirEtiquetas(todas = false){const etiquetas = Array.from(document.
 <script src="persianas-materiais.js"></script>
 <script src="plano-corte-persianas.js"></script>
 <script src="plano-corte-cortinas.js"></script>
-<script src="pagamento.js"></script>
-<script src="cortina-editor.js"></script>
-<script src="vendor/jsbarcode-code128.min.js"></script><script src="etiquetas-codigo-barras.js"></script><script src="logistica-modelo.js"></script><script src="logistica.js"></script><script src="etiquetas-producao.js"></script><script src="etiquetas-niimbot.js"></script><script src="produto-precos.js"></script><script src="custos-orcamento.js"></script>
-<script src="cortina-calculo.js"></script>
-<script src="salvamento-automatico.js"></script>
-<script src="financeiro-modelo.js"></script>
-<script src="financeiro.js"></script>
-<script src="producao-status.js"></script>
-<script src="categorias-edicao.js"></script>
-<script src="confeccao-cortinas.js"></script>
-<script src="interface-moderna.js"></script>
 </body>
 </html>

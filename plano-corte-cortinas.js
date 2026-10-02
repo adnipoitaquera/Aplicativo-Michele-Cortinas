@@ -27,5 +27,5 @@ function imprimirPlanoCorteTubosTrilhos() {
     const barras = organizarBarrasAluminio(cortes);
     document.getElementById('area-impressao-plano-corte').innerHTML = `<h1>Plano de Corte de Tubos e Trilhos</h1>${htmlPlanoCortePersianas(cortes, barras)}`;
     document.body.classList.add('imprimindo-plano-corte');
-    window.print();
+    imprimirComRetorno();
 }

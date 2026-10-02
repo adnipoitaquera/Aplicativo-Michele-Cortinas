@@ -1,5 +1,6 @@
 /* Tema de tela: a apresentação dos documentos impressos continua independente. */
 @media print {
+  .rel-conf-acoes { display:none!important; }
   body.imprimindo-relatorio #app-shell .conteudo-aba:not(.relatorio-impressao-container),
   body.imprimindo-lista-relatorio #app-shell .conteudo-aba:not(.relatorio-impressao-container) { display:none!important; }
   body.imprimindo-relatorio #aba-relatorio-materiais > .historico-toolbar { display:none!important; }

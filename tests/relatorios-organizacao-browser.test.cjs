@@ -36,8 +36,17 @@ test('menu único de relatórios alterna vendas e materiais e imprime apenas o e
     });
     await page.getByRole('tab',{name:'Confecção',exact:true}).click();
     assert.match(await page.locator('#rel-conf-corpo').innerText(),/Ana\s+21\s+R\$\s*675,00\s+R\$\s*0,00/);
+    fs.mkdirSync(path.join(root,'artifacts/layout-pagamento'),{recursive:true});
+    await page.locator('#relatorio-confeccao').screenshot({path:path.join(root,'artifacts/layout-pagamento/relatorio.png')});
+    assert.equal(await page.locator('#rel-conf-corpo .rel-conf-acoes').evaluate(e=>getComputedStyle(e).display),'table-cell');
     await page.getByRole('button',{name:'Registrar pagamento',exact:true}).click();
     assert.equal(await page.locator('#fin-costureira').inputValue(),'C1');
+    for(const width of [1280,390,320]){
+      await page.setViewportSize({width,height:900});
+      await page.locator('#fin-editor').screenshot({path:path.join(root,`artifacts/layout-pagamento/formulario-${width}.png`)});
+      assert.equal(await page.locator('#fin-editor').evaluate(e=>e.scrollWidth<=e.clientWidth),true,`Formulário dentro da tela de ${width}px`);
+    }
+    await page.setViewportSize({width:1280,height:900});
     await page.locator('#fin-bruto').fill('200');await page.getByRole('button',{name:'Salvar lançamento',exact:true}).click();
     const pagamento=await page.evaluate(()=>JSON.parse(dadosStorage.getItem('michele_config_empresa')).financeiro.lancamentos[0]);
     assert.equal(pagamento.costureiraId,'C1');assert.equal(pagamento.status,'Liquidado');assert.equal(pagamento.valorLiquido,200);

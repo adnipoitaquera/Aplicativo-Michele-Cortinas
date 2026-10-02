@@ -15,12 +15,26 @@
     return MicheleLogisticaModelo.itens(pedidos);
   };
   function salvarCadastros(dados){const atual=config();dadosStorage.setItem('michele_config_empresa',JSON.stringify({...atual,logistica:dados}));}
+  window.atualizarOperacaoLeitura=function(){
+    const consulta=el('log-acao').value==='consultar';
+    el('log-registrar').textContent=consulta?'Consultar etiqueta':'Registrar leitura';
+    el('log-consulta').hidden=true;el('log-feedback').textContent='';
+    el('log-codigo').focus();
+  };
+  function mostrarConsulta(x){
+    const dados=cadastros(),rota=(dados.rotas||[]).find(r=>r.id===x.peca.rotaId);
+    const responsavel=(dados.responsaveis||[]).find(r=>r.id===rota?.responsavelId);
+    const campos=[['Cliente',x.doc.cliente?.nome],['Pedido',numeroExibicao(x.doc)],['Telefone',x.doc.cliente?.telefone],['Endereço',x.doc.cliente?.endereco],['Ambiente',x.item.ambiente],['Peça',`${x.peca.unidade} de ${Number(x.item.quantidade)||1}`],['Produto',x.item.descPersiana||x.item.modelo||x.item.textoVoal],['Medidas',`${Number(x.item.largura||0).toFixed(2)} × ${Number(x.item.altura||0).toFixed(2)} m`],['Status',x.peca.estado],['Rota',rota?.nome],['Responsável',responsavel?.nome]];
+    const painel=el('log-consulta');
+    painel.innerHTML=`<h3>Identificação do pacote</h3><p>Código: <strong>${esc(x.peca.codigo)}</strong></p><div class="operacao-grid">${campos.map(([nome,valor])=>`<div class="operacao-card"><small>${esc(nome)}</small><p>${esc(valor||'Não informado')}</p></div>`).join('')}</div><h4>Histórico de movimentações</h4>${(x.peca.historico||[]).map(h=>`<p>${esc(h.estado)} · ${esc(new Date(h.data).toLocaleString('pt-BR'))} · ${esc(h.usuario)}</p>`).join('')||'<p>Nenhuma movimentação registrada.</p>'}`;
+    painel.hidden=false;
+  }
   window.atualizarLogistica=function(){
     if(!permitido())return;
     const shell=el('log-shell');if(!shell)return;
     if(!shell.children.length)shell.innerHTML=`
-      <div class="modulo-cabecalho"><div><h2>Logística e entregas</h2><p>Leia a etiqueta de cada peça. Recebimento da confecção, carregamento e entrega são registrados separadamente.</p></div></div>
-      <form id="log-leitura" onsubmit="event.preventDefault();lerEtiquetaLogistica()"><div class="historico-toolbar"><label for="log-acao">Operação</label><select id="log-acao"><option value="receber">Receber da confecção</option><option value="carregar">Saiu para entrega</option><option value="entregar">Confirmar entrega</option></select><input id="log-codigo" autocomplete="off" placeholder="Leia o código e pressione Enter" aria-label="Código da etiqueta"><button class="btn btn-ouro">Registrar leitura</button></div></form><p id="log-feedback" role="status" aria-live="polite"></p><p id="log-notificacoes"></p>
+      <div class="modulo-cabecalho"><div><h2>Logística e entregas</h2><p>Consulte uma etiqueta para identificar o pacote sem alterar seu status. Escolha uma operação para registrar a movimentação.</p></div></div>
+      <form id="log-leitura" onsubmit="event.preventDefault();lerEtiquetaLogistica()"><div class="historico-toolbar"><label for="log-acao">Operação</label><select id="log-acao" onchange="atualizarOperacaoLeitura()"><option value="consultar">Consultar etiqueta</option><option value="receber">Receber da confecção</option><option value="carregar">Saiu para entrega</option><option value="entregar">Confirmar entrega</option></select><input id="log-codigo" autocomplete="off" placeholder="Leia o código e pressione Enter" aria-label="Código da etiqueta"><button id="log-registrar" class="btn btn-ouro">Consultar etiqueta</button></div></form><p id="log-feedback" role="status" aria-live="polite"></p><section id="log-consulta" hidden aria-label="Identificação do pacote"></section><p id="log-notificacoes"></p>
       <details><summary>Cadastro de motoristas e instaladores</summary><form onsubmit="event.preventDefault();salvarResponsavelLogistica()"><div class="grid-forms"><div class="form-group"><label>Nome</label><input id="log-resp-nome" required></div><div class="form-group"><label>Função</label><select id="log-resp-tipo"><option>Motorista</option><option>Instalador</option><option>Motorista e instalador</option></select></div><div class="form-group"><label>Telefone</label><input id="log-resp-telefone" type="tel"></div></div><button class="btn">Cadastrar responsável</button></form><p id="log-responsaveis"></p></details>
       <details><summary>Cadastrar rota</summary><form onsubmit="event.preventDefault();salvarRotaLogistica()"><div class="grid-forms"><div class="form-group"><label>Nome da rota</label><input id="log-rota-nome" required></div><div class="form-group"><label>Data</label><input id="log-rota-data" type="date" required></div><div class="form-group"><label>Motorista ou instalador</label><select id="log-rota-responsavel" required></select></div><div class="form-group"><label>Local de saída</label><input id="log-rota-origem" placeholder="Endereço completo"></div></div><button class="btn">Criar rota</button></form></details>
       <div class="historico-toolbar"><input id="log-busca" type="search" placeholder="Filtrar pedido, cliente, ambiente ou código" oninput="atualizarLogistica()"><select id="log-rota" onchange="atualizarLogistica()"><option value="">Todas as rotas</option></select><button class="btn" onclick="vincularPecasRota()">Vincular peças selecionadas à rota</button><button class="btn" onclick="abrirMapaRota()">Abrir rota no mapa</button></div><p id="log-rota-info"></p>
@@ -45,7 +59,13 @@
   window.lerEtiquetaLogistica=function(){
     if(!permitido())return;
     const entrada=el('log-codigo'),feedback=el('log-feedback');
+    el('log-consulta').hidden=true;
     try{
+      if(el('log-acao').value==='consultar'){
+        mostrarConsulta(MicheleLogisticaModelo.consultar(pedidos,entrada.value.trim()));
+        feedback.textContent='Etiqueta encontrada. Consulta realizada sem alterar o status da peça.';
+        entrada.value='';entrada.focus();return;
+      }
       const resultado=MicheleLogisticaModelo.ler(pedidos,entrada.value.trim(),el('log-acao').value,usuarioAtual?.nome||'Administrador',new Date().toISOString());
       if(!resultado.repetido)gravarPedidos(resultado.pedidos);
       feedback.textContent=resultado.repetido?'Esta leitura já foi registrada.':`${numeroExibicao(resultado.x.doc)} · ${resultado.x.item.ambiente} · peça ${resultado.x.peca.unidade}: ${resultado.x.peca.estado}.`;

@@ -1,6 +1,19 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');
 const modelo=require('../logistica-modelo.js');
 const criar=()=>{let n=10000000000000;return modelo.garantir([{idDocumento:'PED1',tipo:'Pedido',itens:[{id:1,ambiente:'Sala',quantidade:2}],producao:{0:'Em confecção'}}],()=>String(n++)).pedidos;};
+test('consulta identifica a peça em qualquer status sem alterar pedido ou histórico',()=>{
+  const lista=criar();lista[0].cliente={nome:'Maria Silva',telefone:'11999999999',endereco:'Rua Teste, 10'};
+  const codigo=modelo.itens(lista)[1].peca.codigo;
+  for(const estado of modelo.estados){
+    lista[0].logistica.pecas[codigo].estado=estado;
+    const antes=JSON.stringify(lista),x=modelo.consultar(lista,' '+codigo+' ');
+    assert.equal(x.doc.cliente.nome,'Maria Silva');assert.equal(x.item.ambiente,'Sala');
+    assert.equal(x.peca.unidade,2);assert.equal(x.peca.estado,estado);assert.equal(JSON.stringify(lista),antes);
+  }
+  assert.throws(()=>modelo.consultar(lista,'00000000000000'),/não encontrado/);
+  const duplicado=JSON.parse(JSON.stringify(lista[0]));
+  assert.throws(()=>modelo.consultar([...lista,duplicado],codigo),/duplicado/);
+});
 test('cada peça tem código exclusivo persistente, sem trocar após editar ou reordenar',()=>{
   const lista=criar(),pecas=modelo.itens(lista);assert.equal(pecas.length,2);assert.notEqual(pecas[0].peca.codigo,pecas[1].peca.codigo);
   assert.equal(modelo.garantir(lista,()=>{throw Error('não deveria gerar');}).mudou,false);

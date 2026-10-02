@@ -26,10 +26,13 @@
     return {pedidos:lista,mudou};
   }
   function itens(pedidos){return pedidos.filter(p=>p.tipo==='Pedido').flatMap(doc=>Object.values(doc.logistica?.pecas||{}).filter(p=>p.ativa).map(peca=>({doc,peca,item:doc.itens[peca.indice]})).filter(x=>x.item));}
-  function ler(pedidos,codigo,acao,usuario,data){
+  function consultar(pedidos,codigo){
     const matches=itens(pedidos).filter(x=>x.peca.codigo===codigo.trim());
     if(matches.length!==1)throw new Error(matches.length?'Código duplicado. Verifique o cadastro.':'Código não encontrado nas etiquetas ativas.');
-    const x=matches[0],novo={receber:estados[1],carregar:estados[2],entregar:estados[3]}[acao];
+    return matches[0];
+  }
+  function ler(pedidos,codigo,acao,usuario,data){
+    const x=consultar(pedidos,codigo),novo={receber:estados[1],carregar:estados[2],entregar:estados[3]}[acao];
     if(!novo)throw new Error('Escolha a operação.');
     if(x.peca.estado===novo || (acao==='receber' && estados.indexOf(x.peca.estado)>1))return {pedidos,repetido:true,x};
     const esperado={receber:estados[0],carregar:estados[1],entregar:estados[2]}[acao];
@@ -44,6 +47,6 @@
     if(acao==='carregar' && lote.every(p=>['Em rota','Entregue'].includes(p.estado)) && !notificacoes.some(n=>n.rotaId===peca.rotaId && n.tipo==='a-caminho'))notificacoes=[...notificacoes,{tipo:'a-caminho',rotaId:peca.rotaId,data,status:'Pendente de integração WhatsApp'}];
     return {pedidos:pedidos.map(p=>p===x.doc?{...p,producao,logistica:{...p.logistica,pecas,notificacoes}}:p),repetido:false,x:{...x,peca}};
   }
-  root.MicheleLogisticaModelo={estados,garantir,itens,ler};
+  root.MicheleLogisticaModelo={estados,garantir,itens,consultar,ler};
   if(typeof module!=='undefined')module.exports=root.MicheleLogisticaModelo;
 })(typeof window!=='undefined'?window:globalThis);

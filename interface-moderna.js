@@ -16,7 +16,7 @@
   boasVindas.append(novo);
   painel.prepend(boasVindas);
 
-  const descricoes = ['Comece um novo projeto', 'Consulte e cadastre contatos', 'Acompanhe cada negociação', 'Sua rede de fornecimento', 'Parceiros de cada projeto', 'Organize seu catálogo', 'Consulte vendas e comissões', 'Confira materiais por pedido', 'Consulte materiais e medidas', 'Planeje e aproveite materiais', 'Prepare a produção de cortinas'];
+  const descricoes = ['Comece um novo projeto', 'Consulte e cadastre contatos', 'Acompanhe cada negociação', 'Sua rede de fornecimento', 'Parceiros de cada projeto', 'Organize seu catálogo', 'Consulte vendas e materiais', 'Consulte materiais e medidas', 'Planeje e aproveite materiais', 'Prepare a produção de cortinas'];
   painel.querySelectorAll('.dashboard > .dash-card').forEach((card, indice) => {
     const descricao = document.createElement('span');
     descricao.className = 'atalho-descricao';

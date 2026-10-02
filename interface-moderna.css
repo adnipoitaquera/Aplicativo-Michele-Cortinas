@@ -3,6 +3,9 @@
   body.imprimindo-relatorio #app-shell .conteudo-aba:not(.relatorio-impressao-container),
   body.imprimindo-lista-relatorio #app-shell .conteudo-aba:not(.relatorio-impressao-container) { display:none!important; }
   body.imprimindo-relatorio #aba-relatorio-materiais > .historico-toolbar { display:none!important; }
+  body.imprimindo-relatorio #relatorio-grupo-vendas,
+  body.imprimindo-lista-relatorio .relatorio-grupo:not(.relatorio-grupo-impressao) { display:none!important; }
+  body.imprimindo-lista-relatorio .relatorio-grupo-impressao { display:block!important; }
 }
 @media print { .moderna-boas-vindas,.moderna-menu,.atalho-descricao { display:none!important; } }
 @media screen {

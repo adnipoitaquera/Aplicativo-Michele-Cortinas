@@ -87,7 +87,7 @@
         complementos.appendChild(grupo('cortina-observacao'));
         grupo('cortina-observacao').classList.add('cortina-observacao');
         const acessorios = corpo.querySelector('.cortina-acessorios');
-        acessorios.insertAdjacentHTML('beforeend', `<div class="form-group"><label for="select-ilhos-${id}">Ilhós</label><select id="select-ilhos-${id}" aria-describedby="ilhos-ajuda-${id}"></select><small id="ilhos-ajuda-${id}">Usa a fórmula do cadastro de produtos. Padrão: largura total do tecido principal ÷ 14 cm × preço unitário.</small></div>`);
+        acessorios.insertAdjacentHTML('beforeend', `<div class="form-group"><label for="select-ilhos-${id}">Ilhós</label><select id="select-ilhos-${id}"></select></div>`);
         ['select-tubo-trilho','cortina-cabecote-traseiro','select-rodizio','cortina-deslizante-traseiro','cortina-fixacao','cortina-suporte','cortina-ponteira-frontal','cortina-ponteira-traseira'].forEach(chave => acessorios.appendChild(grupo(chave)));
         const dimensoesTrilho = grupo('select-tubo-trilho').querySelector('div[style*="grid"]');
         if (dimensoesTrilho) extras.appendChild(dimensoesTrilho);

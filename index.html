@@ -3143,8 +3143,10 @@ function processarCalculoGeral() {
             }
         }
 
-        const instalacaoQtd = parseInt(document.getElementById(`instalacao-qtd-${id}`)?.value, 10) || 0;
         const instalacaoValorUnitario = parseFloat(document.getElementById(`instalacao-valor-${id}`)?.value) || 0;
+        const campoQuantidadeInstalacao = document.getElementById(`instalacao-qtd-${id}`);
+        if (instalacaoValorUnitario > 0 && campoQuantidadeInstalacao?.value === '') campoQuantidadeInstalacao.value = '1';
+        const instalacaoQtd = parseInt(campoQuantidadeInstalacao?.value, 10) || 0;
         const totalInstalacao = instalacaoQtd * instalacaoValorUnitario;
 
         const materiais = [];

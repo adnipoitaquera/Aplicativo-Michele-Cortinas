@@ -1,7 +1,7 @@
 function registrarCustoMaterial(material, id) {
   if (material.custoTotal != null) return {...material};
   const select = material.produtoChave ? document.getElementById(`${material.produtoChave}-${id}`) : null;
-  const nome = String(select?.selectedOptions[0]?.textContent || material.nome).replace(/\s*-\s*R\$.*$/, '').replace(/\s+[—-]\s+(Tecido principal|Forro|Tecido 3).*$/i,'').trim();
+  const nome = String(select?.selectedOptions?.[0]?.textContent || material.nome).replace(/\s*-\s*R\$.*$/, '').replace(/\s+[—-]\s+(Tecido principal|Forro|Tecido 3).*$/i,'').trim();
   let lista = [];
   try { lista = JSON.parse(select?.dataset.source || '[]'); } catch (_) {}
   if (!lista.length) lista = Object.values(categoriasProduto).flatMap(c=>c.lista);

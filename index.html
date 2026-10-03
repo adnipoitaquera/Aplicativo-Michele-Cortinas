@@ -741,6 +741,8 @@ body{padding:0!important;background:#0d0d0d!important}
 
 
     <div id="aba-orcamento" class="conteudo-aba ativa">
+        <button type="button" class="btn" onclick="atualizarPrecosOrcamento()">Atualizar preços pelo cadastro</button>
+        <p id="orc-precos-status" role="status" aria-live="polite"></p>
         <div class="secao-titulo">
             <span>Vincular Cliente</span>
         </div>
@@ -1671,7 +1673,15 @@ function normalizarNomeTecido(texto) {
     return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
-function restaurarSelecaoProduto(select, dados) {
+function restaurarSelecaoProduto(select, dados, atualizarPreco = false) {
+    if (atualizarPreco && dados.text && select.dataset.source) {
+        let fonte = []; try { fonte = JSON.parse(select.dataset.source); } catch (_) {}
+        const nome = normalizarNomeTecido(dados.text.replace(/\s*-\s*R\$.*$/, ''));
+        const encontrados = fonte.filter(item => normalizarNomeTecido(item.nome) === nome);
+        if (encontrados.length === 1 && Number.isFinite(Number(encontrados[0].preco)) && Number(encontrados[0].preco) >= 0) {
+            dados = {...dados,text:encontrados[0].nome,value:String(encontrados[0].preco)};
+        }
+    }
     if (!dados.text) {
         const antiga = select.dataset.materialPersiana && Array.from(select.options).findIndex(opcao => opcao.textContent === dados.value);
         if (typeof antiga === 'number' && antiga >= 0) select.selectedIndex = antiga;
@@ -1971,6 +1981,18 @@ function atualizarSelectProduto(select, itens, unidade) {
     if (indice >= 0) select.selectedIndex = indice + 1;
     if (select.atualizarFiltro) select.atualizarFiltro();
 }
+function atualizarPrecosOrcamento() {
+  let alterados = 0;
+  document.querySelectorAll('#container-itens-orcamento select[data-source]').forEach(select => {
+    if (select.value === '') return;
+    const anterior = select.value;
+    restaurarSelecaoProduto(select,{value:anterior,text:select.selectedOptions[0]?.textContent || ''},true);
+    if (Number(anterior) !== Number(select.value)) alterados++;
+  });
+  processarCalculoGeral();
+  document.getElementById('orc-precos-status').textContent = alterados ? `${alterados} preço(s) atualizado(s) pelo cadastro. Confira o total do orçamento.` : 'Os produtos encontrados já estão com os preços atuais do cadastro.';
+  window.MicheleAutoSave?.agendar('orcamento');
+}
 function atualizarOpcoesProdutos() {
   if (typeof atualizarCatalogoCamposPersianas === 'function') atualizarCatalogoCamposPersianas();
   document.querySelectorAll('select[id^="select-voal-"]').forEach(select => atualizarSelectProduto(select, PRECOS_VOAL.filter(item => MicheleCatalogoUso.permite(item,'voal','cortinas')), ''));
@@ -2104,6 +2126,7 @@ function salvarProduto() {
   persistirCategoriaProduto(dados);
   atualizarCategoriasProdutoSelecionaveis(categoria);
   atualizarOpcoesProdutos();
+  if (document.querySelector('#container-itens-orcamento .item-carrinho-card')) processarCalculoGeral();
   atualizarTabelaProdutos();
   limparProduto();
   avisarGravacao('Produto salvo.');
@@ -2621,7 +2644,7 @@ function aplicarEstadoCard(id, estado) {
         if(!el) return;
         if('checked' in dados && (el.type === 'checkbox' || el.type === 'radio')) el.checked = dados.checked;
         if('value' in dados) {
-            if(el.tagName === 'SELECT') restaurarSelecaoProduto(el, { ...dados, text: dados.text || estado.campos?.[el.id]?.text });
+            if(el.tagName === 'SELECT') restaurarSelecaoProduto(el, { ...dados, text: dados.text || estado.campos?.[el.id]?.text }, !objetoOrcamentoCorrente?.idDocumento);
             else el.value = dados.value;
         }
         el.disabled = !!dados.disabled;
@@ -2638,7 +2661,7 @@ function aplicarEstadoCard(id, estado) {
         arr.forEach((dados, j) => {
             const el = els[j]; if(!el) return;
             if(el.type === 'checkbox' || el.type === 'radio') el.checked = dados.checked;
-            if(el.tagName === 'SELECT') restaurarSelecaoProduto(el, { ...dados, text: dados.text || estado.campos?.[el.id]?.text });
+            if(el.tagName === 'SELECT') restaurarSelecaoProduto(el, { ...dados, text: dados.text || estado.campos?.[el.id]?.text }, !objetoOrcamentoCorrente?.idDocumento);
             else el.value = dados.value;
             el.disabled = !!dados.disabled;
         });

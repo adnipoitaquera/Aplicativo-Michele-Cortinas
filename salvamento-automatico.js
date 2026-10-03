@@ -118,10 +118,10 @@
         if (!campo?.id || ['file','button','submit','search'].includes(campo.type) || /^(busca-|search-|login-)/.test(campo.id)) return null;
         return Object.keys(telas).find(tela => campo.closest?.(`#${telas[tela][0]}`) && campo.id.startsWith(telas[tela][1]));
     }
-    function restaurarCampos(campos) {
+    function restaurarCampos(campos, atualizarPrecos = false) {
         for (const [id,dados] of Object.entries(campos || {})) {
             const input = el(id); if (!input || ['password','file'].includes(input.type)) continue;
-            if (input.tagName === 'SELECT') restaurarSelecaoProduto(input,dados);
+            if (input.tagName === 'SELECT') restaurarSelecaoProduto(input,dados,atualizarPrecos);
             else input.value = dados.value;
             if (['checkbox','radio'].includes(input.type)) input.checked = dados.checked;
         }
@@ -138,7 +138,7 @@
                     for (const ambiente of e.ambientes || []) { contadorItensId = Number(ambiente.id)-1; adicionarItemOrcamentoPadrao(); aplicarEstadoCard(ambiente.id,ambiente.estado); }
                     objetoOrcamentoCorrente = e.documento || null;
                 }
-                restaurarCampos(e.campos);
+                restaurarCampos(e.campos, r.tela === 'orcamento' && !e.documento?.idDocumento);
                 if (r.tela === 'clientes') clienteEditando = clientes.find(c => c.codigo === e.editando) || null;
                 if (r.tela === 'fornecedores') fornecedorEditando = e.editando || null;
                 if (r.tela === 'profissionais') profissionalEditando = e.editando || null;

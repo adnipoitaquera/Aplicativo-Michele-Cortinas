@@ -87,6 +87,7 @@
         complementos.appendChild(grupo('cortina-observacao'));
         grupo('cortina-observacao').classList.add('cortina-observacao');
         const acessorios = corpo.querySelector('.cortina-acessorios');
+        acessorios.insertAdjacentHTML('beforeend', `<div class="form-group"><label for="select-ilhos-${id}">Ilhós</label><select id="select-ilhos-${id}" aria-describedby="ilhos-ajuda-${id}"></select><small id="ilhos-ajuda-${id}">Largura total do tecido principal ÷ 0,14 m × valor unitário cadastrado.</small></div>`);
         ['select-tubo-trilho','cortina-cabecote-traseiro','select-rodizio','cortina-deslizante-traseiro','cortina-fixacao','cortina-suporte','cortina-ponteira-frontal','cortina-ponteira-traseira'].forEach(chave => acessorios.appendChild(grupo(chave)));
         const dimensoesTrilho = grupo('select-tubo-trilho').querySelector('div[style*="grid"]');
         if (dimensoesTrilho) extras.appendChild(dimensoesTrilho);
@@ -243,11 +244,12 @@
     }
     function catalogos() {
         const normalizar = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-        const filtros = {'tubo-trilho':/tubo|trilho/,rodizio:/rodizio|deslizante/,argola:/argola/,entretela:/entretela/,suporte:/suporte/,ponteira:/ponteira|terminal/,terceiro:/blackout|black out|blecaute/};
+        const filtros = {'tubo-trilho':/tubo|trilho/,rodizio:/rodizio|deslizante/,argola:/argola/,ilhos:/ilhos/,entretela:/entretela/,suporte:/suporte/,ponteira:/ponteira|terminal/,terceiro:/blackout|black out|blecaute/};
         for (const [tipo,filtro] of Object.entries(filtros)) {
             const itens = Object.entries(categoriasProduto).flatMap(([categoria,c]) => (c.lista || []).filter(p => MicheleCatalogoUso.permite(p,`${categoria} ${c.nome}`,'cortinas') && filtro.test(normalizar(`${c.nome} ${p.subcategoria || ''} ${p.nome}`))));
             document.querySelectorAll(`select[id^="select-${tipo}-"]`).forEach(select => {
                 atualizarSelectProduto(select,itens,'');
+                if (tipo === 'ilhos') select.options[0].textContent = itens.length ? 'Sem ilhós' : 'Cadastre Ilhós nos produtos';
                 if (tipo === 'terceiro') {
                     select.options[0].textContent = itens.length ? 'Selecionar blackout...' : 'Cadastre Blackout na tabela de preços';
                     const id = select.id.replace('select-terceiro-','');

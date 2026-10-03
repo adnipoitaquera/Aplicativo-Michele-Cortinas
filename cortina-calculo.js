@@ -39,6 +39,9 @@
         const valorCostureira = ler('costureira-valor') == null || ler('costureira-valor') === '' ? 45 : positivo(ler('costureira-valor'));
         if (metros) materiais.push({nome:'Mão de obra de confecção',quantidade:metros/1.4,unidade:'faixa',valorUnitario:valorCostureira,valorTotal:metros/1.4*valorCostureira,custoUnitario:valorCostureira,custoTotal:metros/1.4*valorCostureira});
         for (const tipo of ['rodizio','argola','gancho','clip']) adicionar(`select-${tipo}`,largura/0.08*quantidade,'un.');
+        // A largura com franzimento independe da metragem de compra quando o tecido é invertido.
+        const larguraPrincipal = tecidos.voal.metros > 0 ? largura * positivo(ler('prop-voal')) * quantidade : 0;
+        adicionar('select-ilhos',larguraPrincipal/0.14,'un.');
         for (const tipo of ['entretela','wave']) adicionar(`select-${tipo}`,tecidos.voal.metros,'m');
         adicionar('select-tubo-trilho',positivo(ler('tubo-trilho-tamanho'))*positivo(ler('tubo-trilho-qtd')),'m');
         for (const tipo of ['suporte','ponteira']) adicionar(`select-${tipo}`,positivo(ler(`cortina-${tipo}-qtd`)),'un.');

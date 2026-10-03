@@ -1,6 +1,25 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const {tecido,calcular} = require('../cortina-calculo.js');
+test('ilhós usam largura principal com franzimento, quantidade e preço cadastrado', () => {
+    const dados = {largura:3.5,altura:2,quantidade:1,'select-voal':10,'prop-voal':2,'select-ilhos':2};
+    const executar = () => calcular(k=>dados[k],k=>k);
+    const ilhos = () => executar().materiais.find(m=>m.produtoChave==='select-ilhos');
+    assert.ok(Math.abs(ilhos().quantidade-50)<1e-9);
+    assert.ok(Math.abs(ilhos().valorTotal-100)<1e-9);
+    const totalCom = executar().total;
+    dados['select-ilhos']='';
+    assert.equal(ilhos(),undefined);
+    assert.ok(Math.abs(totalCom-executar().total-100)<1e-9);
+    dados['select-ilhos']=3;
+    dados.quantidade=2;
+    dados.altura=4; // A inversão altera o consumo, mas não a largura do cabeçote.
+    dados['select-forro']=5; dados['prop-forro']=3;
+    assert.ok(Math.abs(ilhos().quantidade-100)<1e-9);
+    assert.ok(Math.abs(ilhos().valorTotal-300)<1e-9);
+    dados['select-voal']='';
+    assert.equal(ilhos(),undefined);
+});
 test('quatro cabeçotes somam 5 ou 8 cm à barra e mudam a inversão no limite', () => {
     for (const tipo of ['simples','com franzidor']) {
         const dados = {largura:3,altura:2.64,'select-voal':100,'prop-voal':3,'cortina-barra':'30 cm','cortina-largura-tecido-voal':3,'cortina-altura-cabecote':0.09};

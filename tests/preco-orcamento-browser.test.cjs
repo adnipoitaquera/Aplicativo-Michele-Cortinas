@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const http=require('node:http');
 const {chromium}=require('playwright');
-test('Ravena usa o preço cadastrado em novos orçamentos e rascunhos',async()=>{
+test('Ravena usa preço final de cadastro em orçamentos novos, rascunhos e histórico',async()=>{
   const root=path.resolve(__dirname,'..');
   const server=http.createServer((req,res)=>{
     const pathname=new URL(req.url,'http://localhost').pathname;
@@ -24,7 +24,7 @@ test('Ravena usa o preço cadastrado em novos orçamentos e rascunhos',async()=>
     const resultado=await page.evaluate(()=>{
       usuarioAtual={id:'TESTE',nome:'Teste',cargo:'Administrador'};iniciarAplicacao();
       editarProduto('voal',PRECOS_VOAL.findIndex(p=>p.nome==='RAVENA 3,00'));
-      document.getElementById('produto-custo').value='10';
+      document.getElementById('produto-custo').value='20';
       document.getElementById('produto-acrescimo').value='100';
       salvarProduto();
       iniciarNovoOrcamento();adicionarItemOrcamentoPadrao();
@@ -44,18 +44,32 @@ test('Ravena usa o preço cadastrado em novos orçamentos e rascunhos',async()=>
       objetoOrcamentoCorrente.idDocumento='ORC-ANTIGO';
       aplicarEstadoCard(id,estado);processarCalculoGeral();
       const historico=material().valorUnitario;
+      const documento=JSON.parse(JSON.stringify(objetoOrcamentoCorrente));
+      documento.configuracaoAmbientes[0].estado=estado;
+      documento.itens[0].materiaisCortina.find(m=>m.produtoChave==='select-voal').valorUnitario=33.9;
+      pedidos.push(documento);
+      const snapshot=JSON.stringify(pedidos);
+      consultarOrcamentoHistorico(pedidos.length-1);
+      const abertoHistorico=material().valorUnitario;
+      const armazenadoPreservado=JSON.stringify(pedidos)===snapshot;
+      objetoOrcamentoCorrente.tipo='Pedido';
+      aplicarEstadoCard(id,estado);processarCalculoGeral();
+      const pedidoFechado=material().valorUnitario;
       atualizarPrecosOrcamento();
       const atualizado=material().valorUnitario;
       editarProduto('voal',PRECOS_VOAL.findIndex(p=>p.nome==='RAVENA 3,00'));
       document.getElementById('produto-custo').value='11';salvarProduto();
       const depoisEdicao=material().valorUnitario;
-      return {novo,restaurado,totalTecido,historico,atualizado,depoisEdicao};
+      return {novo,restaurado,totalTecido,historico,abertoHistorico,armazenadoPreservado,pedidoFechado,atualizado,depoisEdicao};
     });
-    assert.equal(resultado.novo,20);
-    assert.equal(resultado.restaurado,20);
-    assert.equal(resultado.totalTecido,120);
-    assert.equal(resultado.historico,33.9);
-    assert.equal(resultado.atualizado,20);
+    assert.equal(resultado.novo,40);
+    assert.equal(resultado.restaurado,40);
+    assert.equal(resultado.totalTecido,240);
+    assert.equal(resultado.historico,40);
+    assert.equal(resultado.abertoHistorico,40);
+    assert.equal(resultado.armazenadoPreservado,true);
+    assert.equal(resultado.pedidoFechado,33.9);
+    assert.equal(resultado.atualizado,40);
     assert.equal(resultado.depoisEdicao,22);
     assert.deepEqual(erros,[]);
   }finally{if(browser)await browser.close();await new Promise(r=>server.close(r));}

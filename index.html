@@ -1981,7 +1981,7 @@ function atualizarSelectProduto(select, itens, unidade) {
     if (indice >= 0) select.selectedIndex = indice + 1;
     if (select.atualizarFiltro) select.atualizarFiltro();
 }
-function atualizarPrecosOrcamento() {
+function sincronizarPrecosCamposOrcamento() {
   let alterados = 0;
   document.querySelectorAll('#container-itens-orcamento select[data-source]').forEach(select => {
     if (select.value === '') return;
@@ -1989,6 +1989,10 @@ function atualizarPrecosOrcamento() {
     restaurarSelecaoProduto(select,{value:anterior,text:select.selectedOptions[0]?.textContent || ''},true);
     if (Number(anterior) !== Number(select.value)) alterados++;
   });
+  return alterados;
+}
+function atualizarPrecosOrcamento() {
+  const alterados = sincronizarPrecosCamposOrcamento();
   processarCalculoGeral();
   document.getElementById('orc-precos-status').textContent = alterados ? `${alterados} preço(s) atualizado(s) pelo cadastro. Confira o total do orçamento.` : 'Os produtos encontrados já estão com os preços atuais do cadastro.';
   window.MicheleAutoSave?.agendar('orcamento');
@@ -3008,6 +3012,9 @@ function travarGrupo(id, tipo) {
 
 // LÓGICA DE ENGENHARIA DE CÁLCULO PARA MÚLTIPLOS ITENS
 function processarCalculoGeral() {
+    // Orçamentos em edição sempre usam o preço final atual do cadastro.
+    // Pedidos já fechados só são reprecificados pela ação explícita de atualização.
+    if (objetoOrcamentoCorrente?.tipo !== 'Pedido') sincronizarPrecosCamposOrcamento();
     const cards = document.querySelectorAll('.item-carrinho-card');
     if(cards.length === 0) {
         alert('Adicione pelo menos um item ao orçamento.');

@@ -889,6 +889,15 @@ body{padding:0!important;background:#0d0d0d!important}
     <div class="form-group"><label for="produto-uso">Uso do produto</label><select id="produto-uso"><option value="cortinas">Cortinas</option><option value="persianas">Persianas</option><option value="ambos">Cortinas e Persianas</option></select></div>
     <div class="form-group"><label>Largura do tecido (m)</label><input id="produto-largura-tecido" type="number" min="0.01" step="0.01" placeholder="Ex.: 3,00"></div>
   </div>
+  <section class="produto-categoria-edicao"><h3>Fórmula de consumo — acessórios de cortinas</h3>
+    <p>Defina a regra deste produto quando selecionado nos acessórios do orçamento. Informe espaçamentos em centímetros: 8 cm equivalem a 0,08 m. Tecidos, persianas, mão de obra e motorização mantêm seus cálculos próprios.</p>
+    <div class="form-inline-grid">
+      <div class="form-group"><label for="produto-formula-tipo">Cálculo da quantidade</label><select id="produto-formula-tipo" onchange="MicheleProdutoFormulas.atualizar()"><option value="padrao">Padrão do campo no orçamento</option><option value="espacamento">Por espaçamento</option><option value="metragem">Por metragem</option><option value="fixa">Quantidade fixa por cortina</option></select></div>
+      <div class="form-group"><label for="produto-formula-base">Base do cálculo</label><select id="produto-formula-base" disabled onchange="MicheleProdutoFormulas.atualizar()"><option value="parede">Largura da parede</option><option value="principal">Largura total do tecido principal (com franzimento)</option><option value="consumo">Metragem de compra do tecido principal</option><option value="forro">Metragem de compra do forro</option><option value="terceiro">Metragem de compra do terceiro tecido</option></select></div>
+      <div class="form-group"><label id="produto-formula-rotulo" for="produto-formula-valor">Fator por metro</label><input id="produto-formula-valor" type="number" min="0.001" step="any" value="1" disabled oninput="MicheleProdutoFormulas.atualizar()"></div>
+      <div class="form-group"><label for="produto-formula-arredondamento">Arredondamento da quantidade total</label><select id="produto-formula-arredondamento" disabled onchange="MicheleProdutoFormulas.atualizar()"><option value="exato">Sem arredondar (padrão atual)</option><option value="cima">Inteiro para cima</option><option value="par">Próximo número par</option></select></div>
+    </div><p id="produto-formula-resumo" role="status">Selecione um produto para consultar ou alterar sua fórmula.</p>
+  </section>
   <button class="btn btn-ouro" onclick="salvarProduto()">Salvar produto</button>
   <section class="produto-categoria-edicao"><h3>Editar nome da categoria</h3><p>Selecione a categoria acima, altere o nome abaixo e clique em Atualizar categoria.</p><div class="form-group"><label for="produto-categoria-nome">Novo nome da categoria selecionada</label><input id="produto-categoria-nome"><button class="btn btn-ouro" type="button" onclick="salvarNomeCategoriaProduto()">Atualizar categoria</button></div><p id="produto-categoria-status" role="status" aria-live="polite"></p></section>
   <div class="secao-titulo" style="margin-top:30px">Categorias e produtos cadastrados</div>
@@ -1928,6 +1937,7 @@ function alternarNovoProduto() {
   atualizarTabelaProdutos();
 }
 function iniciarNovaCategoria() {
+  window.MicheleProdutoFormulas?.preencher();
   produtoEditando = null;
   atualizarCategoriasProdutoSelecionaveis('novo');
   document.getElementById('produto-nome').value = '';
@@ -1978,7 +1988,7 @@ function atualizarOpcoesProdutos() {
   });
   
   const tubosCortinas = Object.entries(categoriasProduto).flatMap(([categoria,dados]) =>
-    (dados.lista || []).filter(item => MicheleCatalogoUso.permite(item,`${categoria} ${dados.nome}`,'cortinas') && /tubo|trilho/i.test(`${dados.nome} ${item.subcategoria || ''} ${item.nome}`))
+    (dados.lista || []).filter(item => MicheleCatalogoUso.permite(item,`${categoria} ${dados.nome}`,'cortinas') && /tubo|trilho/i.test(`${item.subcategoria || ''} ${item.nome}`))
   );
   document.querySelectorAll('select[id^="select-tubo-trilho-"]').forEach(select => atualizarSelectProduto(select,tubosCortinas,''));
   if (window.MicheleCortinaEditor) window.MicheleCortinaEditor.catalogos();
@@ -1996,6 +2006,7 @@ function atualizarTabelaProdutos() {
   ).join('') || '<tr><td colspan="7">Nenhum produto encontrado.</td></tr>';
 }
 function limparProduto() {
+  window.MicheleProdutoFormulas?.preencher();
   document.getElementById('busca-produto').value = '';
   document.getElementById('produto-busca-status').textContent = '';
   document.getElementById('produto-subcategoria').value = '';
@@ -2014,6 +2025,7 @@ function editarProduto(categoria, indice, semRolar = false) {
   const dados = categoriasProduto[categoria];
   const item = dados?.lista[indice];
   if (!item) return;
+  window.MicheleProdutoFormulas?.preencher(item);
   produtoEditando = { categoria, indice };
   atualizarCategoriasProdutoSelecionaveis(categoria);
   document.getElementById('produto-nome').value = item.nome;
@@ -2048,6 +2060,8 @@ function calcularPrecoProduto() {
   }
 }
 function salvarProduto() {
+  let formulaCortina;
+  try { formulaCortina = window.MicheleProdutoFormulas?.ler(); } catch (erro) { alert(erro.message); return; }
   const custoTexto = document.getElementById('produto-custo').value;
   const percentualTexto = document.getElementById('produto-acrescimo').value;
   if (custoTexto === '' || percentualTexto === '') { alert('Informe o preço de custo e o percentual de acréscimo.'); return; }
@@ -2080,13 +2094,13 @@ function salvarProduto() {
   if (!dados || !nome || !Number.isFinite(preco) || preco < 0) { alert('Informe categoria, produto e um valor válido.'); return; }
   if (produtoEditando) {
     const origem = categoriasProduto[produtoEditando.categoria];
-    if (produtoEditando.categoria === categoria) dados.lista[produtoEditando.indice] = { ...dados.lista[produtoEditando.indice], nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso };
+    if (produtoEditando.categoria === categoria) dados.lista[produtoEditando.indice] = { ...dados.lista[produtoEditando.indice], nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso, formulaCortina };
     else {
       origem.lista.splice(produtoEditando.indice, 1);
-      dados.lista.push({ nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso });
+      dados.lista.push({ nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso, formulaCortina });
       persistirCategoriaProduto(origem);
     }
-  } else dados.lista.push({ nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso });
+  } else dados.lista.push({ nome, preco, custo, acrescimo, subcategoria, larguraTecido, uso, formulaCortina });
   persistirCategoriaProduto(dados);
   atualizarCategoriasProdutoSelecionaveis(categoria);
   atualizarOpcoesProdutos();
@@ -3136,7 +3150,8 @@ function processarCalculoGeral() {
         }
         const calculoCortina = window.MicheleCortinaCalculo ? (cortinaAtiva ? window.MicheleCortinaCalculo.calcular(
             chave => document.getElementById(`${chave}-${id}`)?.value,
-            chave => document.getElementById(`${chave}-${id}`)?.selectedOptions[0]?.textContent || chave
+            chave => document.getElementById(`${chave}-${id}`)?.selectedOptions[0]?.textContent || chave,
+            chave => window.MicheleProdutoFormulas?.produtoSelecionado(document.getElementById(`${chave}-${id}`))
         ) : {materiais:[],tecidos:{},total:0}) : null;
         if (calculoCortina) materiais.splice(0, materiais.length, ...calculoCortina.materiais);
         const materiaisCortina = cortinaAtiva ? materiais.map(material => ({...material})) : [];
@@ -4536,6 +4551,7 @@ function imprimirEtiquetas(todas = false){const etiquetas = Array.from(document.
 <script src="pagamento.js"></script>
 <script src="cortina-editor.js"></script>
 <script src="vendor/jsbarcode-code128.min.js"></script><script src="etiquetas-codigo-barras.js"></script><script src="logistica-modelo.js"></script><script src="logistica.js"></script><script src="etiquetas-producao.js"></script><script src="etiquetas-niimbot.js"></script><script src="produto-precos.js"></script><script src="custos-orcamento.js"></script>
+<script src="produto-formulas.js"></script>
 <script src="cortina-calculo.js"></script>
 <script src="salvamento-automatico.js"></script>
 <script src="financeiro-modelo.js"></script>

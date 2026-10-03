@@ -142,7 +142,10 @@
                 if (r.tela === 'clientes') clienteEditando = clientes.find(c => c.codigo === e.editando) || null;
                 if (r.tela === 'fornecedores') fornecedorEditando = e.editando || null;
                 if (r.tela === 'profissionais') profissionalEditando = e.editando || null;
-                if (r.tela === 'produtos') produtoEditando = e.editando || null;
+                if (r.tela === 'produtos') {
+                    produtoEditando = e.editando || null;
+                    root.MicheleProdutoFormulas?.atualizar();
+                }
                 if (r.tela === 'orcamento') processarCalculoGeral();
                 mensagem(r.tela,'Seu último preenchimento foi recuperado. Salvamento automático ativo.');
             }

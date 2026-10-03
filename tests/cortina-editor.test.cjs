@@ -9,9 +9,10 @@ test('catálogo de ilhós aceita acentos, usa preços cadastrados e exclui persi
     const ctx = {
         window:{},
         document:{querySelectorAll:seletor=>seletor==='select[id^="select-ilhos-"]'?[select]:[]},
-        categoriasProduto:{acessorios:{nome:'Acessórios',lista:[
+        categoriasProduto:{acessorios:{nome:'Ilhós, tubos e acessórios',lista:[
             {nome:'Ilhós branco',preco:2},{nome:'Ilhos cromado',preco:3},
-            {nome:'Argola',preco:4},{nome:'Ilhós persiana',preco:5,uso:'persianas'}
+            {nome:'Argola',preco:4},{nome:'Ilhós persiana',preco:5,uso:'persianas'},
+            {nome:'Tubo decorativo',preco:10},{nome:'Trilho suíço',preco:12}
         ]}},
         MicheleCatalogoUso:require('../catalogo-uso.js'),
         atualizarSelectProduto:(_select,produtos)=>{itens=produtos;}

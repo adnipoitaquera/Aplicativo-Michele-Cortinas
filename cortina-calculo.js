@@ -11,7 +11,7 @@
         const comprimento = altura + positivo(acrescimo);
         return {metros:partes * comprimento, partes, comprimento};
     }
-    function calcular(ler, nome) {
+    function calcular(ler, nome, produto = () => null) {
         const largura = positivo(ler('largura')), altura = positivo(ler('altura')), quantidade = positivo(ler('quantidade')) || 1;
         const materiais = [], tecidos = {}, avisos = [];
         const tipoCabecote = String(ler('cortina-cabecote-tipo') || '');
@@ -22,7 +22,14 @@
         const alturaCorte = Math.round((altura + cabecote + barra) * 1000000) / 1000000;
         const adicionar = (chave,qtd,unidade,descricao,extra={}) => {
             const valor = positivo(ler(chave));
-            if (qtd > 0 && ler(chave) !== '' && ler(chave) != null) materiais.push({produtoChave:chave,nome:descricao || nome(chave), quantidade:qtd, unidade, valorUnitario:valor, valorTotal:qtd*valor,...extra});
+            const formula = !extra.tecido && chave.startsWith('select-') ? produto(chave)?.formulaCortina : null;
+            if (formula && formula.tipo !== 'padrao') {
+                const motor = root.MicheleProdutoFormulas || (typeof require !== 'undefined' ? require('./produto-formulas.js') : null);
+                const medidas = {cortinas:quantidade,parede:largura*quantidade,principal:tecidos.voal?.metros > 0 ? largura*positivo(ler('prop-voal'))*quantidade : 0,consumo:tecidos.voal?.metros || 0,forro:tecidos.forro?.metros || 0,terceiro:tecidos.terceiro?.metros || 0};
+                const calculado = motor.calcular(formula,medidas,qtd,unidade);
+                qtd = calculado.quantidade; unidade = calculado.unidade;
+            }
+            if (qtd > 0 && ler(chave) !== '' && ler(chave) != null) materiais.push({produtoChave:chave,nome:descricao || nome(chave), quantidade:qtd, unidade, valorUnitario:valor, valorTotal:qtd*valor,...extra,...(formula ? {formulaCortina:{...formula}} : {})});
         };
         for (const tipo of ['voal','forro','terceiro']) {
             const selecionado = ler(`select-${tipo}`) !== '' && ler(`select-${tipo}`) != null;

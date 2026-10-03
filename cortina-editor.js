@@ -87,7 +87,7 @@
         complementos.appendChild(grupo('cortina-observacao'));
         grupo('cortina-observacao').classList.add('cortina-observacao');
         const acessorios = corpo.querySelector('.cortina-acessorios');
-        acessorios.insertAdjacentHTML('beforeend', `<div class="form-group"><label for="select-ilhos-${id}">Ilhós</label><select id="select-ilhos-${id}" aria-describedby="ilhos-ajuda-${id}"></select><small id="ilhos-ajuda-${id}">Largura total do tecido principal ÷ 0,14 m × valor unitário cadastrado.</small></div>`);
+        acessorios.insertAdjacentHTML('beforeend', `<div class="form-group"><label for="select-ilhos-${id}">Ilhós</label><select id="select-ilhos-${id}" aria-describedby="ilhos-ajuda-${id}"></select><small id="ilhos-ajuda-${id}">Usa a fórmula do cadastro de produtos. Padrão: largura total do tecido principal ÷ 14 cm × preço unitário.</small></div>`);
         ['select-tubo-trilho','cortina-cabecote-traseiro','select-rodizio','cortina-deslizante-traseiro','cortina-fixacao','cortina-suporte','cortina-ponteira-frontal','cortina-ponteira-traseira'].forEach(chave => acessorios.appendChild(grupo(chave)));
         const dimensoesTrilho = grupo('select-tubo-trilho').querySelector('div[style*="grid"]');
         if (dimensoesTrilho) extras.appendChild(dimensoesTrilho);
@@ -142,7 +142,7 @@
                 el(`cortina-largura-tecido-${tipo}-${id}`).value = produto?.larguraTecido || 3;
             });
         }
-        extras.insertAdjacentHTML('afterbegin', `<div class="form-group"><label for="cortina-altura-cabecote-${id}">Altura do cabeçote (m)</label><input id="cortina-altura-cabecote-${id}" type="number" min="0" step="0.01" value="0.09"></div><p class="cortina-nota">Altura de corte = parede + cabeçote + barra. Se ultrapassar a largura do tecido cadastrado, a inversão é automática, com pedaços inteiros. Rodízios e argolas: largura ÷ 0,08 por cortina.</p>`);
+        extras.insertAdjacentHTML('afterbegin', `<div class="form-group"><label for="cortina-altura-cabecote-${id}">Altura do cabeçote (m)</label><input id="cortina-altura-cabecote-${id}" type="number" min="0" step="0.01" value="0.09"></div><p class="cortina-nota">Altura de corte = parede + cabeçote + barra. Se ultrapassar a largura do tecido cadastrado, a inversão é automática, com pedaços inteiros. As fórmulas dos acessórios podem ser alteradas no cadastro de produtos; o espaçamento padrão de rodízios e argolas é 8 cm.</p>`);
         el(`cortina-cabecote-tipo-${id}`).addEventListener('change', () => {
             const medida = /([58]) cm/.exec(el(`cortina-cabecote-tipo-${id}`).value);
             const altura = el(`cortina-altura-cabecote-${id}`);
@@ -244,9 +244,9 @@
     }
     function catalogos() {
         const normalizar = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-        const filtros = {'tubo-trilho':/tubo|trilho/,rodizio:/rodizio|deslizante/,argola:/argola/,ilhos:/ilhos/,entretela:/entretela/,suporte:/suporte/,ponteira:/ponteira|terminal/,terceiro:/blackout|black out|blecaute/};
+        const filtros = {'tubo-trilho':/tubo|trilho/,rodizio:/rodizio|deslizante/,gancho:/gancho|ganchinho/,clip:/clip/,wave:/wave/,argola:/argola/,ilhos:/ilhos/,entretela:/entretela/,suporte:/suporte/,ponteira:/ponteira|terminal/,terceiro:/blackout|black out|blecaute/};
         for (const [tipo,filtro] of Object.entries(filtros)) {
-            const itens = Object.entries(categoriasProduto).flatMap(([categoria,c]) => (c.lista || []).filter(p => MicheleCatalogoUso.permite(p,`${categoria} ${c.nome}`,'cortinas') && filtro.test(normalizar(`${c.nome} ${p.subcategoria || ''} ${p.nome}`))));
+            const itens = Object.entries(categoriasProduto).flatMap(([categoria,c]) => (c.lista || []).filter(p => MicheleCatalogoUso.permite(p,`${categoria} ${c.nome}`,'cortinas') && filtro.test(normalizar(`${p.subcategoria || ''} ${p.nome}`))));
             document.querySelectorAll(`select[id^="select-${tipo}-"]`).forEach(select => {
                 atualizarSelectProduto(select,itens,'');
                 if (tipo === 'ilhos') select.options[0].textContent = itens.length ? 'Sem ilhós' : 'Cadastre Ilhós nos produtos';
